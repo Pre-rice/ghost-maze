@@ -53,10 +53,13 @@ export function calculateDistances(startNode, width, height, hWalls, vWalls) {
     const canMove = (x, y, dx, dy) => {
         const nx = x + dx, ny = y + dy;
         if (nx < 0 || nx >= width || ny < 0 || ny >= height) return false;
-        if (dx === 1 && vWalls[y][x + 1].type !== WALL_TYPES.EMPTY) return false;
-        if (dx === -1 && vWalls[y][x].type !== WALL_TYPES.EMPTY) return false;
-        if (dy === 1 && hWalls[y + 1][x].type !== WALL_TYPES.EMPTY) return false;
-        if (dy === -1 && hWalls[y][x].type !== WALL_TYPES.EMPTY) return false;
+        // 玩家通行规则：EMPTY 与 DOOR 可通行，其余（SOLID/GLASS/LOCKED/ONE_WAY/LETTER_DOOR）阻挡。
+        // 起点房间出口是 DOOR，玩家可穿过；终点选择必须按玩家可达性计算，否则距离场被锁死在起点房间内。
+        const isTraversable = (wall) => wall.type === WALL_TYPES.EMPTY || wall.type === WALL_TYPES.DOOR;
+        if (dx === 1 && !isTraversable(vWalls[y][x + 1])) return false;
+        if (dx === -1 && !isTraversable(vWalls[y][x])) return false;
+        if (dy === 1 && !isTraversable(hWalls[y + 1][x])) return false;
+        if (dy === -1 && !isTraversable(hWalls[y][x])) return false;
         return true;
     };
     

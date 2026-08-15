@@ -110,12 +110,15 @@ export function findPlayerPath(start, end, config) {
                 let isBlocked = false;
                 
                 if (wall) {
-                    if (wall.type === WALL_TYPES.SOLID || 
-                        wall.type === WALL_TYPES.GLASS || 
+                    if (wall.type === WALL_TYPES.SOLID ||
+                        wall.type === WALL_TYPES.GLASS ||
                         (wall.type === WALL_TYPES.LOCKED && playerKeys < wall.keys)) {
                         isBlocked = true;
-                    } else if (wall.type === WALL_TYPES.ONE_WAY && 
-                               (dx !== wall.direction.dx || dy !== wall.direction.dy)) {
+                    } else if (wall.type === WALL_TYPES.ONE_WAY &&
+                               (!wall.direction || dx !== wall.direction.dx || dy !== wall.direction.dy)) {
+                        isBlocked = true;
+                    } else if (wall.type === WALL_TYPES.LETTER_DOOR && wall.currentState !== 'open') {
+                        // 关着的字母门不可通行（与真实移动 handleMove 一致；currentState 缺失时按关闭处理）
                         isBlocked = true;
                     }
                 }

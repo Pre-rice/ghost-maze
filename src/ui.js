@@ -206,7 +206,7 @@ export function updateProximityWarning(config) {
     for (const ghost of ghosts) {
         if (Math.abs(ghost.x - player.x) <= 1 && Math.abs(ghost.y - player.y) <= 1) {
             totalNearbyGhosts++;
-            if (!seenCells[ghost.y][ghost.x] && !debugVision) {
+            if (!seenCells[ghost.y]?.[ghost.x] && !debugVision) {
                 invisibleNearbyGhosts++;
             }
         }

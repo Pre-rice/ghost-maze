@@ -125,7 +125,14 @@ export const GameLogic = {
 
         // 按顺序处理玩家操作后的所有变化
         this.handleItemPickup(nextState, mapDef);
-        
+
+        // 玩家已踩到终点：立即判胜，先于鬼的移动/碰撞（避免同回合被鬼咬死导致 isWon/isDead 并存）
+        if (this._isPlayerOnEndPos(nextState, mapDef)) {
+            nextState.isWon = true;
+            nextState.isRevivalPoint = false;
+            return nextState;
+        }
+
         if (isStairAction) {
             // 玩家使用楼梯：让原层的鬼向玩家原位置移动
             this.moveGhostsAfterStair(nextState, originalPlayerPos, mapDef);
@@ -677,7 +684,10 @@ export const GameLogic = {
                 else if (dy === -1) wall = layerState.wallStates.h[y + 1][p.x];
 
                 if (wall && wall.type !== WALL_TYPES.EMPTY && wall.type !== WALL_TYPES.GLASS) {
-                    break;
+                    // 已打开的字母门不阻挡玩家视野（与幽灵视野 _canGhostSeePlayer 保持一致，且与渲染层画成敞开相符）
+                    if (!(wall.type === WALL_TYPES.LETTER_DOOR && wall.currentState === 'open')) {
+                        break;
+                    }
                 }
 
                 seen[y][x] = true;
@@ -729,6 +739,16 @@ export const GameLogic = {
             state.isDead = true;
             state.deathReason = 'no_stamina';
         }
+    },
+
+    /**
+     * 判断玩家是否已到达当前层终点
+     */
+    _isPlayerOnEndPos(state, mapDef) {
+        const p = state.player;
+        const layerDef = mapDef.layers[p.layer];
+        const endPos = layerDef.initialEntities.endPos;
+        return !!endPos && p.x === endPos.x && p.y === endPos.y;
     },
 
     /**

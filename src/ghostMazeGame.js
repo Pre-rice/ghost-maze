@@ -589,11 +589,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateProximityWarning() {
+            // 编辑器模式无实时鬼/视野数据，直接跳过（seenCells 可能为空或旧尺寸，访问会越界崩溃）
+            if (this.state === GAME_STATES.EDITOR || !this.currentGameState) return;
+            // 多层下视图层可能 ≠ 玩家层：警告统计必须针对玩家所在层的数据（鬼、视野），而非当前视图层
+            const layerIndex = this.playerLayer;
+            const layerState = this.currentGameState.layerStates[layerIndex];
+            const seen = this.currentGameState.seenCells[layerIndex];
+            if (!layerState || !seen || !seen.length) return;
             UI.updateProximityWarning({
                 gameMode: this.gameMode,
-                ghosts: this.ghosts,
+                ghosts: layerState.ghosts,
                 player: this.player,
-                seenCells: this.seenCells,
+                seenCells: seen,
                 debugVision: this.debugVision,
                 ghostProximityDisplay: this.ghostProximityDisplay
             });
@@ -814,6 +821,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.multiLayerMode = this.mapData.multiLayerMode || false;
             this.layerCount = this.mapData.layerCount || 1;
             this.currentLayer = 0;
+            // 编辑器无视野概念，重置 seenCells，避免旧尺寸残留导致后续访问越界
+            this.seenCells = [];
             this.stairs = JSON.parse(JSON.stringify(this.mapData.stairs || []));
             this.layers = JSON.parse(JSON.stringify(this.mapData.layers || []));
             if (this.multiLayerMode && this.layers.length > 0) {

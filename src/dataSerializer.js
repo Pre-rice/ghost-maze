@@ -31,6 +31,8 @@ export const DataSerializer = {
             let modeByte = (sourceData.gameMode === 'exploration' ? 0 : 1);
             if (sourceData.editorMode === 'free') modeByte |= 2;
             if (sourceData.multiLayerMode) modeByte |= 4;
+            // bit3：多层地图时第 1..N-1 层额外携带 endPos/buttons 字段，读取端据此分派
+            if (sourceData.multiLayerMode && sourceData.layers && sourceData.layers.length > 0) modeByte |= 8;
             buffer.push(modeByte);
             
             buffer.push(sourceData.initialHealth);
@@ -143,7 +145,23 @@ export const DataSerializer = {
                     
                     if (layer.customStartPos) buffer.push(layer.customStartPos.x, layer.customStartPos.y);
                     else buffer.push(0xFF, 0xFF);
-                    
+
+                    // 每层 endPos（0xFF,0xFF 哨兵表示无，格式同顶层）
+                    if (layer.endPos) buffer.push(layer.endPos.x, layer.endPos.y);
+                    else buffer.push(0xFF, 0xFF);
+
+                    // 每层按钮（格式同顶层）
+                    pushEntities(layer.buttons || [], b => {
+                        buffer.push(b.x, b.y);
+                        let dir = 0;
+                        if (b.direction.dy === -1) dir = 0;
+                        else if (b.direction.dy === 1) dir = 1;
+                        else if (b.direction.dx === -1) dir = 2;
+                        else dir = 3;
+                        buffer.push(dir);
+                        buffer.push(b.letter.charCodeAt(0));
+                    });
+
                     pushEntities(layer.ghosts || [], g => buffer.push(g.x, g.y));
                     pushEntities(layer.items || [], i => buffer.push(i.x, i.y));
                     
@@ -223,6 +241,8 @@ export const DataSerializer = {
             const gameMode = (modeByte & 1) === 0 ? 'exploration' : 'death-loop';
             const editorMode = (modeByte & 2) === 0 ? 'regular' : 'free';
             const multiLayerMode = (modeByte & 4) !== 0;
+            // bit3：多层各层是否携带 endPos/buttons 扩展字段（旧码为 0，走原路径完全兼容）
+            const layerExt = (modeByte & 8) !== 0;
             
             const initialHealth = read();
             const initialStamina = (read() << 8) | read();
@@ -334,7 +354,23 @@ export const DataSerializer = {
                     
                     const lcsx = read(), lcsy = read();
                     const layerCustomStartPos = lcsx !== 0xFF ? { x: lcsx, y: lcsy } : null;
-                    
+
+                    // 每层 endPos/buttons（仅当 bit3 扩展标志开启；旧码此处无数据，保持 null/[]）
+                    let layerEndPos = null;
+                    let layerButtons = [];
+                    if (layerExt) {
+                        const lex = read(), ley = read();
+                        if (lex !== 0xFF) layerEndPos = { x: lex, y: ley };
+                        layerButtons = readEntities(() => {
+                            const x = read(), y = read(), dirCode = read(), letter = String.fromCharCode(read());
+                            let direction = { dx: 1, dy: 0 };
+                            if (dirCode === 0) direction = { dx: 0, dy: -1 };
+                            else if (dirCode === 1) direction = { dx: 0, dy: 1 };
+                            else if (dirCode === 2) direction = { dx: -1, dy: 0 };
+                            return { x, y, direction, letter };
+                        });
+                    }
+
                     const layerGhosts = readEntities(() => ({ x: read(), y: read() }));
                     const layerItems = readEntities(() => ({ x: read(), y: read(), type: 'key' }));
                     
@@ -368,7 +404,7 @@ export const DataSerializer = {
                     const layerHWalls = Array.from({ length: height + 1 }, () => Array.from({ length: width }, readNextLayerWall));
                     const layerVWalls = Array.from({ length: height }, () => Array.from({ length: width + 1 }, readNextLayerWall));
                     
-                    layers.push({ hWalls: layerHWalls, vWalls: layerVWalls, activeCells: layerActiveCells, ghosts: layerGhosts, items: layerItems, buttons: [], stairs: stairs.filter(s => s.layer === layerIdx), endPos: null, customStartPos: layerCustomStartPos });
+                    layers.push({ hWalls: layerHWalls, vWalls: layerVWalls, activeCells: layerActiveCells, ghosts: layerGhosts, items: layerItems, buttons: layerButtons, stairs: stairs.filter(s => s.layer === layerIdx), endPos: layerEndPos, customStartPos: layerCustomStartPos });
                 }
             }
 
