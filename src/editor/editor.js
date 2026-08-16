@@ -1,4 +1,4 @@
-import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from './constants.js';
+import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../constants.js';
 
 /**
  * Editor 模块 - 处理地图编辑器相关功能
@@ -137,31 +137,6 @@ export function isCellOccupied(x, y, entities) {
 }
 
 /**
- * 擦除位置上的实体
- * @param {object} pos - 位置 {x, y}
- * @param {object} entities - 实体对象
- * @returns {object} 更新后的实体
- */
-export function eraseEntityAtPos(pos, entities) {
-    const { x, y } = pos;
-    let { ghosts, items, buttons, endPos, customStartPos, stairs, currentLayer } = entities;
-    
-    ghosts = ghosts.filter(g => !(g.x === x && g.y === y));
-    items = items.filter(i => !(i.x === x && i.y === y));
-    buttons = buttons.filter(b => !(b.x === x && b.y === y));
-    stairs = stairs.filter(s => !(s.x === x && s.y === y && s.layer === currentLayer));
-    
-    if (endPos && endPos.x === x && endPos.y === y) {
-        endPos = null;
-    }
-    if (customStartPos && customStartPos.x === x && customStartPos.y === y) {
-        customStartPos = null;
-    }
-    
-    return { ghosts, items, buttons, endPos, customStartPos, stairs };
-}
-
-/**
  * 检查楼梯放置是否有效（完整版：当前层/目标层双向校验）
  * @param {number} x - X坐标
  * @param {number} y - Y坐标
@@ -221,22 +196,6 @@ export function createStartRoomLayout(hWalls, vWalls, roomY) {
     // 出口门：右侧 vWalls[roomY+1][3]，上方 hWalls[roomY][1]
     vWalls[roomY + 1][START_ROOM_SIZE] = door();
     hWalls[roomY][1] = door();
-}
-export function toggleWall(wall, targetType, hWalls, vWalls) {
-    const { x, y, type } = wall;
-    const newHWalls = hWalls.map(row => row.map(w => ({ ...w })));
-    const newVWalls = vWalls.map(row => row.map(w => ({ ...w })));
-    
-    const wallArray = type === 'h' ? newHWalls : newVWalls;
-    const currentWall = wallArray[y][x];
-    
-    if (currentWall.type === targetType) {
-        wallArray[y][x] = { type: WALL_TYPES.EMPTY, keys: 0 };
-    } else {
-        wallArray[y][x] = { type: targetType, keys: currentWall.keys || 0 };
-    }
-    
-    return { hWalls: newHWalls, vWalls: newVWalls };
 }
 
 /**

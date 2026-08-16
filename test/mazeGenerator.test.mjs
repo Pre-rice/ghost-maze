@@ -5,7 +5,7 @@
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
 import { generateFullMaze } from '../src/mazeGenerator.js';
 import { calculateDistances } from '../src/pathfinding.js';
-import { isPosInStartRoom, createEmptyWalls } from '../src/editor.js';
+import { isPosInStartRoom, createEmptyWalls } from '../src/editor/editor.js';
 import { WALL_TYPES as WT } from '../src/constants.js';
 
 suite('mazeGenerator');

@@ -8,7 +8,7 @@ import * as UI from './ui.js';
 import * as Renderer from './renderer.js';
 import * as MazeGenerator from './mazeGenerator.js';
 import * as InputHandler from './inputHandler.js';
-import * as Editor from './editor.js';
+import * as Editor from './editor/editor.js';
 import * as LayerManager from './layerManager.js';
 import * as Pathfinding from './pathfinding.js';
 import * as ThemeManager from './themeManager.js';

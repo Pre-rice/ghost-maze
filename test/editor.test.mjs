@@ -6,9 +6,9 @@
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
 import {
     createBlankEditorMap, createEmptyWalls, isPosInStartRoom, isWallEditable,
-    isCellOccupied, eraseEntityAtPos, isValidStairPlacement,
+    isCellOccupied, isValidStairPlacement,
     createStartRoomLayout, validateMapForPlay, getWallAtPos,
-} from '../src/editor.js';
+} from '../src/editor/editor.js';
 import { WALL_TYPES as WT, EDITOR_TOOLS, START_ROOM_SIZE } from '../src/constants.js';
 
 suite('editor');
@@ -57,23 +57,6 @@ test('isCellOccupied: 鬼/钥匙/终点/楼梯占用；按钮不阻止（可共�
     assertEq(isCellOccupied(4, 4, entities), true, '楼梯占用');
     assertEq(isCellOccupied(5, 5, entities), false, '按钮不阻止放置');
     assertEq(isCellOccupied(6, 6, entities), false, '空位可放置');
-});
-
-test('eraseEntityAtPos: 清除该格全部实体（楼梯按当前层）', () => {
-    const entities = {
-        ghosts: [{ x: 1, y: 1 }], items: [{ x: 1, y: 1 }, { x: 2, y: 2 }],
-        endPos: { x: 1, y: 1 }, buttons: [{ x: 1, y: 1 }],
-        stairs: [{ x: 1, y: 1, layer: 0 }, { x: 1, y: 1, layer: 1 }],
-        currentLayer: 0,
-    };
-    const r = eraseEntityAtPos({ x: 1, y: 1 }, entities);
-    assertEq(r.ghosts.length, 0, '鬼清除');
-    assertEq(r.items.length, 1, '仅清除该格钥匙');
-    assertEq(r.items[0].x, 2, '其余钥匙保留');
-    assertEq(r.endPos, null, '终点清除');
-    assertEq(r.buttons.length, 0, '按钮清除');
-    assertEq(r.stairs.length, 1, '仅清除当前层楼梯');
-    assertEq(r.stairs[0].layer, 1, '其他层楼梯保留');
 });
 
 test('isValidStairPlacement: 活动格/重复/边界层/目标层实体判定（完整版）', () => {
