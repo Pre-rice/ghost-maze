@@ -1802,10 +1802,6 @@ document.addEventListener('DOMContentLoaded', () => {
             else { return (mouseX > wall.x * cs) ? { dx: 1, dy: 0 } : { dx: -1, dy: 0 }; }
         }
 
-        calculateDistances(startNode) {
-            return Pathfinding.calculateDistances(startNode, this.width, this.height, this.hWalls, this.vWalls);
-        }
-
         findPlayerPath(start, end) {
             return Pathfinding.findPlayerPath(start, end, {
                 width: this.width,
