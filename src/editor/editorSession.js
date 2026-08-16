@@ -359,6 +359,143 @@ export class EditorDocument {
         }
     }
 
+    /** 定位墙引用（hWalls/vWalls 中对应坐标的实际墙对象） */
+    _wallRef(wall) {
+        return wall.type === 'h' ? this.hWalls[wall.y][wall.x] : this.vWalls[wall.y][wall.x];
+    }
+
+    /** 单元格是否可放置实体（边界 + 激活格） */
+    _cellEditable(x, y) {
+        return x >= 0 && x < this.width && y >= 0 && y < this.height && !!this.activeCells[y] && !!this.activeCells[y][x];
+    }
+
+    /** 实体放置是否允许（regular 模式起始房间内禁止；free 恒允许） */
+    _entityAllowed(x, y) {
+        if (this.mode === 'free') return true;
+        return !this.isPosInStartRoom(x, y);
+    }
+
+    /**
+     * 拖拽画墙（替换语义，非 toggle）：WALL/GLASS 工具拖拽时直接替换为指定类型。
+     * 对应 inputHandler.handleCanvasMouseMove 拖拽分支的 `= { type }` 直接赋值（不翻转、不清按钮）。
+     */
+    setWall(wall, type) {
+        if (wall.type === 'h' && wall.y >= 0 && wall.y <= this.height && wall.x >= 0 && wall.x < this.width) {
+            this.hWalls[wall.y][wall.x] = { type };
+        } else if (wall.type === 'v' && wall.x >= 0 && wall.x <= this.width && wall.y >= 0 && wall.y < this.height) {
+            this.vWalls[wall.y][wall.x] = { type };
+        }
+    }
+
+    /** 放置/取消门（DOOR 工具点击：SOLID 墙先清依附按钮，DOOR↔EMPTY 切换） */
+    toggleDoor(wall) {
+        const wallRef = this._wallRef(wall);
+        if (wallRef.type === WALL_TYPES.SOLID) this.eraseButtonsOnWall(wall);
+        wallRef.type = wallRef.type === WALL_TYPES.DOOR ? WALL_TYPES.EMPTY : WALL_TYPES.DOOR;
+    }
+
+    /** 放置数字门（LOCK 工具点击；keys 由调用方 prompt+校验后传入；SOLID 墙先清按钮） */
+    setLocked(wall, keys) {
+        const wallRef = this._wallRef(wall);
+        if (wallRef.type === WALL_TYPES.SOLID) this.eraseButtonsOnWall(wall);
+        const newWall = { type: WALL_TYPES.LOCKED, keys };
+        if (wall.type === 'h') this.hWalls[wall.y][wall.x] = newWall; else this.vWalls[wall.y][wall.x] = newWall;
+    }
+
+    /**
+     * 放置/翻转字母门（LETTER_DOOR 工具点击）。
+     * 已是字母门 → 翻转 initialState；否则用 letter（调用方 prompt+校验后传入）建新门并清 SOLID 按钮。
+     */
+    toggleLetterDoor(wall, letter) {
+        const wallRef = this._wallRef(wall);
+        if (wallRef.type === WALL_TYPES.LETTER_DOOR) {
+            wallRef.initialState = wallRef.initialState === 'open' ? 'closed' : 'open';
+        } else {
+            if (wallRef.type === WALL_TYPES.SOLID) this.eraseButtonsOnWall(wall);
+            const newWall = { type: WALL_TYPES.LETTER_DOOR, letter: letter.toUpperCase(), initialState: 'closed' };
+            if (wall.type === 'h') this.hWalls[wall.y][wall.x] = newWall; else this.vWalls[wall.y][wall.x] = newWall;
+        }
+    }
+
+    /**
+     * 放置/改向单向门（ONE_WAY 工具：点击放置，拖拽改方向）。
+     * 已是单向门且方向不同 → 仅改方向；否则（SOLID 先清按钮）替换为新单向门。
+     * 同时覆盖 inputHandler mouseDown 放置与 mouseMove 拖拽改向两种语义。
+     */
+    setOneWay(wall, direction) {
+        const wallRef = this._wallRef(wall);
+        if (wallRef.type === WALL_TYPES.SOLID) this.eraseButtonsOnWall(wall);
+        if (wallRef.type === WALL_TYPES.ONE_WAY) {
+            if (direction && (wallRef.direction.dx !== direction.dx || wallRef.direction.dy !== direction.dy)) {
+                wallRef.direction = direction;
+            }
+        } else {
+            const newWall = { type: WALL_TYPES.ONE_WAY, direction };
+            if (wall.type === 'h') this.hWalls[wall.y][wall.x] = newWall; else this.vWalls[wall.y][wall.x] = newWall;
+        }
+    }
+
+    /** 设置终点（END 工具；占用格仅当就是当前终点时允许重设）。返回是否设置成功 */
+    setEnd(x, y) {
+        if (!this._cellEditable(x, y) || !this._entityAllowed(x, y)) return false;
+        if (!this.isCellOccupied(x, y) || (this.endPos && this.endPos.x === x && this.endPos.y === y)) {
+            this.endPos = { x, y };
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 设置起点（START 工具；仅 free 模式）。
+     * 多层时先保存当前层并清空所有层 customStartPos；随后置当前层起点并更新 playerLayer。
+     * 返回是否成功（占用格仅当就是当前起点时允许重设）。UI 刷新由调用方负责。
+     */
+    setStart(x, y) {
+        if (this.mode !== 'free' || !this._cellEditable(x, y) || !this._entityAllowed(x, y)) return false;
+        if (this.isCellOccupied(x, y) && !(this.customStartPos && this.customStartPos.x === x && this.customStartPos.y === y)) return false;
+        if (this.multiLayerMode) {
+            this.saveCurrentLayer();
+            for (let i = 0; i < this.layerCount; i++) { if (this.layers[i]) { this.layers[i].customStartPos = null; } }
+        }
+        this.customStartPos = { x, y };
+        this.playerLayer = this.currentLayer;
+        return true;
+    }
+
+    /** 放置/移除鬼（GHOST 工具；有则删，无则未占用时放置） */
+    toggleGhost(x, y) {
+        if (!this._cellEditable(x, y) || !this._entityAllowed(x, y)) return false;
+        const idx = this.ghosts.findIndex(g => g.x === x && g.y === y);
+        if (idx > -1) { this.ghosts.splice(idx, 1); return true; }
+        if (this.isCellOccupied(x, y)) return false;
+        this.ghosts.push({ x, y });
+        return true;
+    }
+
+    /** 放置/移除钥匙（KEY 工具；有 key 则删，无则未占用时放置） */
+    toggleKey(x, y) {
+        if (!this._cellEditable(x, y) || !this._entityAllowed(x, y)) return false;
+        const idx = this.items.findIndex(i => i.x === x && i.y === y);
+        if (idx > -1 && this.items[idx].type === 'key') { this.items.splice(idx, 1); return true; }
+        if (this.isCellOccupied(x, y)) return false;
+        this.items.push({ x, y, type: 'key' });
+        return true;
+    }
+
+    /**
+     * 放置/移除按钮（BUTTON 工具；同格同方向已存在则删，否则以 letter 新建）。
+     * @param {object} hotspot - 按钮热点 {x, y, direction}（来自 Pathfinding.getButtonHotspotAtPos）
+     */
+    toggleButton(hotspot, letter) {
+        if (!hotspot || !this._cellEditable(hotspot.x, hotspot.y)) return false;
+        const idx = this.buttons.findIndex(b =>
+            b.x === hotspot.x && b.y === hotspot.y &&
+            b.direction.dx === hotspot.direction.dx && b.direction.dy === hotspot.direction.dy);
+        if (idx > -1) { this.buttons.splice(idx, 1); return true; }
+        this.buttons.push({ ...hotspot, letter: letter.toUpperCase() });
+        return true;
+    }
+
     /** 切换格激活状态（对应 toggleActiveCell 纯数据部分；去激活时清实体+清四周墙） */
     toggleActiveCell(x, y, action) {
         if (x < 0 || x >= this.width || y < 0 || y >= this.height) return;
@@ -440,6 +577,13 @@ export class EditorDocument {
         this.stairs.push({ x, y, direction, layer: this.currentLayer });
         this.stairs.push({ x, y, direction: pairedDirection, layer: targetLayer });
         return true;
+    }
+
+    /** 清空全部墙为 EMPTY（对应主类 clearEntitiesOnly 的墙清空部分；激活格/实体不动） */
+    clearWalls() {
+        const empty = () => ({ type: WALL_TYPES.EMPTY, keys: 0 });
+        this.hWalls = Array(this.height + 1).fill(null).map(() => Array(this.width).fill(null).map(empty));
+        this.vWalls = Array(this.height).fill(null).map(() => Array(this.width + 1).fill(null).map(empty));
     }
 
     /** 清空实体（保留墙与激活格；楼梯含配对清理，对应 clearEntitiesOnly 纯数据部分） */

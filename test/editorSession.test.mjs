@@ -320,6 +320,197 @@ test('clearAllGrids / resetGrids: 激活格全部去激活 / 激活', () => {
     assertEq(doc.activeCells.every(r => r.every(v => v === true)), true, '全部激活');
 });
 
+// ---------- Step 4 写操作（inputHandler 内联逻辑收敛，行为锁定） ----------
+
+test('setWall: 拖拽替换语义（非 toggle），h/v 墙按 type 定位', () => {
+    const doc = EditorDocument.blank(10, 10, 'regular');
+    // 横墙替换
+    doc.setWall({ x: 4, y: 4, type: 'h' }, WT.SOLID);
+    assertEq(doc.hWalls[4][4].type, WT.SOLID, 'h 墙变 SOLID');
+    // 替换语义：同墙再拖同样类型仍为 SOLID（不翻转）
+    doc.setWall({ x: 4, y: 4, type: 'h' }, WT.SOLID);
+    assertEq(doc.hWalls[4][4].type, WT.SOLID, '替换不翻转');
+    // keys 字段随替换消失（与原实现 { type } 直接赋值一致）
+    assertEq(doc.hWalls[4][4].keys, undefined, '替换对象无 keys（与原实现一致）');
+    // 竖墙替换 GLASS
+    doc.setWall({ x: 5, y: 3, type: 'v' }, WT.GLASS);
+    assertEq(doc.vWalls[3][5].type, WT.GLASS, 'v 墙变 GLASS');
+    // 越界不崩溃
+    doc.setWall({ x: 99, y: 99, type: 'h' }, WT.SOLID);
+});
+
+test('toggleDoor: DOOR↔EMPTY 切换 + SOLID 墙先清依附按钮', () => {
+    const doc = EditorDocument.blank(10, 10, 'regular');
+    const wall = { x: 4, y: 4, type: 'h' };
+    doc.toggleDoor(wall);
+    assertEq(doc.hWalls[4][4].type, WT.DOOR, 'EMPTY→DOOR');
+    doc.toggleDoor(wall);
+    assertEq(doc.hWalls[4][4].type, WT.EMPTY, 'DOOR→EMPTY');
+    // SOLID 墙上挂按钮 → 放门时清除
+    doc.toggleWall(wall, WT.SOLID);
+    doc.buttons.push({ x: 4, y: 3, direction: { dx: 0, dy: 1 }, letter: 'A' }); // (4,3) 下边按钮
+    doc.toggleDoor(wall);
+    assertEq(doc.hWalls[4][4].type, WT.DOOR, 'SOLID→DOOR');
+    assertEq(doc.buttons.length, 0, 'SOLID 墙放门清依附按钮');
+});
+
+test('setLocked: 数字门替换 + keys 携带 + SOLID 清按钮', () => {
+    const doc = EditorDocument.blank(10, 10, 'regular');
+    doc.setLocked({ x: 5, y: 5, type: 'h' }, 3);
+    assertEq(doc.hWalls[5][5].type, WT.LOCKED, 'LOCKED 放置');
+    assertEq(doc.hWalls[5][5].keys, 3, 'keys 携带');
+    // SOLID 墙放锁清按钮
+    doc.toggleWall({ x: 6, y: 6, type: 'h' }, WT.SOLID);
+    doc.buttons.push({ x: 6, y: 5, direction: { dx: 0, dy: 1 }, letter: 'B' });
+    doc.setLocked({ x: 6, y: 6, type: 'h' }, 1);
+    assertEq(doc.hWalls[6][6].type, WT.LOCKED, 'SOLID→LOCKED');
+    assertEq(doc.buttons.length, 0, 'SOLID 墙放锁清依附按钮');
+});
+
+test('toggleLetterDoor: 建门（大写 letter + closed）→ 翻转 initialState 循环', () => {
+    const doc = EditorDocument.blank(10, 10, 'regular');
+    const wall = { x: 4, y: 4, type: 'h' };
+    doc.toggleLetterDoor(wall, 'b');
+    assertEq(doc.hWalls[4][4].type, WT.LETTER_DOOR, 'LETTER_DOOR 放置');
+    assertEq(doc.hWalls[4][4].letter, 'B', 'letter 大写');
+    assertEq(doc.hWalls[4][4].initialState, 'closed', '初始 closed');
+    doc.toggleLetterDoor(wall, 'A'); // 已是字母门 → 翻转，忽略 letter
+    assertEq(doc.hWalls[4][4].initialState, 'open', '翻转 → open');
+    assertEq(doc.hWalls[4][4].letter, 'B', '翻转不改 letter');
+    doc.toggleLetterDoor(wall, 'A');
+    assertEq(doc.hWalls[4][4].initialState, 'closed', '再翻 → closed');
+    // SOLID 墙建门清按钮
+    doc.toggleWall({ x: 7, y: 7, type: 'h' }, WT.SOLID);
+    doc.buttons.push({ x: 7, y: 6, direction: { dx: 0, dy: 1 }, letter: 'C' });
+    doc.toggleLetterDoor({ x: 7, y: 7, type: 'h' }, 'z');
+    assertEq(doc.hWalls[7][7].type, WT.LETTER_DOOR, 'SOLID→LETTER_DOOR');
+    assertEq(doc.buttons.length, 0, 'SOLID 墙放字母门清依附按钮');
+});
+
+test('setOneWay: 放置 + 拖拽改向 + SOLID 清按钮', () => {
+    const doc = EditorDocument.blank(10, 10, 'regular');
+    const wall = { x: 4, y: 4, type: 'h' };
+    doc.setOneWay(wall, { dx: 0, dy: -1 });
+    assertEq(doc.hWalls[4][4].type, WT.ONE_WAY, 'ONE_WAY 放置');
+    assertDeepEq(doc.hWalls[4][4].direction, { dx: 0, dy: -1 }, '方向设置');
+    // 拖拽改向
+    doc.setOneWay(wall, { dx: 0, dy: 1 });
+    assertDeepEq(doc.hWalls[4][4].direction, { dx: 0, dy: 1 }, '拖拽改向');
+    // 同方向幂等
+    doc.setOneWay(wall, { dx: 0, dy: 1 });
+    assertDeepEq(doc.hWalls[4][4].direction, { dx: 0, dy: 1 }, '同方向不变');
+    // SOLID 墙放单向门清按钮
+    doc.toggleWall({ x: 6, y: 6, type: 'h' }, WT.SOLID);
+    doc.buttons.push({ x: 6, y: 5, direction: { dx: 0, dy: 1 }, letter: 'D' });
+    doc.setOneWay({ x: 6, y: 6, type: 'h' }, { dx: 0, dy: -1 });
+    assertEq(doc.hWalls[6][6].type, WT.ONE_WAY, 'SOLID→ONE_WAY');
+    assertEq(doc.buttons.length, 0, 'SOLID 墙放单向门清依附按钮');
+});
+
+test('setEnd: 空位设置 / 占用格拒绝（当前终点可重设）/ regular 起始房间拒绝', () => {
+    const doc = EditorDocument.blank(10, 10, 'regular');
+    assertEq(doc.setEnd(5, 5), true, '空位设置成功');
+    assertDeepEq(doc.endPos, { x: 5, y: 5 }, 'endPos 设置');
+    // 占用格（放鬼）拒绝
+    doc.ghosts.push({ x: 6, y: 6 });
+    assertEq(doc.setEnd(6, 6), false, '占用格拒绝');
+    assertDeepEq(doc.endPos, { x: 5, y: 5 }, 'endPos 不变');
+    // 占用格但就是当前终点 → 重设成功
+    doc.ghosts.push({ x: 5, y: 5 });
+    assertEq(doc.setEnd(5, 5), true, '当前终点可重设');
+    assertDeepEq(doc.endPos, { x: 5, y: 5 });
+    // regular 起始房间（{1,8}）拒绝
+    assertEq(doc.setEnd(1, 8), false, 'regular 起始房间拒绝');
+    // free 模式起始房间允许
+    const free = EditorDocument.blank(10, 10, 'free');
+    assertEq(free.setEnd(1, 8), true, 'free 起始房间允许');
+});
+
+test('setStart: 仅 free；占用拒绝（当前起点可重设）；多层清全层起点 + playerLayer', () => {
+    // regular 模式拒绝
+    const regular = EditorDocument.blank(10, 10, 'regular');
+    assertEq(regular.setStart(5, 5), false, 'regular 模式拒绝');
+    assertEq(regular.customStartPos, null, 'regular 无起点');
+    // free 空位设置
+    const free = EditorDocument.blank(10, 10, 'free');
+    assertEq(free.setStart(5, 5), true, 'free 空位设置成功');
+    assertDeepEq(free.customStartPos, { x: 5, y: 5 }, 'customStartPos');
+    assertEq(free.playerLayer, free.currentLayer, 'playerLayer 跟随当前层');
+    // 占用格拒绝
+    free.ghosts.push({ x: 6, y: 6 });
+    assertEq(free.setStart(6, 6), false, '占用格拒绝');
+    assertDeepEq(free.customStartPos, { x: 5, y: 5 }, '起点不变');
+    // 当前起点所在格可重设
+    free.ghosts.push({ x: 5, y: 5 });
+    assertEq(free.setStart(5, 5), true, '当前起点可重设');
+    // 多层：清所有层 customStartPos + playerLayer 更新
+    const multi = EditorDocument.blank(10, 10, 'free', true);
+    multi.addLayer();
+    multi.layers[0].customStartPos = { x: 1, y: 1 };
+    multi.layers[1].customStartPos = { x: 2, y: 2 };
+    multi.currentLayer = 1;
+    assertEq(multi.setStart(5, 5), true, '多层设置起点');
+    assertEq(multi.layers[0].customStartPos, null, '层 0 起点清除');
+    assertEq(multi.layers[1].customStartPos, null, '层 1 起点清除');
+    assertDeepEq(multi.customStartPos, { x: 5, y: 5 }, '当前层起点设置');
+    assertEq(multi.playerLayer, 1, 'playerLayer = currentLayer');
+});
+
+test('toggleGhost: 放置/移除 + 占用拒绝 + regular 起始房间拒绝', () => {
+    const doc = EditorDocument.blank(10, 10, 'regular');
+    assertEq(doc.toggleGhost(5, 5), true, '空位放置');
+    assertEq(doc.ghosts.length, 1, '鬼已放置');
+    assertDeepEq(doc.ghosts[0], { x: 5, y: 5 }, '鬼对象 {x,y}（id 由导出补）');
+    // 同格再点 → 移除
+    assertEq(doc.toggleGhost(5, 5), true, '同格再点移除');
+    assertEq(doc.ghosts.length, 0, '鬼已移除');
+    // 占用格拒绝
+    doc.endPos = { x: 6, y: 6 };
+    assertEq(doc.toggleGhost(6, 6), false, '终点格拒绝');
+    // regular 起始房间拒绝
+    assertEq(doc.toggleGhost(1, 8), false, 'regular 起始房间拒绝');
+    const free = EditorDocument.blank(10, 10, 'free');
+    assertEq(free.toggleGhost(1, 8), true, 'free 起始房间允许');
+});
+
+test('toggleKey: 放置/移除 + 占用拒绝 + regular 起始房间拒绝', () => {
+    const doc = EditorDocument.blank(10, 10, 'regular');
+    assertEq(doc.toggleKey(5, 5), true, '空位放置');
+    assertEq(doc.items.length, 1, '钥匙已放置');
+    assertDeepEq(doc.items[0], { x: 5, y: 5, type: 'key' }, '钥匙对象 {x,y,type:key}');
+    // 同格再点 → 移除
+    assertEq(doc.toggleKey(5, 5), true, '同格再点移除');
+    assertEq(doc.items.length, 0, '钥匙已移除');
+    // 非 key 物品（如宝藏）不按 key 移除——用 items 直接放一个非 key 项验证 findIndex 条件
+    doc.items.push({ x: 5, y: 5, type: 'treasure' });
+    assertEq(doc.toggleKey(5, 5), false, '非 key 物品不触发移除且格已占用');
+    assertEq(doc.items.length, 1, 'treasure 保留');
+    // 占用格拒绝
+    doc.endPos = { x: 6, y: 6 };
+    assertEq(doc.toggleKey(6, 6), false, '终点格拒绝');
+    // regular 起始房间拒绝
+    assertEq(doc.toggleKey(1, 8), false, 'regular 起始房间拒绝');
+    const free = EditorDocument.blank(10, 10, 'free');
+    assertEq(free.toggleKey(1, 8), true, 'free 起始房间允许');
+});
+
+test('toggleButton: 新建（大写 letter）/ 同格同方向删除 / 同格异方向共存', () => {
+    const doc = EditorDocument.blank(10, 10, 'regular');
+    const hotspot = { x: 4, y: 4, direction: { dx: 0, dy: -1 } };
+    assertEq(doc.toggleButton(hotspot, 'a'), true, '新建按钮');
+    assertEq(doc.buttons.length, 1, '按钮已放');
+    assertDeepEq(doc.buttons[0], { ...hotspot, letter: 'A' }, '按钮对象含大写 letter');
+    // 同格同方向再点 → 删除
+    assertEq(doc.toggleButton(hotspot, 'a'), true, '同热点再点删除');
+    assertEq(doc.buttons.length, 0, '按钮已删');
+    // 同格异方向 → 新增不删
+    doc.toggleButton(hotspot, 'B');
+    doc.toggleButton({ ...hotspot, direction: { dx: 0, dy: 1 } }, 'C');
+    assertEq(doc.buttons.length, 2, '同格异方向共存');
+    // 无热点 → 拒绝
+    assertEq(doc.toggleButton(null, 'A'), false, 'null 热点拒绝');
+});
+
 // ---------- 尺寸 ----------
 
 test('resize: 多层保持层数重建；单层退化', () => {

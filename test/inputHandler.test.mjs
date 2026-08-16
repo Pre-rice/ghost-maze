@@ -6,7 +6,9 @@
  * 目的：锁定「模块级变量缺失」类迁移 bug 不再复发。
  */
 import { deflateRawSync } from 'node:zlib';
-import { test, suite, summary, assert, assertEq } from './_assert.mjs';
+import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
+import { WALL_TYPES } from '../src/core/constants.js';
+import { EditorDocument } from '../src/editor/editorSession.js';
 
 // 必须在动态 import inputHandler 之前完成 DOM mock（该模块顶层引用 document）
 globalThis.window = globalThis.window || { pako: { deflateRaw: (d) => deflateRawSync(d), inflateRaw: null } };
@@ -28,23 +30,17 @@ const InputHandler = await import('../src/inputHandler.js');
 
 suite('inputHandler 冒烟');
 
-// 构造最小游戏对象：覆盖鼠标函数访问到的全部字段与方法
+// 构造最小游戏对象：覆盖鼠标函数访问到的全部字段与方法。
+// 编辑器权威源 = editorDoc（EditorDocument）；host 镜像字段（width/hWalls/…）由
+// syncEditorMirrors 桥接指向 doc（对应 main.js Step 5 的 _syncEditorMirrors）。
 const makeGame = () => {
-    const wallBorder = Array.from({ length: 11 }, (_, y) =>
-        Array.from({ length: 10 }, (_, x) => ({ type: (y === 0 || y === 10 || x === 0 || x === 9) ? 1 : 0 })));
-    const wallV = Array.from({ length: 10 }, (_, y) =>
-        Array.from({ length: 11 }, (_, x) => ({ type: (x === 0 || x === 10 || y === 0 || y === 9) ? 1 : 0 })));
-    return {
-        state: 'playing', width: 10, height: 10, cellSize: 50,
+    const g = {
+        state: 'playing', cellSize: 50,
         player: { x: 1, y: 1, keys: 0 },
         seenCells: Array.from({ length: 10 }, () => Array(10).fill(true)),
         debugVision: false,
         drawOffset: { x: 0, y: 0 }, padding: 15,
-        hWalls: wallBorder, vWalls: wallV,
-        activeCells: Array.from({ length: 10 }, () => Array(10).fill(true)),
-        ghosts: [], items: [], buttons: [], stairs: [], layers: [],
-        customStartPos: null, endPos: null,
-        layerCount: 1, currentLayer: 0, multiLayerMode: false,
+        editorDoc: EditorDocument.blank(10, 10, 'regular', false),
         // Phase 4：游戏分支读 controller 权威源（多层判断/视图层）+ getGameView() 投影
         controller: {
             mapDefinition: { multiLayerMode: false },
@@ -57,11 +53,38 @@ const makeGame = () => {
             hoveredWall: null, hoveredButtonHotspot: null, gridDragAction: null,
             stairPlacement: null, isRightClickErasing: false, rightClickMousePos: null,
         },
-        movePlayer() {}, stopAutoMove() {}, drawEditor() {}, eraseAtPos() {},
-        setEditorTool() {}, eraseButtonsOnWall() {}, eraseStairAt() {},
-        _renderStaticLayer() {}, isWallEditable() { return true; },
-        isCellOccupiedInEditor() { return false; }, isPosInStartRoom() { return false; },
-        showToast() {},
+        movePlayer() {}, stopAutoMove() {}, drawEditor() {}, setEditorTool() {},
+        _renderStaticLayer() {}, showToast() {},
+        // —— 编辑器薄委托（对应 main.js Step 5：写操作委托 editorDoc + 镜像同步）——
+        syncEditorMirrors() {
+            const d = this.editorDoc;
+            this.width = d.width; this.height = d.height;
+            this.hWalls = d.hWalls; this.vWalls = d.vWalls;
+            this.activeCells = d.activeCells;
+            this.ghosts = d.ghosts; this.items = d.items; this.buttons = d.buttons; this.stairs = d.stairs;
+            this.customStartPos = d.customStartPos; this.endPos = d.endPos;
+            this.layerCount = d.layerCount; this.currentLayer = d.currentLayer;
+            this.multiLayerMode = d.multiLayerMode; this.playerLayer = d.playerLayer;
+        },
+        toggleWall(wall, type) { this.editorDoc.toggleWall(wall, type); this.syncEditorMirrors(); this.drawEditor(); },
+        toggleActiveCell(x, y, action) { this.editorDoc.toggleActiveCell(x, y, action); this.syncEditorMirrors(); this._renderStaticLayer(); this.drawEditor(); },
+        setWall(wall, type) { this.editorDoc.setWall(wall, type); this.syncEditorMirrors(); this.drawEditor(); },
+        toggleDoor(wall) { this.editorDoc.toggleDoor(wall); this.syncEditorMirrors(); this.drawEditor(); },
+        setLocked(wall, keys) { this.editorDoc.setLocked(wall, keys); this.syncEditorMirrors(); this.drawEditor(); },
+        toggleLetterDoor(wall, letter) { this.editorDoc.toggleLetterDoor(wall, letter); this.syncEditorMirrors(); this.drawEditor(); },
+        setOneWay(wall, direction) { this.editorDoc.setOneWay(wall, direction); this.syncEditorMirrors(); this.drawEditor(); },
+        setEnd(x, y) { this.editorDoc.setEnd(x, y); this.syncEditorMirrors(); this.drawEditor(); },
+        setStart(x, y) { this.editorDoc.setStart(x, y); this.syncEditorMirrors(); this.drawEditor(); },
+        toggleGhost(x, y) { this.editorDoc.toggleGhost(x, y); this.syncEditorMirrors(); this.drawEditor(); },
+        toggleKey(x, y) { this.editorDoc.toggleKey(x, y); this.syncEditorMirrors(); this.drawEditor(); },
+        toggleButton(hotspot, letter) { this.editorDoc.toggleButton(hotspot, letter); this.syncEditorMirrors(); this.drawEditor(); },
+        eraseStairAt(x, y, layer) { this.editorDoc.eraseStairAt(x, y, layer); this.syncEditorMirrors(); },
+        placeStair(x, y, direction) { const ok = this.editorDoc.placeStair(x, y, direction); this.syncEditorMirrors(); return ok; },
+        isValidStairPlacement(x, y, direction) { return this.editorDoc.isValidStairPlacement(x, y, direction); },
+        eraseAtPos(pos) { this.editorDoc.eraseAt(pos, this.cellSize); this.syncEditorMirrors(); },
+        isWallEditable(wall) { return this.editorDoc.isWallEditable(wall); },
+        isCellOccupiedInEditor(x, y) { return this.editorDoc.isCellOccupied(x, y); },
+        isPosInStartRoom(x, y) { return this.editorDoc.isPosInStartRoom(x, y); },
         getGameView() {
             return {
                 width: this.width, height: this.height, cellSize: this.cellSize,
@@ -71,6 +94,8 @@ const makeGame = () => {
             };
         },
     };
+    g.syncEditorMirrors();
+    return g;
 };
 
 test('模块可加载：canvas 引用有效', () => {
@@ -244,6 +269,108 @@ test('handleCanvasClick：路径中某步失败则停止，不累积跳格', () 
         globalThis.setInterval = origSetInterval;
         globalThis.clearInterval = origClearInterval;
     }
+});
+
+// ==================== Step 5 编辑器委托锁（写操作走 editorDoc + 镜像同步） ====================
+// 坐标换算：clientX=75 → pos=(60,60) → cell(1,1) 偏 10px → getWallAtPos 命中上边界 hWalls[1][1]
+//           clientX=275 → pos=(260,260) → cell(5,5)（地图中央，非起始房间）
+
+test('编辑器 wall 工具 mousedown → editorDoc 墙翻转 + 镜像同步', () => {
+    const g = makeGame();
+    g.state = 'editor';
+    g.editor.active = true; g.editor.tool = 'wall';
+    InputHandler.handleCanvasMouseDown(g, { button: 0, clientX: 75, clientY: 75 });
+    assertEq(g.editorDoc.hWalls[1][1].type, WALL_TYPES.SOLID, 'wall 工具按下应翻转墙为 SOLID');
+    assertEq(g.hWalls[1][1].type, WALL_TYPES.SOLID, '镜像字段应同步指向 doc');
+});
+
+test('编辑器 glass 工具 mousedown → editorDoc 墙 GLASS', () => {
+    const g = makeGame();
+    g.state = 'editor';
+    g.editor.active = true; g.editor.tool = 'glass';
+    InputHandler.handleCanvasMouseDown(g, { button: 0, clientX: 75, clientY: 75 });
+    assertEq(g.editorDoc.hWalls[1][1].type, WALL_TYPES.GLASS);
+});
+
+test('编辑器 door 工具 mouseup（点击不拖动）→ editorDoc 墙切换 DOOR', () => {
+    const g = makeGame();
+    g.state = 'editor';
+    g.editor.active = true; g.editor.tool = 'door';
+    InputHandler.handleCanvasMouseDown(g, { button: 0, clientX: 75, clientY: 75 });
+    InputHandler.handleCanvasMouseUp(g, { button: 0, clientX: 75, clientY: 75 });
+    assertEq(g.editorDoc.hWalls[1][1].type, WALL_TYPES.DOOR, '点击门工具应切为 DOOR');
+});
+
+test('编辑器 lock 工具 mouseup → editorDoc 墙替换为 LOCKED（keys 来自 prompt）', () => {
+    const g = makeGame();
+    g.state = 'editor';
+    g.editor.active = true; g.editor.tool = 'lock';
+    const origPrompt = globalThis.prompt;
+    globalThis.prompt = () => '3';
+    try {
+        InputHandler.handleCanvasMouseDown(g, { button: 0, clientX: 75, clientY: 75 });
+        InputHandler.handleCanvasMouseUp(g, { button: 0, clientX: 75, clientY: 75 });
+    } finally {
+        globalThis.prompt = origPrompt;
+    }
+    const w = g.editorDoc.hWalls[1][1];
+    assertEq(w.type, WALL_TYPES.LOCKED, '锁工具应替换墙为 LOCKED');
+    assertEq(w.keys, 3, 'keys 应来自 prompt 输入');
+});
+
+test('编辑器 ghost 工具 mouseup → editorDoc.ghosts 新增', () => {
+    const g = makeGame();
+    g.state = 'editor';
+    g.editor.active = true; g.editor.tool = 'ghost';
+    InputHandler.handleCanvasMouseDown(g, { button: 0, clientX: 275, clientY: 275 });
+    InputHandler.handleCanvasMouseUp(g, { button: 0, clientX: 275, clientY: 275 });
+    assertDeepEq(g.editorDoc.ghosts, [{ x: 5, y: 5 }]);
+});
+
+test('编辑器 key 工具 mouseup → editorDoc.items 新增 key', () => {
+    const g = makeGame();
+    g.state = 'editor';
+    g.editor.active = true; g.editor.tool = 'key';
+    InputHandler.handleCanvasMouseDown(g, { button: 0, clientX: 275, clientY: 275 });
+    InputHandler.handleCanvasMouseUp(g, { button: 0, clientX: 275, clientY: 275 });
+    assertDeepEq(g.editorDoc.items, [{ x: 5, y: 5, type: 'key' }]);
+});
+
+test('编辑器 grid 工具（free 模式）mousedown → editorDoc.activeCells 翻转', () => {
+    const g = makeGame();
+    g.state = 'editor';
+    g.editorDoc.mode = 'free';
+    g.editor.active = true; g.editor.tool = 'grid';
+    InputHandler.handleCanvasMouseDown(g, { button: 0, clientX: 275, clientY: 275 }); // cell(5,5)
+    assertEq(g.editorDoc.activeCells[5][5], false, 'grid 工具应取消激活格');
+    assertEq(g.activeCells[5][5], false, '镜像应同步');
+});
+
+test('编辑器 stair 工具 mouseup → editorDoc.stairs 成对新增', () => {
+    const g = makeGame();
+    g.state = 'editor';
+    g.editorDoc = EditorDocument.blank(10, 10, 'regular', true);
+    g.editorDoc.addLayer(); // layerCount=2，第 1 层为空层
+    g.syncEditorMirrors();
+    g.editor.active = true; g.editor.tool = 'stair';
+    InputHandler.handleCanvasMouseDown(g, { button: 0, clientX: 275, clientY: 275 });
+    InputHandler.handleCanvasMouseUp(g, { button: 0, clientX: 275, clientY: 275 });
+    assertEq(g.editorDoc.stairs.length, 2, '楼梯应成对新增（up + down）');
+    assertEq(g.editorDoc.stairs[0].layer, 0);
+    assertEq(g.editorDoc.stairs[1].layer, 1);
+});
+
+test('编辑器 WALL 拖拽 → setWall 替换语义（不翻转回 EMPTY）', () => {
+    const g = makeGame();
+    g.state = 'editor';
+    g.editor.active = true; g.editor.tool = 'wall';
+    // mousedown 在 (1,1) 上边界 → SOLID
+    InputHandler.handleCanvasMouseDown(g, { button: 0, clientX: 75, clientY: 75 });
+    assertEq(g.editorDoc.hWalls[1][1].type, WALL_TYPES.SOLID, '起点墙已 SOLID');
+    // 拖拽到 (7,1) 同排水平墙 → 替换语义（保持 SOLID 而非再翻转回 EMPTY）
+    InputHandler.handleCanvasMouseMove(g, { clientX: 375, clientY: 75 });
+    assertEq(g.editorDoc.hWalls[1][1].type, WALL_TYPES.SOLID, '起点墙保持 SOLID（无翻转）');
+    assertEq(g.editorDoc.hWalls[1][7].type, WALL_TYPES.SOLID, '拖拽目标墙替换为 SOLID');
 });
 
 summary('inputHandler 冒烟');

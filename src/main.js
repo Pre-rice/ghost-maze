@@ -9,6 +9,7 @@ import { createGameView, createEditorView, computeGameView, pruneTrails } from '
 import * as MazeGenerator from './core/mazeGenerator.js';
 import * as InputHandler from './inputHandler.js';
 import * as Editor from './editor/editor.js';
+import { EditorDocument } from './editor/editorSession.js';
 import * as LayerManager from './layerManager.js';
 import * as Pathfinding from './core/pathfinding.js';
 import * as ThemeManager from './themeManager.js';
@@ -533,60 +534,148 @@ drawEditor() {
 
         enterEditorMode() {
             this.stopAnimationLoop();
-            if (!this.mapData) {
-                this.width = 10; this.height = 10; this.editor.mode = 'regular'; this.multiLayerMode = false;
-                this.layerCount = 1; this.currentLayer = 0; this.stairs = [];
-                this.createBlankEditorMap();
-                this.mapData = {
-                    width: this.width, height: this.height, hWalls: JSON.parse(JSON.stringify(this.hWalls)), vWalls: JSON.parse(JSON.stringify(this.vWalls)),
-                    endPos: null, initialGhosts: [], items: [], activeCells: this.activeCells, editorMode: 'regular',
-                    multiLayerMode: false, layerCount: 1, layers: [], stairs: []
-                };
+            // 编辑器会话唯一数据源：从当前地图装载；无地图则建空白文档（分享码 = 保存按钮）
+            if (!this.editorDoc) {
+                this.editorDoc = this.mapData
+                    ? EditorDocument.fromMapData(this.mapData)
+                    : EditorDocument.blank(10, 10, 'regular', false);
             }
             this.state = GAME_STATES.EDITOR; this.editor.active = true; this.setEditorTool(EDITOR_TOOLS.WALL);
             document.getElementById('game-controls').style.display = 'none';
             document.getElementById('editor-controls').style.display = 'block';
-            this.width = this.mapData.width; this.height = this.mapData.height;
-            this.startPos = { x: 1, y: this.height - 2 };
-            this.customStartPos = this.mapData.customStartPos || null;
-            if (this.mapData.multiLayerMode && this.mapData.layers) {
-                this.customStartPos = null;
-                for (let i = 0; i < this.mapData.layers.length; i++) {
-                    if (this.mapData.layers[i] && this.mapData.layers[i].customStartPos) { this.customStartPos = this.mapData.layers[i].customStartPos; break; }
-                }
-            }
-            this.activeCells = this.mapData.activeCells || Array(this.height).fill(null).map(() => Array(this.width).fill(true));
-            this.editor.mode = this.mapData.editorMode || 'regular';
-            this.multiLayerMode = this.mapData.multiLayerMode || false;
-            this.layerCount = this.mapData.layerCount || 1;
-            this.currentLayer = 0;
+            this._syncEditorMirrors();
             // 编辑器无视野概念，重置 seenCells，避免旧尺寸残留导致后续访问越界
             this.seenCells = [];
-            this.stairs = JSON.parse(JSON.stringify(this.mapData.stairs || []));
-            this.layers = JSON.parse(JSON.stringify(this.mapData.layers || []));
-            if (this.multiLayerMode && this.layers.length > 0) {
-                let startLayerIndex = typeof this.mapData.playerStartLayer === 'number' && this.mapData.playerStartLayer < this.layerCount ? this.mapData.playerStartLayer : 0;
-                if (startLayerIndex === 0) {
-                    for (let i = 0; i < this.layers.length; i++) { if (this.layers[i] && this.layers[i].customStartPos) { startLayerIndex = i; break; } }
-                }
-                this.currentLayer = startLayerIndex; this.playerLayer = startLayerIndex;
-                const layerData = this.layers[this.currentLayer];
-                if (layerData) {
-                    this.hWalls = layerData.hWalls; this.vWalls = layerData.vWalls; this.endPos = layerData.endPos;
-                    this.ghosts = layerData.ghosts; this.items = layerData.items; this.buttons = layerData.buttons;
-                    this.activeCells = layerData.activeCells; this.customStartPos = layerData.customStartPos;
-                }
-            } else {
-                this.hWalls = JSON.parse(JSON.stringify(this.mapData.hWalls)); this.vWalls = JSON.parse(JSON.stringify(this.mapData.vWalls));
-                this.endPos = this.mapData.endPos ? { ...this.mapData.endPos } : null;
-                this.ghosts = JSON.parse(JSON.stringify(this.mapData.initialGhosts || []));
-                this.items = JSON.parse(JSON.stringify(this.mapData.items || []));
-                this.buttons = JSON.parse(JSON.stringify(this.mapData.buttons || []));
-            }
             this.editorMapSizeInput.value = this.width; this.padding = 15;
             this.cellSize = (canvas.width - 2 * this.padding) / this.width;
             this.updateEditorUIForMode(); this.updateLayerModeUI(); this.updateLayerPanel();
             this._renderStaticLayer(); this.drawEditor(); this.updateDpadVisibility();
+        }
+
+        /**
+         * 编辑器镜像桥接：宿主散字段 ← editorDoc 字段（引用别名，非拷贝）。
+         * Step 5 过渡用：渲染/查询仍读镜像；Step 6 删镜像后改走 computeEditorView / 直接读 doc。
+         */
+        _syncEditorMirrors() {
+            const d = this.editorDoc;
+            if (!d) return;
+            this.width = d.width; this.height = d.height;
+            this.startPos = d.startPos;
+            this.customStartPos = d.customStartPos;
+            this.activeCells = d.activeCells;
+            this.hWalls = d.hWalls; this.vWalls = d.vWalls;
+            this.ghosts = d.ghosts; this.items = d.items; this.buttons = d.buttons;
+            this.stairs = d.stairs; this.endPos = d.endPos;
+            this.multiLayerMode = d.multiLayerMode; this.layerCount = d.layerCount;
+            this.currentLayer = d.currentLayer; this.playerLayer = d.playerLayer;
+            this.editor.mode = d.mode;
+            this.layers = d.layers;
+        }
+
+        // ---------- 编辑器写操作薄委托（数据源 = editorDoc；渲染仍走镜像，Step 6 后镜像删除） ----------
+
+        toggleWall(wall, targetType = WALL_TYPES.SOLID) {
+            this.editorDoc.toggleWall(wall, targetType);
+            this._syncEditorMirrors();
+            this.drawEditor();
+        }
+
+        toggleActiveCell(x, y, action) {
+            this.editorDoc.toggleActiveCell(x, y, action);
+            this._syncEditorMirrors();
+            this._renderStaticLayer(); this.drawEditor();
+        }
+
+        setWall(wall, type) {
+            this.editorDoc.setWall(wall, type);
+            this._syncEditorMirrors();
+            this.drawEditor();
+        }
+
+        toggleDoor(wall) {
+            this.editorDoc.toggleDoor(wall);
+            this._syncEditorMirrors();
+            this.drawEditor();
+        }
+
+        setLocked(wall, keys) {
+            this.editorDoc.setLocked(wall, keys);
+            this._syncEditorMirrors();
+            this.drawEditor();
+        }
+
+        toggleLetterDoor(wall, letter) {
+            this.editorDoc.toggleLetterDoor(wall, letter);
+            this._syncEditorMirrors();
+            this.drawEditor();
+        }
+
+        setOneWay(wall, direction) {
+            this.editorDoc.setOneWay(wall, direction);
+            this._syncEditorMirrors();
+            this.drawEditor();
+        }
+
+        setEnd(x, y) {
+            const ok = this.editorDoc.setEnd(x, y);
+            this._syncEditorMirrors();
+            this.drawEditor();
+            return ok;
+        }
+
+        setStart(x, y) {
+            const ok = this.editorDoc.setStart(x, y);
+            this._syncEditorMirrors();
+            this.updateLayerPanel();
+            this.drawEditor();
+            return ok;
+        }
+
+        toggleGhost(x, y) {
+            const ok = this.editorDoc.toggleGhost(x, y);
+            this._syncEditorMirrors();
+            this.drawEditor();
+            return ok;
+        }
+
+        toggleKey(x, y) {
+            const ok = this.editorDoc.toggleKey(x, y);
+            this._syncEditorMirrors();
+            this.drawEditor();
+            return ok;
+        }
+
+        toggleButton(hotspot, letter) {
+            const ok = this.editorDoc.toggleButton(hotspot, letter);
+            this._syncEditorMirrors();
+            this.drawEditor();
+            return ok;
+        }
+
+        eraseAtPos(pos) {
+            this.editorDoc.eraseAt(pos, this.cellSize);
+            this._syncEditorMirrors();
+            this.drawEditor();
+        }
+
+        eraseButtonsOnWall(wall) {
+            this.editorDoc.eraseButtonsOnWall(wall);
+            this._syncEditorMirrors();
+        }
+
+        eraseStairAt(x, y, layer) {
+            this.editorDoc.eraseStairAt(x, y, layer);
+            this._syncEditorMirrors();
+        }
+
+        placeStair(x, y, direction) {
+            const ok = this.editorDoc.placeStair(x, y, direction);
+            this._syncEditorMirrors();
+            return ok;
+        }
+
+        isValidStairPlacement(x, y, direction) {
+            return this.editorDoc.isValidStairPlacement(x, y, direction);
         }
 
         updateLayerModeUI() {
@@ -595,24 +684,27 @@ drawEditor() {
         }
 
         attemptSetEditorMode(mode) {
-            if (this.editor.mode === mode) return;
+            if (this.editorDoc.mode === mode) return;
             this.showConfirm(`切换编辑模式将清空当前地图，确定吗？`, () => {
-                this.editor.mode = mode;
-                if (mode === 'free') { this.resetGridsAndClearEntities(); }
-                else { this.createBlankEditorMap(); this._renderStaticLayer(); this.drawEditor(); }
+                this.editorDoc.mode = mode;
+                if (mode === 'free') { this.editorDoc.resetGrids(); this.editorDoc.clearEntities(); }
+                else { this.editorDoc.createBlank(this.editorDoc.width, this.editorDoc.height); }
+                this._syncEditorMirrors();
                 this.updateEditorUIForMode();
+                this._renderStaticLayer(); this.drawEditor();
             });
         }
 
         updateEditorUIForMode() {
-            const isRegular = this.editor.mode === 'regular';
+            const isRegular = this.editorDoc.mode === 'regular';
             document.getElementById('edit-type-regular-btn').classList.toggle('active', isRegular);
             document.getElementById('edit-type-free-btn').classList.toggle('active', !isRegular);
             document.getElementById('tool-start').style.display = isRegular ? 'none' : 'block';
             document.getElementById('tool-grid').style.display = isRegular ? 'none' : 'block';
             document.getElementById('layer-mode-container').style.display = isRegular ? 'none' : 'block';
-            if (isRegular && this.multiLayerMode) {
-                this.multiLayerMode = false; this.layerCount = 1; this.currentLayer = 0;
+            if (isRegular && this.editorDoc.multiLayerMode) {
+                this.editorDoc.multiLayerMode = false; this.editorDoc.layerCount = 1; this.editorDoc.currentLayer = 0;
+                this._syncEditorMirrors();
                 this.updateLayerPanel();
             }
             if (isRegular && [EDITOR_TOOLS.GRID, EDITOR_TOOLS.START, EDITOR_TOOLS.STAIR].includes(this.editor.tool)) {
@@ -623,81 +715,53 @@ drawEditor() {
 
         updateStairToolVisibility() {
             const stairBtn = document.getElementById('tool-stair');
-            const shouldShow = this.editor.mode === 'free' && this.multiLayerMode;
+            const shouldShow = this.editorDoc.mode === 'free' && this.editorDoc.multiLayerMode;
             stairBtn.style.display = shouldShow ? 'block' : 'none';
             if (!shouldShow && this.editor.tool === EDITOR_TOOLS.STAIR) { this.setEditorTool(EDITOR_TOOLS.WALL); }
         }
 
         setLayerMode(isMultiLayer) {
-            if (this.multiLayerMode === isMultiLayer) return;
-            if (!isMultiLayer && this.layerCount > 1) {
+            if (this.editorDoc.multiLayerMode === isMultiLayer) return;
+            if (!isMultiLayer && this.editorDoc.layerCount > 1) {
                 this.showConfirm('地图只会保留第一层的内容，确定吗？', () => { this._applyLayerMode(false); });
             } else { this._applyLayerMode(isMultiLayer); }
         }
 
         _applyLayerMode(isMultiLayer) {
-            this.multiLayerMode = isMultiLayer;
+            this.editorDoc.applyLayerMode(isMultiLayer);
+            this._syncEditorMirrors();
             document.getElementById('layer-mode-single-btn').classList.toggle('active', !isMultiLayer);
             document.getElementById('layer-mode-multi-btn').classList.toggle('active', isMultiLayer);
-            if (isMultiLayer) {
-                this.layerCount = 1; this.currentLayer = 0; this.playerLayer = 0; this.stairs = [];
-                this.layers = [{
-                    hWalls: this.hWalls, vWalls: this.vWalls, activeCells: this.activeCells, ghosts: this.ghosts,
-                    items: this.items, buttons: this.buttons, stairs: [], endPos: this.endPos, customStartPos: this.customStartPos
-                }];
-            } else {
-                if (this.layers.length > 0) {
-                    const firstLayer = this.layers[0];
-                    this.hWalls = firstLayer.hWalls; this.vWalls = firstLayer.vWalls; this.activeCells = firstLayer.activeCells;
-                    this.ghosts = firstLayer.ghosts; this.items = firstLayer.items; this.buttons = firstLayer.buttons;
-                    this.endPos = firstLayer.endPos; this.customStartPos = firstLayer.customStartPos;
-                }
-                this.layerCount = 1; this.currentLayer = 0; this.playerLayer = 0; this.stairs = []; this.layers = [];
-            }
             this.updateLayerPanel(); this.updateStairToolVisibility();
             this._renderStaticLayer(); this.drawEditor();
         }
 
         addLayer() {
-            if (this.layerCount >= 10) { this.showToast('最多只能添加10层地图！', 3000, 'error'); return; }
-            const newLayer = LayerManager.createNewLayer(this.width, this.height);
-            this.layers.push(newLayer); this.layerCount++;
-            this.updateLayerPanel(); this.showToast(`已添加第 ${this.layerCount} 层`, 2000, 'success');
+            if (!this.editorDoc.addLayer()) { this.showToast('最多只能添加10层地图！', 3000, 'error'); return; }
+            this._syncEditorMirrors();
+            this.updateLayerPanel(); this.showToast(`已添加第 ${this.editorDoc.layerCount} 层`, 2000, 'success');
         }
 
         removeLayer() {
-            if (this.layerCount <= 1) { this.showToast('初始的1层不可删除！', 3000, 'error'); return; }
-            this.showConfirm(`确定要删除第 ${this.layerCount} 层吗？`, () => {
-                // 保存当前层数据
-                this._saveCurrentLayerData();
-                
-                this.layers.pop(); this.layerCount--;
-                const removedLayerIndex = this.layerCount;
-                LayerManager.cleanupStairsOnLayerRemove(this.layers, removedLayerIndex);
-                
-                // 清理全局楼梯数组中指向被删除层的楼梯
-                this.stairs = this.stairs.filter(s => s.layer < this.layerCount);
-                // 清理指向被删除层的成对楼梯
-                this.stairs = this.stairs.filter(s => {
-                    const targetLayer = s.direction === 'up' ? s.layer + 1 : s.layer - 1;
-                    return targetLayer >= 0 && targetLayer < this.layerCount;
-                });
-                
-                // 如果当前视图在被删除的顶层，强制切换到新的顶层
-                if (this.currentLayer >= this.layerCount) {
-                    this.currentLayer = this.layerCount - 1;
-                    this._switchToLayer(this.currentLayer);
-                    this._renderStaticLayer();
-                    this.drawEditor();
-                }
-                this.updateLayerPanel(); this.showToast(`已删除第 ${this.layerCount + 1} 层`, 2000, 'success');
+            if (this.editorDoc.layerCount <= 1) { this.showToast('初始的1层不可删除！', 3000, 'error'); return; }
+            this.showConfirm(`确定要删除第 ${this.editorDoc.layerCount} 层吗？`, () => {
+                const r = this.editorDoc.removeLayer();
+                if (!r.ok) { this.showToast(r.message, 3000, 'error'); return; }
+                this._syncEditorMirrors();
+                if (r.switched) { this._renderStaticLayer(); this.drawEditor(); }
+                this.updateLayerPanel(); this.showToast(`已删除第 ${this.editorDoc.layerCount + 1} 层`, 2000, 'success');
             });
         }
 
         switchToLayer(layerIndex) {
-            if (layerIndex === this.currentLayer || layerIndex < 0 || layerIndex >= this.layerCount) return;
-            if (this.state === GAME_STATES.EDITOR) {
-                this._saveCurrentLayerData(); this._switchToLayer(layerIndex);
+            const isEditor = this.state === GAME_STATES.EDITOR;
+            const current = isEditor ? this.editorDoc.currentLayer : this.controller.viewLayer;
+            const layerCount = isEditor ? this.editorDoc.layerCount : (this.controller.mapDefinition?.layerCount || 1);
+            if (layerIndex === current || layerIndex < 0 || layerIndex >= layerCount) return;
+            if (isEditor) {
+                this.editorDoc.saveCurrentLayer();
+                this.editorDoc.switchLayer(layerIndex);
+                this._syncEditorMirrors();
                 this._renderStaticLayer(); this.drawEditor();
             } else if ([GAME_STATES.PLAYING, GAME_STATES.DEAD, GAME_STATES.WON].includes(this.state)) {
                 // 视图层切换（权威源为 controller.viewLayer；渲染/输入经投影读对应层数据）
@@ -707,54 +771,18 @@ drawEditor() {
             this.updateLayerPanel();
         }
 
-        _saveCurrentLayerData() {
-            if (!this.multiLayerMode || this.layers.length === 0) return;
-            this.layers[this.currentLayer] = {
-                hWalls: this.hWalls, vWalls: this.vWalls, activeCells: this.activeCells, ghosts: this.ghosts,
-                items: this.items, buttons: this.buttons, stairs: this.stairs.filter(s => s.layer === this.currentLayer),
-                endPos: this.endPos, customStartPos: this.customStartPos
-            };
-        }
-
-        _switchToLayer(layerIndex) {
-            this.currentLayer = layerIndex;
-            if (this.layers[layerIndex]) {
-                const layer = this.layers[layerIndex];
-                this.hWalls = layer.hWalls; this.vWalls = layer.vWalls; this.activeCells = layer.activeCells;
-                this.ghosts = layer.ghosts; this.items = layer.items; this.buttons = layer.buttons;
-                this.endPos = layer.endPos; this.customStartPos = layer.customStartPos;
-            }
-        }
-
         updateLayerPanel() {
             // 检查是否有起点设置
             let hasStartPoint = false;
             let multiLayerMode, layerCount, currentLayer, playerLayer;
             if (this.editor.active) {
-                // 编辑器模式：读编辑器工作字段（Step 5 后改读 editorDoc）
-                multiLayerMode = this.multiLayerMode;
-                layerCount = this.layerCount;
-                currentLayer = this.currentLayer;
-                playerLayer = this.playerLayer;
-                if (this.editor.mode === 'regular') {
-                    hasStartPoint = true; // 常规模式总是有起点
-                } else {
-                    // 自由模式下检查所有层是否有 customStartPos
-                    if (this.multiLayerMode) {
-                        for (let i = 0; i < this.layerCount; i++) {
-                            if (this.layers[i] && this.layers[i].customStartPos) {
-                                hasStartPoint = true;
-                                break;
-                            }
-                        }
-                        // 也检查当前编辑层的 customStartPos
-                        if (!hasStartPoint && this.customStartPos) {
-                            hasStartPoint = true;
-                        }
-                    } else {
-                        hasStartPoint = !!this.customStartPos;
-                    }
-                }
+                // 编辑器模式：读 editorDoc 权威源（doc.hasStartPoint 封装起点判定）
+                const doc = this.editorDoc;
+                multiLayerMode = doc.multiLayerMode;
+                layerCount = doc.layerCount;
+                currentLayer = doc.currentLayer;
+                playerLayer = doc.playerLayer;
+                hasStartPoint = doc.hasStartPoint();
             } else {
                 // 游戏模式：读 controller 权威源（起点恒有）
                 hasStartPoint = true;
@@ -773,89 +801,31 @@ drawEditor() {
             });
         }
 
-        createBlankEditorMap() {
-            this.padding = 15; this.cellSize = (canvas.width - 2 * this.padding) / this.width;
-            const wall = () => ({ type: WALL_TYPES.SOLID, keys: 0 });
-            const empty = () => ({ type: WALL_TYPES.EMPTY, keys: 0 });
-            const door = () => ({ type: WALL_TYPES.DOOR, keys: 0 });
-            this.hWalls = Array(this.height + 1).fill(null).map(() => Array(this.width).fill(null).map(empty));
-            this.vWalls = Array(this.height).fill(null).map(() => Array(this.width + 1).fill(null).map(empty));
-            this.customStartPos = null;
-            this.activeCells = Array(this.height).fill(null).map(() => Array(this.width).fill(true));
-            if (this.editor.mode === 'regular') {
-                for (let x = 0; x < this.width; x++) { this.hWalls[0][x] = wall(); this.hWalls[this.height][x] = wall(); }
-                for (let y = 0; y < this.height; y++) { this.vWalls[y][0] = wall(); this.vWalls[y][this.width] = wall(); }
-                const roomY = getStartRoomY(this.height);
-                for (let x = 0; x < 3; x++) this.hWalls[roomY + 3][x] = wall();
-                for (let y = roomY; y < roomY + 3; y++) this.vWalls[y][0] = wall();
-                this.hWalls[roomY][0] = wall(); this.hWalls[roomY][2] = wall();
-                this.vWalls[roomY][3] = wall(); this.vWalls[roomY + 2][3] = wall();
-                this.hWalls[roomY][1] = door(); this.vWalls[roomY + 1][3] = door();
-            }
-            this.startPos = { x: 1, y: this.height - 2 };
-            this.endPos = null; this.ghosts = []; this.items = []; this.buttons = []; this.stairs = [];
-            if (this.multiLayerMode) {
-                this.layers = [{
-                    hWalls: this.hWalls, vWalls: this.vWalls, activeCells: this.activeCells, ghosts: [], items: [],
-                    buttons: [], stairs: [], endPos: null, customStartPos: null
-                }];
-                this.layerCount = 1; this.currentLayer = 0;
-            }
-        }
-
         resizeAndClearEditor() {
             const size = parseInt(this.editorMapSizeInput.value);
             if (size < 8 || size > 20) {
                 this.showToast('地图大小必须在 8 到 20 之间。', 3000, 'error');
                 this.editorMapSizeInput.value = this.width; return;
             }
-            const savedLayerCount = this.multiLayerMode ? this.layerCount : 1;
-            const wasMultiLayer = this.multiLayerMode;
-            this.width = size; this.height = size;
-            this.createBlankEditorMap();
-            if (wasMultiLayer && savedLayerCount > 1) {
-                this.multiLayerMode = true; this.layerCount = savedLayerCount; this.currentLayer = 0;
-                this.playerLayer = 0; this.stairs = []; this.layers = [];
-                for (let i = 0; i < savedLayerCount; i++) {
-                    this.layers.push({
-                        hWalls: Editor.createEmptyWalls('h', size, size), vWalls: Editor.createEmptyWalls('v', size, size),
-                        activeCells: Array(size).fill(null).map(() => Array(size).fill(true)),
-                        ghosts: [], items: [], buttons: [], stairs: [], endPos: null, customStartPos: null
-                    });
-                }
-                const firstLayer = this.layers[0];
-                this.hWalls = firstLayer.hWalls; this.vWalls = firstLayer.vWalls; this.activeCells = firstLayer.activeCells;
-                this.ghosts = firstLayer.ghosts; this.items = firstLayer.items; this.buttons = firstLayer.buttons;
-                this.updateLayerPanel();
-            }
+            const wasMultiLayer = this.editorDoc.multiLayerMode;
+            const savedLayerCount = wasMultiLayer ? this.editorDoc.layerCount : 1;
+            this.editorDoc.resize(size, wasMultiLayer, savedLayerCount);
+            this._syncEditorMirrors();
+            if (wasMultiLayer && savedLayerCount > 1) { this.updateLayerPanel(); }
             this._renderStaticLayer(); this.drawEditor();
         }
 
         playEditedMap() {
-            if (this.multiLayerMode) { this._saveCurrentLayerData(); }
-            if (this.editor.mode === 'free') {
-                let hasStartPoint = false, startLayer = 0;
-                if (this.multiLayerMode) {
-                    for (let i = 0; i < this.layerCount; i++) {
-                        if (this.layers[i] && this.layers[i].customStartPos) { hasStartPoint = true; startLayer = i; break; }
-                    }
-                } else { hasStartPoint = !!this.customStartPos; }
-                if (!hasStartPoint) { this.showToast('自由模式必须设置起点！', 3000, 'error'); return; }
-                this.playerLayer = startLayer;
+            if (this.editorDoc.multiLayerMode) { this.editorDoc.saveCurrentLayer(); }
+            if (this.editorDoc.mode === 'free') {
+                if (!this.editorDoc.hasStartPoint()) { this.showToast('自由模式必须设置起点！', 3000, 'error'); return; }
             }
             this.editor.active = false;
             document.getElementById('game-controls').style.display = 'block';
             document.getElementById('editor-controls').style.display = 'none';
             this.initialHealth = parseInt(document.getElementById('editor-initial-health').value) || 5;
             this.initialStamina = parseInt(document.getElementById('editor-initial-stamina').value) || 100;
-            if (this.multiLayerMode) { this._saveCurrentLayerData(); }
-            const editedMapData = {
-                width: this.width, height: this.height, hWalls: this.hWalls, vWalls: this.vWalls, endPos: this.endPos,
-                initialGhosts: this.ghosts.map((g, i) => ({ x: g.x, y: g.y, id: i })), items: this.items, buttons: this.buttons,
-                activeCells: this.activeCells, editorMode: this.editor.mode, customStartPos: this.customStartPos,
-                multiLayerMode: this.multiLayerMode, layerCount: this.layerCount,
-                layers: JSON.parse(JSON.stringify(this.layers)), stairs: JSON.parse(JSON.stringify(this.stairs))
-            };
+            const editedMapData = this.editorDoc.toMapData();
             this.startGame(editedMapData);
             this.updateDpadVisibility();
         }
@@ -868,37 +838,26 @@ drawEditor() {
         }
 
         clearEntitiesOnly() {
-            const empty = () => ({ type: WALL_TYPES.EMPTY, keys: 0 });
-            this.hWalls = Array(this.height + 1).fill(null).map(() => Array(this.width).fill(null).map(empty));
-            this.vWalls = Array(this.height).fill(null).map(() => Array(this.width + 1).fill(null).map(empty));
-            this.endPos = null; this.customStartPos = null; this.ghosts = []; this.items = []; this.buttons = [];
-            
-            // 清空当前层的楼梯，同时清除成对的楼梯
-            const currentLayerStairs = this.stairs.filter(s => s.layer === this.currentLayer);
-            currentLayerStairs.forEach(stair => {
-                const pairedLayer = stair.direction === 'up' ? stair.layer + 1 : stair.layer - 1;
-                const pairedDirection = stair.direction === 'up' ? 'down' : 'up';
-                // 移除成对的楼梯
-                this.stairs = this.stairs.filter(s => 
-                    !(s.x === stair.x && s.y === stair.y && s.layer === pairedLayer && s.direction === pairedDirection)
-                );
-            });
-            // 移除当前层的所有楼梯
-            this.stairs = this.stairs.filter(s => s.layer !== this.currentLayer);
-            
-            // 更新层面板（起点被删除后不应显示黄色边框）
+            // 清空墙 + 实体 + 当前层楼梯（doc.clearWalls + doc.clearEntities 组合；doc.clearEntities 本身保留墙）
+            this.editorDoc.clearWalls();
+            this.editorDoc.clearEntities();
+            this._syncEditorMirrors();
             this.updateLayerPanel();
             this.drawEditor();
         }
 
         clearAllGridsAndEntities() {
-            this.activeCells = Array(this.height).fill(null).map(() => Array(this.width).fill(false));
-            this.clearEntitiesOnly(); this._renderStaticLayer(); this.drawEditor();
+            this.editorDoc.clearAllGrids(); // 内含 clearEntities
+            this.editorDoc.clearWalls();
+            this._syncEditorMirrors();
+            this._renderStaticLayer(); this.drawEditor();
         }
 
         resetGridsAndClearEntities() {
-            this.activeCells = Array(this.height).fill(null).map(() => Array(this.width).fill(true));
-            this.clearEntitiesOnly(); this._renderStaticLayer(); this.drawEditor();
+            this.editorDoc.resetGrids(); // 内含 clearEntities
+            this.editorDoc.clearWalls();
+            this._syncEditorMirrors();
+            this._renderStaticLayer(); this.drawEditor();
         }
 
         showClearMapConfirm() {
@@ -915,8 +874,8 @@ drawEditor() {
         }
 
         clearEditorMap() {
-            if (this.editor.mode === 'free') { this.showClearMapConfirm(); }
-            else { this.showConfirm('你确定要清空所有墙壁、实体和物品吗？', () => { this.createBlankEditorMap(); this.drawEditor(); }); }
+            if (this.editorDoc.mode === 'free') { this.showClearMapConfirm(); }
+            else { this.showConfirm('你确定要清空所有墙壁、实体和物品吗？', () => { this.editorDoc.createBlank(this.editorDoc.width, this.editorDoc.height); this._syncEditorMirrors(); this.drawEditor(); }); }
         }
 
         setEditorTool(tool) {
@@ -932,78 +891,15 @@ drawEditor() {
 
 
         isPosInStartRoom(cellX, cellY) {
-            if (this.editor.mode === 'regular') {
-                return Editor.isPosInStartRoom(cellX, cellY, this.height);
-            }
-            return false;
+            return this.editorDoc.isPosInStartRoom(cellX, cellY);
         }
 
         isWallEditable(wall) {
-            return Editor.isWallEditable(wall, this.editor.mode, this.width, this.height, this.activeCells);
+            return this.editorDoc.isWallEditable(wall);
         }
 
         isCellOccupiedInEditor(x, y) {
-            return Editor.isCellOccupied(x, y, {
-                ghosts: this.ghosts,
-                items: this.items,
-                buttons: this.buttons,
-                endPos: this.endPos,
-                customStartPos: this.customStartPos,
-                stairs: this.stairs,
-                currentLayer: this.currentLayer
-            });
-        }
-
-        eraseAtPos(pos) {
-            const wall = InputHandler.getWallAtPos(this, pos.x, pos.y);
-            if (wall && this.isWallEditable(wall)) {
-                // 先清除该墙上的按钮（requirement 8：按钮必须依附在墙上）
-                this.eraseButtonsOnWall(wall);
-                if (wall.type === 'h') this.hWalls[wall.y][wall.x] = { type: WALL_TYPES.EMPTY, keys: 0 };
-                else this.vWalls[wall.y][wall.x] = { type: WALL_TYPES.EMPTY, keys: 0 };
-            }
-            const cellX = Math.floor(pos.x / this.cellSize); const cellY = Math.floor(pos.y / this.cellSize);
-            if (this.editor.mode === 'free' || !this.isPosInStartRoom(cellX, cellY)) {
-                if (this.endPos && this.endPos.x === cellX && this.endPos.y === cellY) { this.endPos = null; }
-                if (this.customStartPos && this.customStartPos.x === cellX && this.customStartPos.y === cellY) { this.customStartPos = null; }
-                this.ghosts = this.ghosts.filter(g => g.x !== cellX || g.y !== cellY);
-                this.items = this.items.filter(i => i.x !== cellX || i.y !== cellY);
-                // 擦除按钮（requirement 5）
-                this.buttons = this.buttons.filter(b => b.x !== cellX || b.y !== cellY);
-                this.eraseStairAt(cellX, cellY, this.currentLayer);
-            }
-            this.drawEditor();
-        }
-
-        // 清除依附在指定墙上的按钮（requirement 8）
-        eraseButtonsOnWall(wall) {
-            if (wall.type === 'h') {
-                // 横墙：上方的格子按钮方向为 dy=1，下方的格子按钮方向为 dy=-1
-                this.buttons = this.buttons.filter(b => {
-                    // 上方格子（y = wall.y - 1）的下边按钮
-                    if (b.x === wall.x && b.y === wall.y - 1 && b.direction.dy === 1) return false;
-                    // 下方格子（y = wall.y）的上边按钮
-                    if (b.x === wall.x && b.y === wall.y && b.direction.dy === -1) return false;
-                    return true;
-                });
-            } else {
-                // 竖墙：左方的格子按钮方向为 dx=1，右方的格子按钮方向为 dx=-1
-                this.buttons = this.buttons.filter(b => {
-                    // 左方格子（x = wall.x - 1）的右边按钮
-                    if (b.x === wall.x - 1 && b.y === wall.y && b.direction.dx === 1) return false;
-                    // 右方格子（x = wall.x）的左边按钮
-                    if (b.x === wall.x && b.y === wall.y && b.direction.dx === -1) return false;
-                    return true;
-                });
-            }
-        }
-
-        eraseStairAt(x, y, layer) {
-            const stair = this.stairs.find(s => s.x === x && s.y === y && s.layer === layer);
-            if (!stair) return;
-            const pairedLayer = stair.direction === 'up' ? layer + 1 : layer - 1;
-            const pairedDirection = stair.direction === 'up' ? 'down' : 'up';
-            this.stairs = this.stairs.filter(s => !(s.x === x && s.y === y && (s.layer === layer || (s.layer === pairedLayer && s.direction === pairedDirection))));
+            return this.editorDoc.isCellOccupied(x, y);
         }
 
         handleCanvasClick(e) { InputHandler.handleCanvasClick(this, e); }
@@ -1028,30 +924,19 @@ drawEditor() {
         }
 
         generateShareCode(isEditor = false) {
-            let sourceData;
             if (isEditor) {
-                if (this.multiLayerMode) { this._saveCurrentLayerData(); }
-                let layer0Data = {
-                    hWalls: this.hWalls, vWalls: this.vWalls, endPos: this.endPos, ghosts: this.ghosts, items: this.items,
-                    buttons: this.buttons || [], activeCells: this.activeCells, customStartPos: this.customStartPos
-                };
-                if (this.multiLayerMode && this.layers && this.layers[0]) { layer0Data = this.layers[0]; }
-                sourceData = {
-                    width: this.width, height: this.height, hWalls: layer0Data.hWalls, vWalls: layer0Data.vWalls,
-                    endPos: layer0Data.endPos, initialGhosts: layer0Data.ghosts, items: layer0Data.items, buttons: layer0Data.buttons,
-                    gameMode: this.gameMode, initialHealth: parseInt(document.getElementById('editor-initial-health').value) || 5,
-                    initialStamina: parseInt(document.getElementById('editor-initial-stamina').value) || 100,
-                    activeCells: layer0Data.activeCells, editorMode: this.editor.mode, customStartPos: layer0Data.customStartPos,
-                    multiLayerMode: this.multiLayerMode,
-                    layerCount: this.layerCount, layers: this.layers, stairs: this.stairs
-                };
-            } else {
-                // 游戏态分享码装配在控制器
-                const shareData = this.controller.buildShareSourceData();
-                if (!shareData) return { success: false, error: '没有地图数据' };
-                sourceData = shareData;
+                // 编辑器分享码装配在 EditorDocument（toShareMapData 内含 saveCurrentLayer）
+                const sourceData = this.editorDoc.toShareMapData(
+                    this.gameMode,
+                    parseInt(document.getElementById('editor-initial-health').value) || 5,
+                    parseInt(document.getElementById('editor-initial-stamina').value) || 100
+                );
+                return DataSerializer.generateShareCode(sourceData);
             }
-            return DataSerializer.generateShareCode(sourceData);
+            // 游戏态分享码装配在控制器
+            const shareData = this.controller.buildShareSourceData();
+            if (!shareData) return { success: false, error: '没有地图数据' };
+            return DataSerializer.generateShareCode(shareData);
         }
 
         loadFromShareCode(code, isEditor = false) {
@@ -1068,33 +953,12 @@ drawEditor() {
                 this.setGameMode(gameMode, true);
                 document.getElementById('editor-initial-health').value = health;
                 document.getElementById('editor-initial-stamina').value = stamina;
-                this.width = mapData.width; this.height = mapData.height;
-                this.startPos = { x: 1, y: this.height - 2 }; this.editorMapSizeInput.value = this.width;
+                // 编辑器数据源 = EditorDocument（fromMapData 深拷贝装载；playerStartLayer v1 残留已由扫描替代）
+                this.editorDoc = EditorDocument.fromMapData(mapData);
+                this._syncEditorMirrors();
+                this.editorMapSizeInput.value = this.width;
                 this.padding = 15; this.cellSize = (canvas.width - 2 * this.padding) / this.width;
-                this.hWalls = mapData.hWalls; this.vWalls = mapData.vWalls; this.endPos = mapData.endPos;
-                this.ghosts = mapData.initialGhosts; this.items = mapData.items; this.buttons = mapData.buttons || [];
-                this.activeCells = mapData.activeCells || Array(this.height).fill(null).map(() => Array(this.width).fill(true));
-                this.editor.mode = mapData.editorMode || 'regular'; this.customStartPos = mapData.customStartPos;
-                this.multiLayerMode = mapData.multiLayerMode || false; this.layerCount = mapData.layerCount || 1;
-                this.currentLayer = 0; this.stairs = JSON.parse(JSON.stringify(mapData.stairs || []));
-                this.layers = JSON.parse(JSON.stringify(mapData.layers || []));
-                this.playerLayer = typeof mapData.playerStartLayer === 'number' ? mapData.playerStartLayer : 0;
-                if (this.multiLayerMode) {
-                    if (this.playerLayer < 0 || this.playerLayer >= this.layerCount) this.playerLayer = 0;
-                    this.currentLayer = this.playerLayer;
-                    if (this.layers[this.playerLayer]) {
-                        const layer = this.layers[this.playerLayer];
-                        this.hWalls = layer.hWalls; this.vWalls = layer.vWalls; this.activeCells = layer.activeCells;
-                        this.ghosts = layer.ghosts; this.items = layer.items; this.buttons = layer.buttons;
-                        this.endPos = layer.endPos; this.customStartPos = layer.customStartPos || mapData.mapStartPos || null;
-                    }
-                }
-                this.mapData = {
-                    ...mapData, hWalls: JSON.parse(JSON.stringify(this.hWalls)), vWalls: JSON.parse(JSON.stringify(this.vWalls)),
-                    initialGhosts: JSON.parse(JSON.stringify(this.ghosts)), items: JSON.parse(JSON.stringify(this.items)),
-                    buttons: JSON.parse(JSON.stringify(this.buttons)), endPos: this.endPos, customStartPos: this.customStartPos,
-                    activeCells: JSON.parse(JSON.stringify(this.activeCells))
-                };
+                this.seenCells = [];
                 this.updateEditorUIForMode(); this.updateLayerModeUI(); this.updateLayerPanel();
                 this._renderStaticLayer(); this.drawEditor();
             } else {

@@ -116,9 +116,9 @@ export function bindDpadControls(game) {
                 case 'w':
                 case 'W':
                     // 向上切换图层
-                    if (game.multiLayerMode) {
+                    if (game.editorDoc.multiLayerMode) {
                         e.preventDefault();
-                        const nextLayer = game.currentLayer >= game.layerCount - 1 ? 0 : game.currentLayer + 1;
+                        const nextLayer = game.editorDoc.currentLayer >= game.editorDoc.layerCount - 1 ? 0 : game.editorDoc.currentLayer + 1;
                         game.switchToLayer(nextLayer);
                     }
                     break;
@@ -126,9 +126,9 @@ export function bindDpadControls(game) {
                 case 's':
                 case 'S':
                     // 向下切换图层
-                    if (game.multiLayerMode) {
+                    if (game.editorDoc.multiLayerMode) {
                         e.preventDefault();
-                        const prevLayer = game.currentLayer <= 0 ? game.layerCount - 1 : game.currentLayer - 1;
+                        const prevLayer = game.editorDoc.currentLayer <= 0 ? game.editorDoc.layerCount - 1 : game.editorDoc.currentLayer - 1;
                         game.switchToLayer(prevLayer);
                     }
                     break;
@@ -159,8 +159,8 @@ export function bindDpadControls(game) {
                 case ' ':
                     // 空格键：回到起点所在的图层
                     e.preventDefault();
-                    if (game.multiLayerMode) {
-                        game.switchToLayer(game.playerLayer);
+                    if (game.editorDoc.multiLayerMode) {
+                        game.switchToLayer(game.editorDoc.playerLayer);
                     }
                     break;
             }
@@ -217,7 +217,7 @@ export function bindDpadControls(game) {
 
         export function handleCanvasMouseDown(game, e) {
             if (!game.editor.active) return;
-            
+
             // 右键点击处理（自动切换到橡皮擦工具）
             if (e.button === 2) {
                 e.preventDefault();
@@ -232,35 +232,35 @@ export function bindDpadControls(game) {
                 game.eraseAtPos(pos);
                 return;
             }
-            
+
             game.editor.isDragging = true; game.editor.didDrag = false; game.editor.hoveredWall = null;
             const pos = getMousePos(game, e);
-            
+
             // 橡皮擦工具处理
             if (game.editor.tool === EDITOR_TOOLS.ERASER) {
                 game.editor.rightClickMousePos = pos;
                 game.eraseAtPos(pos);
                 return;
             }
-            
-            if (game.editor.tool === EDITOR_TOOLS.GRID && game.editor.mode === 'free') {
+
+            if (game.editor.tool === EDITOR_TOOLS.GRID && game.editorDoc.mode === 'free') {
                 const cellX = Math.floor(pos.x / game.cellSize); const cellY = Math.floor(pos.y / game.cellSize);
-                if (cellX >= 0 && cellX < game.width && cellY >= 0 && cellY < game.height) {
-                    game.editor.gridDragAction = game.activeCells[cellY][cellX] ? 'remove' : 'add';
-                    toggleActiveCell(game, cellX, cellY, game.editor.gridDragAction);
+                if (cellX >= 0 && cellX < game.editorDoc.width && cellY >= 0 && cellY < game.editorDoc.height) {
+                    game.editor.gridDragAction = game.editorDoc.activeCells[cellY][cellX] ? 'remove' : 'add';
+                    game.toggleActiveCell(cellX, cellY, game.editor.gridDragAction);
                 }
-            } else if (game.editor.tool === EDITOR_TOOLS.STAIR && game.multiLayerMode) {
+            } else if (game.editor.tool === EDITOR_TOOLS.STAIR && game.editorDoc.multiLayerMode) {
                 const cellX = Math.floor(pos.x / game.cellSize); const cellY = Math.floor(pos.y / game.cellSize);
-                if (cellX >= 0 && cellX < game.width && cellY >= 0 && cellY < game.height) {
-                    const existingStair = game.stairs.find(s => s.x === cellX && s.y === cellY && s.layer === game.currentLayer);
-                    if (existingStair) { game.eraseStairAt(cellX, cellY, game.currentLayer); game.drawEditor(); }
+                if (cellX >= 0 && cellX < game.editorDoc.width && cellY >= 0 && cellY < game.editorDoc.height) {
+                    const existingStair = game.editorDoc.stairs.find(s => s.x === cellX && s.y === cellY && s.layer === game.editorDoc.currentLayer);
+                    if (existingStair) { game.eraseStairAt(cellX, cellY, game.editorDoc.currentLayer); game.drawEditor(); }
                     else {
                         let direction = (pos.y - cellY * game.cellSize) < game.cellSize / 2 ? 'up' : 'down';
-                        if (!isValidStairPlacement(game, cellX, cellY, direction)) {
+                        if (!game.isValidStairPlacement(cellX, cellY, direction)) {
                             const otherDirection = direction === 'up' ? 'down' : 'up';
-                            if (isValidStairPlacement(game, cellX, cellY, otherDirection)) { direction = otherDirection; }
+                            if (game.isValidStairPlacement(cellX, cellY, otherDirection)) { direction = otherDirection; }
                         }
-                        if (isValidStairPlacement(game, cellX, cellY, direction)) { game.editor.stairPlacement = { x: cellX, y: cellY, direction, layer: game.currentLayer }; }
+                        if (game.isValidStairPlacement(cellX, cellY, direction)) { game.editor.stairPlacement = { x: cellX, y: cellY, direction, layer: game.editorDoc.currentLayer }; }
                         else { game.showToast('无效放置', 1500, 'error'); }
                         game.drawEditor();
                     }
@@ -270,19 +270,14 @@ export function bindDpadControls(game) {
                 if (wall && game.isWallEditable(wall)) {
                     game.editor.dragAxis = wall.type;
                     const type = game.editor.tool === EDITOR_TOOLS.GLASS ? WALL_TYPES.GLASS : WALL_TYPES.SOLID;
-                    toggleWall(game, wall, type); game.editor.lastDragPos = wall;
+                    game.toggleWall(wall, type); game.editor.lastDragPos = wall;
                 } else { game.editor.dragAxis = null; }
             } else if (game.editor.tool === EDITOR_TOOLS.ONE_WAY) {
                 const wall = getWallAtPos(game, pos.x, pos.y);
                 if (wall && game.isWallEditable(wall)) {
-                    // 单向门不是SOLID墙，需要清除依附的按钮
-                    const currentWallObj = wall.type === 'h' ? game.hWalls[wall.y][wall.x] : game.vWalls[wall.y][wall.x];
-                    if (currentWallObj.type === WALL_TYPES.SOLID) {
-                        game.eraseButtonsOnWall(wall);
-                    }
                     const direction = getMouseSideOfWall(game, pos.x, pos.y, wall);
-                    const newWall = { type: WALL_TYPES.ONE_WAY, direction: direction };
-                    if (wall.type === 'h') game.hWalls[wall.y][wall.x] = newWall; else game.vWalls[wall.y][wall.x] = newWall;
+                    // 委托 doc.setOneWay：SOLID 墙清按钮 + 替换/改向一并处理
+                    game.setOneWay(wall, direction);
                     game.editor.lastDragPos = wall; game.drawEditor();
                 }
             }
@@ -291,14 +286,14 @@ export function bindDpadControls(game) {
         export function handleCanvasMouseMove(game, e) {
             if (!game.editor.active) return;
             const pos = getMousePos(game, e);
-            
+
             // 右键拖动橡皮擦
             if (game.editor.isRightClickErasing) {
                 game.editor.rightClickMousePos = pos;
                 game.eraseAtPos(pos);
                 return;
             }
-            
+
             // 橡皮擦工具：始终显示指示点，拖动时擦除
             if (game.editor.tool === EDITOR_TOOLS.ERASER) {
                 game.editor.rightClickMousePos = pos;
@@ -309,15 +304,15 @@ export function bindDpadControls(game) {
                 }
                 return;
             }
-            
-            if (game.editor.tool === EDITOR_TOOLS.GRID && game.editor.mode === 'free') {
+
+            if (game.editor.tool === EDITOR_TOOLS.GRID && game.editorDoc.mode === 'free') {
                 const cellX = Math.floor(pos.x / game.cellSize); const cellY = Math.floor(pos.y / game.cellSize);
                 if (game.editor.isDragging) {
                     game.editor.hoveredWall = null; game.editor.didDrag = true;
-                    if (cellX >= 0 && cellX < game.width && cellY >= 0 && cellY < game.height) {
-                        const currentStatus = game.activeCells[cellY][cellX];
+                    if (cellX >= 0 && cellX < game.editorDoc.width && cellY >= 0 && cellY < game.editorDoc.height) {
+                        const currentStatus = game.editorDoc.activeCells[cellY][cellX];
                         if ((game.editor.gridDragAction === 'add' && !currentStatus) || (game.editor.gridDragAction === 'remove' && currentStatus)) {
-                            toggleActiveCell(game, cellX, cellY, game.editor.gridDragAction);
+                            game.toggleActiveCell(cellX, cellY, game.editor.gridDragAction);
                         }
                     }
                 } else {
@@ -327,30 +322,30 @@ export function bindDpadControls(game) {
                 }
                 return;
             }
-            if (game.editor.tool === EDITOR_TOOLS.STAIR && game.multiLayerMode) {
+            if (game.editor.tool === EDITOR_TOOLS.STAIR && game.editorDoc.multiLayerMode) {
                 if (game.editor.stairPlacement && game.editor.isDragging) {
                     const cellX = game.editor.stairPlacement.x; const cellY = game.editor.stairPlacement.y;
                     let direction = (pos.y - cellY * game.cellSize) < game.cellSize / 2 ? 'up' : 'down';
-                    if (!isValidStairPlacement(game, cellX, cellY, direction)) {
+                    if (!game.isValidStairPlacement(cellX, cellY, direction)) {
                         const otherDirection = direction === 'up' ? 'down' : 'up';
-                        if (isValidStairPlacement(game, cellX, cellY, otherDirection)) { direction = otherDirection; }
+                        if (game.isValidStairPlacement(cellX, cellY, otherDirection)) { direction = otherDirection; }
                     }
                     if (game.editor.stairPlacement.direction !== direction) {
                         game.editor.stairPlacement.direction = direction; game.editor.didDrag = true; game.drawEditor();
                     }
                 } else if (!game.editor.isDragging) {
                     const cellX = Math.floor(pos.x / game.cellSize); const cellY = Math.floor(pos.y / game.cellSize);
-                    if (cellX >= 0 && cellX < game.width && cellY >= 0 && cellY < game.height && game.activeCells[cellY][cellX]) {
-                        const existingStair = game.stairs.find(s => s.x === cellX && s.y === cellY && s.layer === game.currentLayer);
+                    if (cellX >= 0 && cellX < game.editorDoc.width && cellY >= 0 && cellY < game.editorDoc.height && game.editorDoc.activeCells[cellY][cellX]) {
+                        const existingStair = game.editorDoc.stairs.find(s => s.x === cellX && s.y === cellY && s.layer === game.editorDoc.currentLayer);
                         if (!existingStair) {
                             let direction = (pos.y - cellY * game.cellSize) < game.cellSize / 2 ? 'up' : 'down';
-                            let valid = isValidStairPlacement(game, cellX, cellY, direction);
+                            let valid = game.isValidStairPlacement(cellX, cellY, direction);
                             if (!valid) {
                                 const otherDirection = direction === 'up' ? 'down' : 'up';
-                                if (isValidStairPlacement(game, cellX, cellY, otherDirection)) { direction = otherDirection; valid = true; }
+                                if (game.isValidStairPlacement(cellX, cellY, otherDirection)) { direction = otherDirection; valid = true; }
                             }
                             if (valid) {
-                                const newPlacement = { x: cellX, y: cellY, direction, layer: game.currentLayer };
+                                const newPlacement = { x: cellX, y: cellY, direction, layer: game.editorDoc.currentLayer };
                                 if (!game.editor.stairPlacement || game.editor.stairPlacement.x !== newPlacement.x || game.editor.stairPlacement.y !== newPlacement.y || game.editor.stairPlacement.direction !== newPlacement.direction) {
                                     game.editor.stairPlacement = newPlacement; game.drawEditor();
                                 }
@@ -397,56 +392,18 @@ export function bindDpadControls(game) {
                 else { wall = { type: 'v', x: game.editor.lastDragPos.x, y: Math.floor(pos.y / game.cellSize) }; }
                 if (wall && game.isWallEditable(wall) && (wall.x !== game.editor.lastDragPos.x || wall.y !== game.editor.lastDragPos.y)) {
                     const newType = game.editor.tool === EDITOR_TOOLS.GLASS ? WALL_TYPES.GLASS : WALL_TYPES.SOLID;
-                    if (wall.type === 'h') game.hWalls[wall.y][wall.x] = { type: newType }; else game.vWalls[wall.y][wall.x] = { type: newType };
-                    game.drawEditor(); game.editor.lastDragPos = wall;
+                    // 拖拽画墙走 setWall 替换语义（勿用 toggleWall 翻转）
+                    game.setWall(wall, newType);
+                    game.editor.lastDragPos = wall;
                 }
             } else if (game.editor.tool === EDITOR_TOOLS.ONE_WAY && game.editor.lastDragPos) {
                 const wallData = game.editor.lastDragPos;
                 const newDirection = getMouseSideOfWall(game, pos.x, pos.y, wallData);
-                let currentWall = (wallData.type === 'h') ? game.hWalls[wallData.y][wallData.x] : game.vWalls[wallData.y][wallData.x];
+                let currentWall = (wallData.type === 'h') ? game.editorDoc.hWalls[wallData.y][wallData.x] : game.editorDoc.vWalls[wallData.y][wallData.x];
                 if (currentWall && currentWall.type === WALL_TYPES.ONE_WAY && (currentWall.direction.dx !== newDirection.dx || currentWall.direction.dy !== newDirection.dy)) {
-                    currentWall.direction = newDirection; game.drawEditor();
+                    game.setOneWay(wallData, newDirection);
                 }
             }
-        }
-
-        export function toggleActiveCell(game, x, y, action) {
-            if (x < 0 || x >= game.width || y < 0 || y >= game.height) return;
-            const newState = (action === 'add');
-            if (game.activeCells[y][x] === newState) return;
-            game.activeCells[y][x] = newState;
-            if (!newState) {
-                if (game.customStartPos && game.customStartPos.x === x && game.customStartPos.y === y) game.customStartPos = null;
-                if (game.endPos && game.endPos.x === x && game.endPos.y === y) game.endPos = null;
-                game.ghosts = game.ghosts.filter(g => g.x !== x || g.y !== y);
-                game.items = game.items.filter(i => i.x !== x || i.y !== y);
-                game.buttons = game.buttons.filter(b => b.x !== x || b.y !== y);
-                game.eraseStairAt(x, y, game.currentLayer);
-                game.hWalls[y][x] = { type: 0 }; game.hWalls[y + 1][x] = { type: 0 };
-                game.vWalls[y][x] = { type: 0 }; game.vWalls[y][x + 1] = { type: 0 };
-            }
-            game._renderStaticLayer(); game.drawEditor();
-        }
-
-        export function isValidStairPlacement(game, x, y, direction) {
-            // 完整校验逻辑收敛在 Editor.isValidStairPlacement（当前层/目标层双向检查）
-            return Editor.isValidStairPlacement(x, y, direction, {
-                activeCells: game.activeCells,
-                stairs: game.stairs,
-                currentLayer: game.currentLayer,
-                layerCount: game.layerCount,
-                layers: game.layers,
-                isCellOccupied: (cx, cy) => game.isCellOccupiedInEditor(cx, cy)
-            });
-        }
-
-        export function placeStair(game, x, y, direction) {
-            if (!isValidStairPlacement(game, x, y, direction)) { game.showToast('无效放置', 2000, 'error'); return false; }
-            const targetLayer = direction === 'up' ? game.currentLayer + 1 : game.currentLayer - 1;
-            const pairedDirection = direction === 'up' ? 'down' : 'up';
-            game.stairs.push({ x, y, direction, layer: game.currentLayer });
-            game.stairs.push({ x, y, direction: pairedDirection, layer: targetLayer });
-            return true;
         }
 
         export function handleCanvasMouseUp(game, e) {
@@ -477,7 +434,7 @@ export function bindDpadControls(game) {
             game.editor.gridDragAction = null;
             if (game.editor.tool === EDITOR_TOOLS.STAIR && game.editor.stairPlacement) {
                 const { x, y, direction } = game.editor.stairPlacement;
-                placeStair(game, x, y, direction);
+                if (!game.placeStair(x, y, direction)) { game.showToast('无效放置', 2000, 'error'); }
                 game.editor.stairPlacement = null; game.drawEditor();
                 game.editor.isDragging = false; game.editor.didDrag = false; return;
             }
@@ -487,76 +444,46 @@ export function bindDpadControls(game) {
                 const wall = getWallAtPos(game, pos.x, pos.y);
                 if (wall && game.isWallEditable(wall)) {
                     if (game.editor.tool === EDITOR_TOOLS.DOOR) {
-                        const wallRef = wall.type === 'h' ? game.hWalls[wall.y][wall.x] : game.vWalls[wall.y][wall.x];
-                        // 门不是SOLID墙，需要清除依附的按钮
-                        if (wallRef.type === WALL_TYPES.SOLID) {
-                            game.eraseButtonsOnWall(wall);
-                        }
-                        wallRef.type = wallRef.type === WALL_TYPES.DOOR ? WALL_TYPES.EMPTY : WALL_TYPES.DOOR;
+                        game.toggleDoor(wall);
                     } else if (game.editor.tool === EDITOR_TOOLS.LOCK) {
-                        const wallRef = wall.type === 'h' ? game.hWalls[wall.y][wall.x] : game.vWalls[wall.y][wall.x];
                         const numStr = prompt('请输入锁需要的钥匙数量:', '0');
                         if (numStr !== null) {
                             const keys = parseInt(numStr);
-                            if (!isNaN(keys) && keys >= 0) {
-                                // 数字门不是SOLID墙，需要清除依附的按钮
-                                if (wallRef.type === WALL_TYPES.SOLID) {
-                                    game.eraseButtonsOnWall(wall);
-                                }
-                                const newWall = { type: WALL_TYPES.LOCKED, keys: keys };
-                                if (wall.type === 'h') game.hWalls[wall.y][wall.x] = newWall; else game.vWalls[wall.y][wall.x] = newWall;
-                            } else { game.showToast('请输入一个有效的非负整数。', 3000, 'error'); }
+                            if (!isNaN(keys) && keys >= 0) { game.setLocked(wall, keys); }
+                            else { game.showToast('请输入一个有效的非负整数。', 3000, 'error'); }
                         }
                     } else if (game.editor.tool === EDITOR_TOOLS.LETTER_DOOR) {
-                        const wallRef = wall.type === 'h' ? game.hWalls[wall.y][wall.x] : game.vWalls[wall.y][wall.x];
-                        if (wallRef.type === WALL_TYPES.LETTER_DOOR) { wallRef.initialState = (wallRef.initialState === 'open') ? 'closed' : 'open'; }
+                        const wallRef = wall.type === 'h' ? game.editorDoc.hWalls[wall.y][wall.x] : game.editorDoc.vWalls[wall.y][wall.x];
+                        if (wallRef.type === WALL_TYPES.LETTER_DOOR) { game.toggleLetterDoor(wall, 'A'); }
                         else {
                             const letter = prompt('请输入一个字母:', 'A');
-                            if (letter && /^[a-zA-Z]$/.test(letter)) {
-                                // 字母门不是SOLID墙，需要清除依附的按钮
-                                if (wallRef.type === WALL_TYPES.SOLID) {
-                                    game.eraseButtonsOnWall(wall);
-                                }
-                                const newWall = { type: WALL_TYPES.LETTER_DOOR, letter: letter.toUpperCase(), initialState: 'closed' };
-                                if (wall.type === 'h') game.hWalls[wall.y][wall.x] = newWall; else game.vWalls[wall.y][wall.x] = newWall;
-                            } else if (letter !== null) { game.showToast('请输入单个英文字母。', 3000, 'error'); }
+                            if (letter && /^[a-zA-Z]$/.test(letter)) { game.toggleLetterDoor(wall, letter); }
+                            else if (letter !== null) { game.showToast('请输入单个英文字母。', 3000, 'error'); }
                         }
                     }
                 }
                 if (game.editor.tool === EDITOR_TOOLS.BUTTON) {
                     const hotspot = getButtonHotspotAtPos(game, pos.x, pos.y);
-                    if (hotspot && game.activeCells[hotspot.y][hotspot.x]) {
-                        const existingButtonIndex = game.buttons.findIndex(b => b.x === hotspot.x && b.y === hotspot.y && b.direction.dx === hotspot.direction.dx && b.direction.dy === hotspot.direction.dy);
-                        if (existingButtonIndex > -1) { game.buttons.splice(existingButtonIndex, 1); }
+                    if (hotspot) {
+                        const existingButtonIndex = game.editorDoc.buttons.findIndex(b => b.x === hotspot.x && b.y === hotspot.y && b.direction.dx === hotspot.direction.dx && b.direction.dy === hotspot.direction.dy);
+                        if (existingButtonIndex > -1) { game.toggleButton(hotspot, 'A'); }
                         else {
                             const letter = prompt('请输入一个字母:', 'A');
-                            if (letter && /^[a-zA-Z]$/.test(letter)) { game.buttons.push({ ...hotspot, letter: letter.toUpperCase() }); }
+                            if (letter && /^[a-zA-Z]$/.test(letter)) { game.toggleButton(hotspot, letter); }
                             else if (letter !== null) { game.showToast('请输入单个英文字母。', 3000, 'error'); }
                         }
                     }
                 }
-                if (cx >= 0 && cx < game.width && cy >= 0 && cy < game.height && game.activeCells[cy][cx]) {
-                    const allowed = game.editor.mode === 'free' ? true : !game.isPosInStartRoom(cx, cy);
+                if (cx >= 0 && cx < game.editorDoc.width && cy >= 0 && cy < game.editorDoc.height && game.editorDoc.activeCells[cy][cx]) {
+                    const allowed = game.editorDoc.mode === 'free' ? true : !game.isPosInStartRoom(cx, cy);
                     if (allowed) {
-                        const isOccupied = game.isCellOccupiedInEditor(cx, cy);
                         switch (game.editor.tool) {
-                            case EDITOR_TOOLS.END: if (!isOccupied || (game.endPos && game.endPos.x === cx && game.endPos.y === cy)) { game.endPos = { x: cx, y: cy }; } break;
+                            case EDITOR_TOOLS.END: game.setEnd(cx, cy); break;
                             case EDITOR_TOOLS.START:
-                                if (game.editor.mode === 'free' && (!isOccupied || (game.customStartPos && game.customStartPos.x === cx && game.customStartPos.y === cy))) {
-                                    if (game.multiLayerMode) {
-                                        game._saveCurrentLayerData();
-                                        for (let i = 0; i < game.layerCount; i++) { if (game.layers[i]) { game.layers[i].customStartPos = null; } }
-                                    }
-                                    game.customStartPos = { x: cx, y: cy }; game.playerLayer = game.currentLayer; game.updateLayerPanel();
-                                } break;
-                            case EDITOR_TOOLS.GHOST:
-                                const existingGhostIndex = game.ghosts.findIndex(g => g.x === cx && g.y === cy);
-                                if (existingGhostIndex > -1) game.ghosts.splice(existingGhostIndex, 1); else if (!isOccupied) game.ghosts.push({ x: cx, y: cy });
+                                if (game.editorDoc.mode === 'free') { game.setStart(cx, cy); }
                                 break;
-                            case EDITOR_TOOLS.KEY:
-                                const existingItemIndex = game.items.findIndex(i => i.x === cx && i.y === cy);
-                                if (existingItemIndex > -1 && game.items[existingItemIndex].type === 'key') game.items.splice(existingItemIndex, 1); else if (!isOccupied) game.items.push({ x: cx, y: cy, type: 'key' });
-                                break;
+                            case EDITOR_TOOLS.GHOST: game.toggleGhost(cx, cy); break;
+                            case EDITOR_TOOLS.KEY: game.toggleKey(cx, cy); break;
                         }
                     }
                 }
@@ -585,43 +512,21 @@ export function bindDpadControls(game) {
         }
 
         export function getWallAtPos(game, mouseX, mouseY) {
-            return Editor.getWallAtPos(mouseX, mouseY, game.cellSize, game.width, game.height, game.editor.tool);
+            const doc = game.editorDoc;
+            return Editor.getWallAtPos(mouseX, mouseY, game.cellSize, doc.width, doc.height, game.editor.tool);
         }
 
         export function getButtonHotspotAtPos(game, mouseX, mouseY) {
+            const doc = game.editorDoc;
             return Pathfinding.getButtonHotspotAtPos(mouseX, mouseY, {
                 cellSize: game.cellSize,
-                width: game.width,
-                height: game.height,
-                activeCells: game.activeCells,
-                hWalls: game.hWalls,
-                vWalls: game.vWalls,
-                editorMode: game.editor.mode
+                width: doc.width,
+                height: doc.height,
+                activeCells: doc.activeCells,
+                hWalls: doc.hWalls,
+                vWalls: doc.vWalls,
+                editorMode: doc.mode
             });
-        }
-
-        export function toggleWall(game, wall, targetType = WALL_TYPES.SOLID) {
-            const { x, y, type } = wall;
-            let currentWallObj;
-            if (type === 'h' && y >= 0 && y <= game.height && x >= 0 && x < game.width) {
-                currentWallObj = game.hWalls[y][x];
-                const newType = currentWallObj.type === targetType ? WALL_TYPES.EMPTY : targetType;
-                // 如果要清空墙类型或用非SOLID类型替换SOLID墙，先清除依附的按钮
-                // 按钮只能依附在SOLID墙上，替换为其他任何类型都需要清除按钮
-                if (newType === WALL_TYPES.EMPTY || (currentWallObj.type === WALL_TYPES.SOLID && newType !== WALL_TYPES.SOLID)) {
-                    game.eraseButtonsOnWall(wall);
-                }
-                game.hWalls[y][x].type = newType;
-            } else if (type === 'v' && x >= 0 && x <= game.width && y >= 0 && y < game.height) {
-                currentWallObj = game.vWalls[y][x];
-                const newType = currentWallObj.type === targetType ? WALL_TYPES.EMPTY : targetType;
-                // 如果要清空墙类型或用非SOLID类型替换SOLID墙，先清除依附的按钮
-                if (newType === WALL_TYPES.EMPTY || (currentWallObj.type === WALL_TYPES.SOLID && newType !== WALL_TYPES.SOLID)) {
-                    game.eraseButtonsOnWall(wall);
-                }
-                game.vWalls[y][x].type = newType;
-            }
-            game.drawEditor();
         }
 
         export function getMouseSideOfWall(game, mouseX, mouseY, wall) {
