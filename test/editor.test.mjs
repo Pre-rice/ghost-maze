@@ -6,28 +6,14 @@
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
 import {
     createBlankEditorMap, createEmptyWalls, isPosInStartRoom, isWallEditable,
-    isCellOccupied, eraseEntityAtPos, isValidStairPlacement, toggleActiveCell,
-    toggleWall, validateMapForPlay, getWallAtPos,
+    isCellOccupied, eraseEntityAtPos, isValidStairPlacement,
+    createStartRoomLayout, validateMapForPlay, getWallAtPos,
 } from '../src/editor.js';
-import { WALL_TYPES as WT, EDITOR_TOOLS } from '../src/constants.js';
+import { WALL_TYPES as WT, EDITOR_TOOLS, START_ROOM_SIZE } from '../src/constants.js';
 
 suite('editor');
 
 const W = (type, extra = {}) => ({ type, keys: 0, ...extra });
-
-test('toggleWall: EMPTY→目标→EMPTY 循环，keys 保留，原数组不可变', () => {
-    const hWalls = [[W(WT.EMPTY)], [W(WT.EMPTY)], [W(WT.EMPTY)]];
-    const vWalls = [[W(WT.EMPTY), W(WT.EMPTY)], [W(WT.EMPTY), W(WT.EMPTY)]];
-    // 放置 LOCKED（带 keys）
-    const r1 = toggleWall({ x: 0, y: 1, type: 'h' }, WT.LOCKED, hWalls, vWalls);
-    const placed = r1.hWalls[1][0];
-    assertEq(placed.type, WT.LOCKED);
-    assertEq(placed.keys, 0);
-    assertEq(hWalls[1][0].type, WT.EMPTY, '原数组不被修改');
-    // 再次放置同类型 → 清除
-    const r2 = toggleWall({ x: 0, y: 1, type: 'h' }, WT.LOCKED, r1.hWalls, r1.vWalls);
-    assertEq(r2.hWalls[1][0].type, WT.EMPTY, '同类型再点 = 清除');
-});
 
 test('isWallEditable: regular 模式外圈与起始房间不可编辑', () => {
     // 10×10：roomY = 7，起始房间 x∈[0,2], y∈[7,9]
@@ -90,31 +76,57 @@ test('eraseEntityAtPos: 清除该格全部实体（楼梯按当前层）', () =>
     assertEq(r.stairs[0].layer, 1, '其他层楼梯保留');
 });
 
-test('isValidStairPlacement: 活动格/重复/边界层判定', () => {
-    const config = {
+test('isValidStairPlacement: 活动格/重复/边界层/目标层实体判定（完整版）', () => {
+    const config = (over = {}) => ({
         activeCells: [[true, true], [false, true]],
-        stairs: [{ x: 0, y: 0, layer: 0 }],
+        stairs: [{ x: 0, y: 0, layer: 0, direction: 'up' }],
         currentLayer: 0, layerCount: 3,
-    };
-    assertEq(isValidStairPlacement(0, 0, 'up', config), false, '已有楼梯');
-    assertEq(isValidStairPlacement(0, 1, 'up', config), false, '非活动格');
-    assertEq(isValidStairPlacement(1, 1, 'up', config), true, '合法放置');
-    assertEq(isValidStairPlacement(1, 1, 'up', { ...config, currentLayer: 2 }), false, '顶层不能放 up 楼梯');
-    assertEq(isValidStairPlacement(1, 1, 'down', { ...config, currentLayer: 0 }), false, '底层不能放 down 楼梯');
+        layers: [
+            null,
+            { activeCells: [[true, true], [false, true]], ghosts: [], items: [], endPos: null, customStartPos: null },
+            { activeCells: [[true, true], [false, true]], ghosts: [], items: [], endPos: null, customStartPos: null },
+        ],
+        isCellOccupied: () => false,
+        ...over
+    });
+    assertEq(isValidStairPlacement(0, 0, 'up', config()), false, '已有楼梯');
+    assertEq(isValidStairPlacement(0, 1, 'up', config()), false, '非活动格');
+    assertEq(isValidStairPlacement(1, 1, 'up', config()), true, '合法放置');
+    assertEq(isValidStairPlacement(1, 1, 'up', config({ currentLayer: 2 })), false, '顶层不能放 up 楼梯');
+    assertEq(isValidStairPlacement(1, 1, 'down', config({ currentLayer: 0 })), false, '底层不能放 down 楼梯');
+    // 目标层该格非活动
+    assertEq(isValidStairPlacement(1, 1, 'up', config({ layers: [null, { activeCells: [[true, true], [false, false]], ghosts: [], items: [], endPos: null, customStartPos: null }] })), false, '目标层非活动格');
+    // 当前层占用
+    assertEq(isValidStairPlacement(1, 1, 'up', config({ isCellOccupied: () => true })), false, '当前层占用不可放');
+    // 目标层有实体
+    assertEq(isValidStairPlacement(1, 1, 'up', config({ layers: [null, { activeCells: [[true, true], [false, true]], ghosts: [{ x: 1, y: 1 }], items: [], endPos: null, customStartPos: null }] })), false, '目标层有鬼不可放');
+    assertEq(isValidStairPlacement(1, 1, 'up', config({ layers: [null, { activeCells: [[true, true], [false, true]], ghosts: [], items: [], endPos: { x: 1, y: 1 }, customStartPos: null }] })), false, '目标层有终点不可放');
+    // 目标层已有非配对楼梯
+    const stairsWithPaired = [{ x: 0, y: 0, layer: 0, direction: 'up' }, { x: 1, y: 1, layer: 1, direction: 'up' }];
+    assertEq(isValidStairPlacement(1, 1, 'up', config({ stairs: stairsWithPaired })), false, '目标层已有非配对楼梯');
 });
 
-test('toggleActiveCell: add 启用 / remove 停用并清实体', () => {
-    const activeCells = [[true, true], [true, true]];
-    const entities = {
-        ghosts: [{ x: 0, y: 1 }], items: [{ x: 1, y: 0 }], endPos: { x: 1, y: 1 },
-        buttons: [], stairs: [], customStartPos: null, currentLayer: 0,
-    };
-    const r1 = toggleActiveCell(0, 1, 'remove', activeCells, entities);
-    assertEq(r1.activeCells[1][0], false, '停用（activeCells 是 [y][x]）');
-    assertEq(r1.entities.ghosts.length, 0, '实体清除');
-    const r2 = toggleActiveCell(0, 1, 'add', r1.activeCells, r1.entities);
-    assertEq(r2.activeCells[1][0], true, '重新启用');
-    assertEq(activeCells[0][1], true, '原数组不可变');
+test('createStartRoomLayout: 起始房间内部畅通 + 出口 DOOR（与 generateFullMaze 逐格一致）', () => {
+    const solid = () => ({ type: WT.SOLID, keys: 0 });
+    const hWalls = Array(11).fill(null).map(() => Array(10).fill(null).map(solid));
+    const vWalls = Array(10).fill(null).map(() => Array(11).fill(null).map(solid));
+    const roomY = 10 - START_ROOM_SIZE; // = 7
+    createStartRoomLayout(hWalls, vWalls, roomY);
+    // 房间内部横墙（第 8、9 行）
+    for (let y = roomY + 1; y < roomY + 2; y++) {
+        for (let x = 0; x < 3; x++) {
+            assertEq(hWalls[y][x].type, WT.EMPTY, `房间内横墙 (${x},${y}) 应为 EMPTY`);
+        }
+    }
+    // 房间内部竖墙（x=1,2）
+    for (let y = roomY; y < roomY + 3; y++) {
+        for (let x = 1; x < 3; x++) {
+            assertEq(vWalls[y][x].type, WT.EMPTY, `房间内竖墙 (${x},${y}) 应为 EMPTY`);
+        }
+    }
+    // 出口：右侧 vWalls[roomY+1][3] = DOOR，上方 hWalls[roomY][1] = DOOR
+    assertEq(vWalls[roomY + 1][3].type, WT.DOOR, '右侧出口应为 DOOR');
+    assertEq(hWalls[roomY][1].type, WT.DOOR, '上方出口应为 DOOR');
 });
 
 test('validateMapForPlay: free 模式起点/活动格校验', () => {

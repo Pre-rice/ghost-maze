@@ -1,4 +1,4 @@
-import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS } from './constants.js';
+import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from './constants.js';
 
 /**
  * Editor 模块 - 处理地图编辑器相关功能
@@ -72,7 +72,7 @@ export function createEmptyWalls(type, width, height) {
  * @returns {boolean}
  */
 export function isPosInStartRoom(cellX, cellY, height) {
-    const roomY = height - 3;
+    const roomY = getStartRoomY(height);
     return cellX >= 0 && cellX < 3 && cellY >= roomY && cellY < roomY + 3;
 }
 
@@ -87,7 +87,7 @@ export function isPosInStartRoom(cellX, cellY, height) {
 export function isWallEditable(wall, editorMode, width, height, activeCells = null) {
     if (!wall) return false;
     const { x, y, type } = wall;
-    const roomY = height - 3;
+    const roomY = getStartRoomY(height);
     
     if (editorMode === 'free') {
         // 在自由模式下，需要检查相邻单元格是否激活
@@ -162,56 +162,66 @@ export function eraseEntityAtPos(pos, entities) {
 }
 
 /**
- * 检查楼梯放置是否有效
+ * 检查楼梯放置是否有效（完整版：当前层/目标层双向校验）
  * @param {number} x - X坐标
  * @param {number} y - Y坐标
  * @param {string} direction - 方向 ('up' | 'down')
- * @param {object} config - 配置 {activeCells, stairs, currentLayer, layerCount}
+ * @param {object} config - 配置 {activeCells, stairs, currentLayer, layerCount, layers, isCellOccupied}
  * @returns {boolean}
  */
 export function isValidStairPlacement(x, y, direction, config) {
-    const { activeCells, stairs, currentLayer, layerCount } = config;
-    
+    const { activeCells, stairs, currentLayer, layerCount, layers = [], isCellOccupied } = config;
+
+    // 当前层该格必须活动且无楼梯
     if (!activeCells[y] || !activeCells[y][x]) return false;
     if (stairs.some(s => s.x === x && s.y === y && s.layer === currentLayer)) return false;
-    if (direction === 'up' && currentLayer >= layerCount - 1) return false;
-    if (direction === 'down' && currentLayer <= 0) return false;
-    
+
+    // 楼层边界
+    const targetLayer = direction === 'up' ? currentLayer + 1 : currentLayer - 1;
+    if (targetLayer < 0 || targetLayer >= layerCount) return false;
+
+    // 目标层该格必须活动
+    const targetData = layers[targetLayer];
+    if (targetData && targetData.activeCells && !targetData.activeCells[y][x]) return false;
+
+    // 当前层该位置已有元素（起点、鬼、钥匙、终点、楼梯等）
+    if (isCellOccupied && isCellOccupied(x, y)) return false;
+
+    // 目标层该位置的元素检查
+    if (targetData) {
+        if (targetData.customStartPos && targetData.customStartPos.x === x && targetData.customStartPos.y === y) return false;
+        if (targetData.endPos && targetData.endPos.x === x && targetData.endPos.y === y) return false;
+        if (targetData.ghosts && targetData.ghosts.some(g => g.x === x && g.y === y)) return false;
+        if (targetData.items && targetData.items.some(i => i.x === x && i.y === y)) return false;
+        // 目标层该位置已有非配对的楼梯
+        const pairedDirection = direction === 'up' ? 'down' : 'up';
+        if (stairs.some(s => s.x === x && s.y === y && s.layer === targetLayer && s.direction !== pairedDirection)) return false;
+    }
+
     return true;
 }
 
 /**
- * 切换活动单元格状态
- * @param {number} x - X坐标
- * @param {number} y - Y坐标
- * @param {string} action - 'add' | 'remove'
- * @param {Array} activeCells - 活动单元格数组
- * @param {object} entities - 实体对象
- * @returns {object} 更新后的 {activeCells, entities}
- */
-export function toggleActiveCell(x, y, action, activeCells, entities) {
-    const newActiveCells = activeCells.map(row => [...row]);
-    let newEntities = { ...entities };
-    
-    if (action === 'add') {
-        newActiveCells[y][x] = true;
-    } else if (action === 'remove') {
-        newActiveCells[y][x] = false;
-        // 移除该单元格上的所有实体
-        newEntities = eraseEntityAtPos({ x, y }, entities);
-    }
-    
-    return { activeCells: newActiveCells, entities: newEntities };
-}
-
-/**
- * 切换墙类型
- * @param {object} wall - 墙对象
- * @param {number} targetType - 目标类型
- * @param {Array} hWalls - 横墙数组
+ * 布置起始房间（左下角 3×3）：内部墙体清空，设置右侧 + 上方两个出口 DOOR
+ * @param {Array} hWalls - 横墙数组（维度需已创建）
  * @param {Array} vWalls - 竖墙数组
- * @returns {object} 更新后的 {hWalls, vWalls}
+ * @param {number} roomY - 起始房间顶行（getStartRoomY(height)）
  */
+export function createStartRoomLayout(hWalls, vWalls, roomY) {
+    const empty = () => ({ type: WALL_TYPES.EMPTY, keys: 0 });
+    const door = () => ({ type: WALL_TYPES.DOOR, keys: 0 });
+
+    // 房间内部墙体清空
+    for (let y = roomY; y < roomY + START_ROOM_SIZE; y++) {
+        for (let x = 0; x < START_ROOM_SIZE; x++) {
+            if (x < START_ROOM_SIZE - 1) vWalls[y][x + 1] = empty();
+            if (y < roomY + START_ROOM_SIZE - 1) hWalls[y + 1][x] = empty();
+        }
+    }
+    // 出口门：右侧 vWalls[roomY+1][3]，上方 hWalls[roomY][1]
+    vWalls[roomY + 1][START_ROOM_SIZE] = door();
+    hWalls[roomY][1] = door();
+}
 export function toggleWall(wall, targetType, hWalls, vWalls) {
     const { x, y, type } = wall;
     const newHWalls = hWalls.map(row => row.map(w => ({ ...w })));
@@ -320,44 +330,3 @@ export function getWallAtPos(mouseX, mouseY, cellSize, width, height, currentToo
     return bestWall;
 }
 
-/**
- * 获取按钮热点
- * @param {number} mouseX - 鼠标X
- * @param {number} mouseY - 鼠标Y
- * @param {number} cellSize - 单元格大小
- * @param {number} width - 地图宽度
- * @param {number} height - 地图高度
- * @param {Array} activeCells - 活动单元格
- * @returns {object|null}
- */
-export function getButtonHotspotAtPos(mouseX, mouseY, cellSize, width, height, activeCells) {
-    const hotspotSize = cellSize * 0.4;
-    const cellX = Math.floor(mouseX / cellSize);
-    const cellY = Math.floor(mouseY / cellSize);
-    
-    if (cellX < 0 || cellX >= width || cellY < 0 || cellY >= height) return null;
-    if (!activeCells[cellY][cellX]) return null;
-    
-    const cellCenterX = cellX * cellSize + cellSize / 2;
-    const cellCenterY = cellY * cellSize + cellSize / 2;
-    
-    const checkHotspot = (dx, dy, direction) => {
-        const hotspotCenterX = cellCenterX + dx * (cellSize / 2 - hotspotSize / 2);
-        const hotspotCenterY = cellCenterY + dy * (cellSize / 2 - hotspotSize / 2);
-        const distX = Math.abs(mouseX - hotspotCenterX);
-        const distY = Math.abs(mouseY - hotspotCenterY);
-        if (distX < hotspotSize / 2 && distY < hotspotSize / 2) {
-            return { x: cellX, y: cellY, direction };
-        }
-        return null;
-    };
-    
-    const hotspots = [
-        checkHotspot(0, -1, { dx: 0, dy: -1 }),
-        checkHotspot(0, 1, { dx: 0, dy: 1 }),
-        checkHotspot(-1, 0, { dx: -1, dy: 0 }),
-        checkHotspot(1, 0, { dx: 1, dy: 0 })
-    ];
-    
-    return hotspots.find(h => h !== null) || null;
-}

@@ -8,6 +8,10 @@ export const WALL_TYPES = {
     LETTER_DOOR: 6
 };
 
+// 起始房间（出生点）固定为左下角 3×3
+export const START_ROOM_SIZE = 3;
+export const getStartRoomY = (height) => height - START_ROOM_SIZE;
+
 export const GAME_STATES = {
     MENU: 'menu',
     PLAYING: 'playing',

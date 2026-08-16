@@ -1,83 +1,11 @@
-import { WALL_TYPES } from './constants.js';
+import { WALL_TYPES, getStartRoomY } from './constants.js';
+import { isPosInStartRoom, createStartRoomLayout } from './editor.js';
+import { calculateDistances } from './pathfinding.js';
 
 /**
  * MazeGenerator 模块 - 处理迷宫生成算法
+ * 复用公共实现：起始房间判定/布置 = editor.js，距离场 = pathfinding.js
  */
-
-/**
- * 创建空墙数据结构
- * @param {string} type - 'h' 或 'v'
- * @param {number} width - 宽度
- * @param {number} height - 高度
- * @returns {Array} 墙数组
- */
-export function createEmptyWalls(type, width, height) {
-    const empty = () => ({ type: WALL_TYPES.EMPTY, keys: 0 });
-    if (type === 'h') {
-        return Array.from({ length: height + 1 }, (_, y) =>
-            Array.from({ length: width }, () => (y === 0 || y === height) ? { type: WALL_TYPES.SOLID } : empty())
-        );
-    } else {
-        return Array.from({ length: height }, () =>
-            Array.from({ length: width + 1 }, (_, x) => (x === 0 || x === width) ? { type: WALL_TYPES.SOLID } : empty())
-        );
-    }
-}
-
-/**
- * 检查位置是否在起始房间
- * @param {number} x - X坐标
- * @param {number} y - Y坐标
- * @param {number} height - 地图高度
- * @returns {boolean}
- */
-export function isPosInStartRoom(x, y, height) {
-    const roomY = height - 3;
-    return x >= 0 && x < 3 && y >= roomY && y < roomY + 3;
-}
-
-/**
- * 计算从起点到所有单元格的距离
- * @param {object} startNode - 起点 {x, y}
- * @param {number} width - 地图宽度
- * @param {number} height - 地图高度
- * @param {Array} hWalls - 横墙
- * @param {Array} vWalls - 竖墙
- * @returns {Array} 距离数组
- */
-export function calculateDistances(startNode, width, height, hWalls, vWalls) {
-    const distances = Array.from({ length: height }, () => Array(width).fill(-1));
-    const queue = [{ ...startNode, dist: 0 }];
-    distances[startNode.y][startNode.x] = 0;
-    
-    const canMove = (x, y, dx, dy) => {
-        const nx = x + dx, ny = y + dy;
-        if (nx < 0 || nx >= width || ny < 0 || ny >= height) return false;
-        // 玩家通行规则：EMPTY 与 DOOR 可通行，其余（SOLID/GLASS/LOCKED/ONE_WAY/LETTER_DOOR）阻挡。
-        // 起点房间出口是 DOOR，玩家可穿过；终点选择必须按玩家可达性计算，否则距离场被锁死在起点房间内。
-        const isTraversable = (wall) => wall.type === WALL_TYPES.EMPTY || wall.type === WALL_TYPES.DOOR;
-        if (dx === 1 && !isTraversable(vWalls[y][x + 1])) return false;
-        if (dx === -1 && !isTraversable(vWalls[y][x])) return false;
-        if (dy === 1 && !isTraversable(hWalls[y + 1][x])) return false;
-        if (dy === -1 && !isTraversable(hWalls[y][x])) return false;
-        return true;
-    };
-    
-    while (queue.length > 0) {
-        const current = queue.shift();
-        const dirs = [{ x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 1, y: 0 }];
-        for (const dir of dirs) {
-            if (canMove(current.x, current.y, dir.x, dir.y)) {
-                const nx = current.x + dir.x, ny = current.y + dir.y;
-                if (distances[ny][nx] === -1) {
-                    distances[ny][nx] = current.dist + 1;
-                    queue.push({ x: nx, y: ny, dist: current.dist + 1 });
-                }
-            }
-        }
-    }
-    return distances;
-}
 
 /**
  * 找到距离起点最远的边缘单元格
@@ -129,17 +57,9 @@ export function generateFullMaze(width, height, ghostCount = 3) {
     const hWalls = Array(height + 1).fill(null).map(() => Array(width).fill(null).map(solid));
     const vWalls = Array(height).fill(null).map(() => Array(width + 1).fill(null).map(solid));
     
-    // 左下角3x3起始房间
-    const roomY = height - 3;
-    for (let y = roomY; y < roomY + 3; y++) {
-        for (let x = 0; x < 3; x++) {
-            if (x < 2) vWalls[y][x + 1] = empty();
-            if (y < roomY + 2) hWalls[y + 1][x] = empty();
-        }
-    }
-    // 起始房间出口门
-    vWalls[roomY + 1][3] = door();
-    hWalls[roomY][1] = door();
+    // 左下角 3×3 起始房间（内部墙体清空 + 两个出口 DOOR）
+    const roomY = getStartRoomY(height);
+    createStartRoomLayout(hWalls, vWalls, roomY);
     
     const startPos = { x: 1, y: height - 2 };
     
@@ -242,7 +162,7 @@ export function generateFullMaze(width, height, ghostCount = 3) {
     // 生成鬼和钥匙
     const occupied = new Set();
     occupied.add(`${endPos.x},${endPos.y}`);
-    for (let y = height - 3; y < height; y++) {
+    for (let y = roomY; y < height; y++) {
         for (let x = 0; x < 3; x++) {
             occupied.add(`${x},${y}`);
         }

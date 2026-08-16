@@ -1,4 +1,4 @@
-import { WALL_TYPES } from './constants.js';
+import { WALL_TYPES, START_ROOM_SIZE } from './constants.js';
 import { GameState } from './gameState.js';
 
 // ==================================================
@@ -340,53 +340,7 @@ export const GameLogic = {
             }
         }
 
-        if (moveIntents.length === 0) return;
-
-        // 解决移动冲突（与 moveGhosts 相同的逻辑）
-        let maxIterations = ghosts.length + 1;
-        let madeProgress = true;
-
-        while (madeProgress && moveIntents.length > 0 && maxIterations > 0) {
-            madeProgress = false;
-            maxIterations--;
-
-            const occupiedCells = new Set(ghosts.map(g => `${g.x},${g.y}`));
-            let possibleMoves = [];
-            let remainingIntents = [];
-
-            for (const intent of moveIntents) {
-                const targetKey = `${intent.nextStep.x},${intent.nextStep.y}`;
-                if (!occupiedCells.has(targetKey)) {
-                    possibleMoves.push(intent);
-                } else {
-                    remainingIntents.push(intent);
-                }
-            }
-
-            const finalMovesThisPass = [];
-            const claimedTargets = new Set();
-            for (const intent of possibleMoves) {
-                const targetKey = `${intent.nextStep.x},${intent.nextStep.y}`;
-                if (!claimedTargets.has(targetKey)) {
-                    finalMovesThisPass.push(intent);
-                    claimedTargets.add(targetKey);
-                } else {
-                    remainingIntents.push(intent);
-                }
-            }
-
-            if (finalMovesThisPass.length > 0) {
-                for (const { ghost, nextStep } of finalMovesThisPass) {
-                    ghost.trail.unshift({ x: ghost.x, y: ghost.y, timestamp: Date.now() });
-                    if (ghost.trail.length > 5) ghost.trail.pop();
-                    ghost.x = nextStep.x;
-                    ghost.y = nextStep.y;
-                }
-                madeProgress = true;
-            }
-
-            moveIntents = remainingIntents;
-        }
+        this._resolveGhostMoveConflicts(ghosts, moveIntents);
     },
 
     /**
@@ -433,53 +387,7 @@ export const GameLogic = {
             }
         }
 
-        if (moveIntents.length === 0) return;
-
-        // 解决移动冲突
-        let maxIterations = ghosts.length + 1;
-        let madeProgress = true;
-
-        while (madeProgress && moveIntents.length > 0 && maxIterations > 0) {
-            madeProgress = false;
-            maxIterations--;
-
-            const occupiedCells = new Set(ghosts.map(g => `${g.x},${g.y}`));
-            let possibleMoves = [];
-            let remainingIntents = [];
-
-            for (const intent of moveIntents) {
-                const targetKey = `${intent.nextStep.x},${intent.nextStep.y}`;
-                if (!occupiedCells.has(targetKey)) {
-                    possibleMoves.push(intent);
-                } else {
-                    remainingIntents.push(intent);
-                }
-            }
-
-            const finalMovesThisPass = [];
-            const claimedTargets = new Set();
-            for (const intent of possibleMoves) {
-                const targetKey = `${intent.nextStep.x},${intent.nextStep.y}`;
-                if (!claimedTargets.has(targetKey)) {
-                    finalMovesThisPass.push(intent);
-                    claimedTargets.add(targetKey);
-                } else {
-                    remainingIntents.push(intent);
-                }
-            }
-
-            if (finalMovesThisPass.length > 0) {
-                for (const { ghost, nextStep } of finalMovesThisPass) {
-                    ghost.trail.unshift({ x: ghost.x, y: ghost.y, timestamp: Date.now() });
-                    if (ghost.trail.length > 5) ghost.trail.pop();
-                    ghost.x = nextStep.x;
-                    ghost.y = nextStep.y;
-                }
-                madeProgress = true;
-            }
-
-            moveIntents = remainingIntents;
-        }
+        this._resolveGhostMoveConflicts(ghosts, moveIntents);
     },
 
     /**
@@ -542,6 +450,61 @@ export const GameLogic = {
     },
 
     /**
+     * 解决鬼移动冲突：同一目标格只允许一个鬼进入，被占用的意图留到下一轮
+     * （moveGhostsAfterStair 与 moveGhostsWithStairChase 共用）
+     * @param {Array} ghosts - 当前层鬼数组
+     * @param {Array} moveIntents - 移动意图 [{ghost, nextStep}]
+     */
+    _resolveGhostMoveConflicts(ghosts, moveIntents) {
+        if (moveIntents.length === 0) return;
+
+        let maxIterations = ghosts.length + 1;
+        let madeProgress = true;
+
+        while (madeProgress && moveIntents.length > 0 && maxIterations > 0) {
+            madeProgress = false;
+            maxIterations--;
+
+            const occupiedCells = new Set(ghosts.map(g => `${g.x},${g.y}`));
+            let possibleMoves = [];
+            let remainingIntents = [];
+
+            for (const intent of moveIntents) {
+                const targetKey = `${intent.nextStep.x},${intent.nextStep.y}`;
+                if (!occupiedCells.has(targetKey)) {
+                    possibleMoves.push(intent);
+                } else {
+                    remainingIntents.push(intent);
+                }
+            }
+
+            const finalMovesThisPass = [];
+            const claimedTargets = new Set();
+            for (const intent of possibleMoves) {
+                const targetKey = `${intent.nextStep.x},${intent.nextStep.y}`;
+                if (!claimedTargets.has(targetKey)) {
+                    finalMovesThisPass.push(intent);
+                    claimedTargets.add(targetKey);
+                } else {
+                    remainingIntents.push(intent);
+                }
+            }
+
+            if (finalMovesThisPass.length > 0) {
+                for (const { ghost, nextStep } of finalMovesThisPass) {
+                    ghost.trail.unshift({ x: ghost.x, y: ghost.y, timestamp: Date.now() });
+                    if (ghost.trail.length > 5) ghost.trail.pop();
+                    ghost.x = nextStep.x;
+                    ghost.y = nextStep.y;
+                }
+                madeProgress = true;
+            }
+
+            moveIntents = remainingIntents;
+        }
+    },
+
+    /**
      * 检查碰撞
      */
     checkCollisions(state, mapDef) {
@@ -570,9 +533,9 @@ export const GameLogic = {
 
         // 常规模式：揭示出生房间
         if (mapDef.editorMode === 'regular') {
-            const roomY = mapDef.height - 3;
-            for (let y = roomY; y < roomY + 3; y++) {
-                for (let x = 0; x < 3; x++) {
+            const roomY = mapDef.height - START_ROOM_SIZE;
+            for (let y = roomY; y < roomY + START_ROOM_SIZE; y++) {
+                for (let x = 0; x < START_ROOM_SIZE; x++) {
                     if (y >= 0 && y < mapDef.height && x >= 0 && x < mapDef.width) {
                         seen[y][x] = true;
                     }

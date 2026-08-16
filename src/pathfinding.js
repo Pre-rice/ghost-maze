@@ -1,4 +1,4 @@
-import { WALL_TYPES } from './constants.js';
+import { WALL_TYPES, getStartRoomY } from './constants.js';
 
 /**
  * Pathfinding 模块 - 路径查找算法
@@ -52,7 +52,8 @@ export function calculateDistances(startNode, width, height, hWalls, vWalls) {
             if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                 const wall = getWallInDirection(x, y, dx, dy, hWalls, vWalls);
                 
-                if (wall && [WALL_TYPES.SOLID, WALL_TYPES.LOCKED, WALL_TYPES.ONE_WAY].includes(wall.type)) {
+                // 玩家通行规则：GLASS 双方不可穿（与 findPlayerPath 一致）；DOOR/已开字母门可穿
+                if (wall && [WALL_TYPES.SOLID, WALL_TYPES.LOCKED, WALL_TYPES.ONE_WAY, WALL_TYPES.GLASS].includes(wall.type)) {
                     continue;
                 }
                 
@@ -202,7 +203,7 @@ export function getButtonHotspotAtPos(mouseX, mouseY, config) {
     }
     
     if (isAttachable) {
-        const roomYStart = height - 3;
+        const roomYStart = getStartRoomY(height);
         const isTopBoundary = direction.dy === -1 && cellY === roomYStart && cellX >= 0 && cellX < 3;
         const isRightBoundary = direction.dx === 1 && cellX === 2 && cellY >= roomYStart && cellY < height;
         

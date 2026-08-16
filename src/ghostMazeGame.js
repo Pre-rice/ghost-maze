@@ -1,4 +1,4 @@
-import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS } from './constants.js';
+import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from './constants.js';
 import { MapDefinition } from './mapDefinition.js';
 import { DataSerializer } from './core/dataSerializer.js';
 import { GameLogic } from './gameLogic.js';
@@ -1046,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (this.editor.mode === 'regular') {
                 for (let x = 0; x < this.width; x++) { this.hWalls[0][x] = wall(); this.hWalls[this.height][x] = wall(); }
                 for (let y = 0; y < this.height; y++) { this.vWalls[y][0] = wall(); this.vWalls[y][this.width] = wall(); }
-                const roomY = this.height - 3;
+                const roomY = getStartRoomY(this.height);
                 for (let x = 0; x < 3; x++) this.hWalls[roomY + 3][x] = wall();
                 for (let y = roomY; y < roomY + 3; y++) this.vWalls[y][0] = wall();
                 this.hWalls[roomY][0] = wall(); this.hWalls[roomY][2] = wall();
@@ -1196,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let y = 0; y < this.height; y++) { for (let x = 0; x < this.width; x++) { if (!this.activeCells[y][x]) { ctx.strokeRect(x * cs, y * cs, cs, cs); } } }
                 ctx.strokeRect(0, 0, this.width * cs, this.height * cs); ctx.setLineDash([]);
             }
-            if (this.editor.mode === 'regular') { ctx.fillStyle = this.colors.startRoomHighlight; ctx.fillRect(0, (this.height - 3) * cs, 3 * cs, 3 * cs); }
+            if (this.editor.mode === 'regular') { ctx.fillStyle = this.colors.startRoomHighlight; ctx.fillRect(0, getStartRoomY(this.height) * cs, START_ROOM_SIZE * cs, START_ROOM_SIZE * cs); }
             ctx.beginPath();
             for (let y = 0; y <= this.height; y++) {
                 for (let x = 0; x < this.width; x++) {
@@ -1586,30 +1586,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         isValidStairPlacement(x, y, direction) {
-            if (!this.activeCells[y][x]) return false;
-            const targetLayer = direction === 'up' ? this.currentLayer + 1 : this.currentLayer - 1;
-            if (targetLayer < 0 || targetLayer >= this.layerCount) return false;
-            if (this.layers[targetLayer] && this.layers[targetLayer].activeCells && !this.layers[targetLayer].activeCells[y][x]) return false;
-            
-            // 检查当前层该位置是否有其他元素（起点、鬼、钥匙、其他楼梯等）
-            if (this.isCellOccupiedInEditor(x, y)) return false;
-            
-            // 检查目标层该位置是否有其他元素
-            if (this.layers[targetLayer]) {
-                const targetLayerData = this.layers[targetLayer];
-                // 检查目标层是否有起点
-                if (targetLayerData.customStartPos && targetLayerData.customStartPos.x === x && targetLayerData.customStartPos.y === y) return false;
-                // 检查目标层是否有终点
-                if (targetLayerData.endPos && targetLayerData.endPos.x === x && targetLayerData.endPos.y === y) return false;
-                // 检查目标层是否有鬼
-                if (targetLayerData.ghosts && targetLayerData.ghosts.some(g => g.x === x && g.y === y)) return false;
-                // 检查目标层是否有钥匙
-                if (targetLayerData.items && targetLayerData.items.some(i => i.x === x && i.y === y)) return false;
-                // 检查目标层该位置是否已有楼梯（不是配对的那个）
-                if (this.stairs.some(s => s.x === x && s.y === y && s.layer === targetLayer && s.direction !== (direction === 'up' ? 'down' : 'up'))) return false;
-            }
-            
-            return true;
+            // 完整校验逻辑收敛在 Editor.isValidStairPlacement（当前层/目标层双向检查）
+            return Editor.isValidStairPlacement(x, y, direction, {
+                activeCells: this.activeCells,
+                stairs: this.stairs,
+                currentLayer: this.currentLayer,
+                layerCount: this.layerCount,
+                layers: this.layers,
+                isCellOccupied: (cx, cy) => this.isCellOccupiedInEditor(cx, cy)
+            });
         }
 
         placeStair(x, y, direction) {

@@ -3,8 +3,9 @@
  * calculateDistances 与 pathfinding 版的分叉锁定
  */
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
-import { generateFullMaze, createEmptyWalls, isPosInStartRoom, calculateDistances as genDistances } from '../src/mazeGenerator.js';
-import { calculateDistances as pfDistances } from '../src/pathfinding.js';
+import { generateFullMaze } from '../src/mazeGenerator.js';
+import { calculateDistances } from '../src/pathfinding.js';
+import { isPosInStartRoom, createEmptyWalls } from '../src/editor.js';
 import { WALL_TYPES as WT } from '../src/constants.js';
 
 suite('mazeGenerator');
@@ -32,11 +33,11 @@ test('generateFullMaze: 10×10 结构不变量', () => {
     assertDeepEq(maze.startPos, { x: 1, y: 8 });
     assert(maze.endPos, '生成器设终点（findFarthestEndCell 决策）');
     // 终点邻格至少一侧可从起点接近（生成器会在终点旁放 LOCKED 门，距离场视为不可过——钥匙收集后仍可进）
-    const dist = genDistances({ x: 1, y: 8 }, 10, 10, maze.hWalls, maze.vWalls);
+    const dist = calculateDistances({ x: 1, y: 8 }, 10, 10, maze.hWalls, maze.vWalls);
     const { x: ex, y: ey } = maze.endPos;
     const near = [{ x: ex, y: ey - 1 }, { x: ex, y: ey + 1 }, { x: ex + 1, y: ey }, { x: ex - 1, y: ey }]
         .filter(c => c.x >= 0 && c.x < 10 && c.y >= 0 && c.y < 10);
-    assert(near.some(c => dist[c.y][c.x] >= 0), '终点至少一侧可从起点接近');
+    assert(near.some(c => dist[c.y][c.x] !== Infinity), '终点至少一侧可从起点接近');
 });
 
 test('generateFullMaze: 起始房间 3×3 内部畅通 + 出口 DOOR', () => {
@@ -70,25 +71,25 @@ test('generateFullMaze: 种子确定性（相同随机序列 → 相同地图）
 
 test('generateFullMaze: 终点可达（起点 → 最远格存在路径）', () => {
     const maze = withRandom([0.42, 0.17, 0.83, 0.31, 0.66, 0.05, 0.92, 0.55, 0.21, 0.73], () => generateFullMaze(10, 10, 1));
-    // 用生成器自己的距离场验证：起点到最远格的距离有限
+    // 用公共距离场验证：起点到最远格的距离有限
     const end = findFarthestEndCellSafe(maze);
-    const dist = genDistances({ x: maze.startPos.x, y: maze.startPos.y }, maze.width, maze.height, maze.hWalls, maze.vWalls);
-    assert(dist[end.y][end.x] >= 0, '最远格必须可达');
+    const dist = calculateDistances({ x: maze.startPos.x, y: maze.startPos.y }, maze.width, maze.height, maze.hWalls, maze.vWalls);
+    assert(dist[end.y][end.x] !== Infinity, '最远格必须可达');
 });
 
-// findFarthestEndCell 未导入（导出于 mazeGenerator），此处内联取最远格
+// findFarthestEndCell 未导出，此处内联取最远格
 function findFarthestEndCellSafe(maze) {
-    const dist = genDistances({ x: maze.startPos.x, y: maze.startPos.y }, maze.width, maze.height, maze.hWalls, maze.vWalls);
+    const dist = calculateDistances({ x: maze.startPos.x, y: maze.startPos.y }, maze.width, maze.height, maze.hWalls, maze.vWalls);
     let best = null, bestDist = -1;
     for (let y = 0; y < maze.height; y++) {
         for (let x = 0; x < maze.width; x++) {
-            if (dist[y][x] > bestDist) { bestDist = dist[y][x]; best = { x, y }; }
+            if (dist[y][x] !== Infinity && dist[y][x] > bestDist) { bestDist = dist[y][x]; best = { x, y }; }
         }
     }
     return best;
 }
 
-test('calculateDistances 分叉锁: pathfinding 版 GLASS 可过（现状），mazeGenerator 版 GLASS 阻挡', () => {
+test('calculateDistances 统一语义: GLASS 阻挡（玩家通行规则，与 findPlayerPath 一致）', () => {
     // 1 列 3 行，GLASS 在 h[1][0]；起点 {0,0}
     const hWalls = [
         [{ type: WT.EMPTY, keys: 0 }],
@@ -97,28 +98,8 @@ test('calculateDistances 分叉锁: pathfinding 版 GLASS 可过（现状），m
         [{ type: WT.EMPTY, keys: 0 }],
     ];
     const vWalls = [[{ type: WT.EMPTY, keys: 0 }], [{ type: WT.EMPTY, keys: 0 }], [{ type: WT.EMPTY, keys: 0 }]];
-    const pf = pfDistances({ x: 0, y: 0 }, 1, 3, hWalls, vWalls);
-    const gen = genDistances({ x: 0, y: 0 }, 1, 3, hWalls, vWalls);
-    // 现状差异如实锁定（Phase 2 收敛目标：统一为 GLASS 阻挡的玩家通行语义）
-    assertEq(pf[2][0], 2, 'pathfinding 版视 GLASS 可过（当前行为，待收敛）');
-    assertEq(gen[2][0], -1, 'mazeGenerator 版视 GLASS 阻挡（正确玩家语义）');
-});
-
-test('calculateDistances: 无 GLASS 时两版输出全等', () => {
-    const hWalls = [
-        [{ type: WT.EMPTY, keys: 0 }, { type: WT.SOLID, keys: 0 }],
-        [{ type: WT.EMPTY, keys: 0 }, { type: WT.DOOR, keys: 0 }],
-        [{ type: WT.EMPTY, keys: 0 }, { type: WT.EMPTY, keys: 0 }],
-    ];
-    const vWalls = [
-        [{ type: WT.EMPTY, keys: 0 }, { type: WT.EMPTY, keys: 0 }, { type: WT.EMPTY, keys: 0 }],
-        [{ type: WT.EMPTY, keys: 0 }, { type: WT.EMPTY, keys: 0 }, { type: WT.EMPTY, keys: 0 }],
-    ];
-    const pf = pfDistances({ x: 0, y: 0 }, 2, 2, hWalls, vWalls);
-    const gen = genDistances({ x: 0, y: 0 }, 2, 2, hWalls, vWalls);
-    // 对齐可达性语义（Infinity vs -1）
-    const genNorm = gen.map(r => r.map(d => d < 0 ? Infinity : d));
-    assertDeepEq(genNorm, pf, '无 GLASS 时两版距离场全等');
+    const d = calculateDistances({ x: 0, y: 0 }, 1, 3, hWalls, vWalls);
+    assertEq(d[2][0], Infinity, 'GLASS 阻挡不可达');
 });
 
 test('isPosInStartRoom 与 createEmptyWalls 基础', () => {
