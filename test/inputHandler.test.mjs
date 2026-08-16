@@ -6,7 +6,7 @@
  * 目的：锁定「模块级变量缺失」类迁移 bug 不再复发。
  */
 import { deflateRawSync } from 'node:zlib';
-import { test, suite, summary, assert } from './_assert.mjs';
+import { test, suite, summary, assert, assertEq } from './_assert.mjs';
 
 // 必须在动态 import inputHandler 之前完成 DOM mock（该模块顶层引用 document）
 globalThis.window = globalThis.window || { pako: { deflateRaw: (d) => deflateRawSync(d), inflateRaw: null } };
@@ -144,6 +144,72 @@ test('findPlayerPath：直接寻路可用', () => {
     const g = makeGame();
     const path = InputHandler.findPlayerPath(g, { x: 1, y: 1 }, { x: 8, y: 8 });
     assert(Array.isArray(path) && path.length >= 1, '应有路径');
+});
+
+test('handleCanvasClick：直线点击逐步移动，delta 恒单格，精确到达目标（防闭包快照累积跳格）', () => {
+    const g = makeGame();
+    g.player = { x: 1, y: 1, keys: 0 }; // 沿 y 轴向下直线
+    const deltas = [];
+    let timerCbs = [];
+    const origSetInterval = globalThis.setInterval;
+    const origClearInterval = globalThis.clearInterval;
+    globalThis.setInterval = (cb) => { timerCbs.push(cb); return 1; };
+    globalThis.clearInterval = () => { timerCbs.length = 0; };
+    let stopCalls = 0;
+    // 模拟真实 stopAutoMove：清理定时器（真实实现会 clearInterval）
+    g.stopAutoMove = () => { stopCalls++; timerCbs.length = 0; };
+    g.movePlayer = (dx, dy) => { deltas.push([dx, dy]); g.player.x += dx; g.player.y += dy; return true; };
+    try {
+        InputHandler.handleCanvasClick(g, { clientX: 50, clientY: 450 }); // 目标格 {1,9}
+        assertEq(deltas.length, 1, '首次立即走一步');
+        assertEq(g.player.y, 2, '首次走到 y=2');
+        // 固定次数触发定时器：8 步走完 + 多余触发让 move() 命中终点条件停止
+        for (let i = 0; i < 12; i++) {
+            for (const cb of [...timerCbs]) cb();
+        }
+        assertEq(g.player.y, 9, '精确到达目标行 y=9');
+        assertEq(g.player.x, 1, 'x 方向不变');
+        assertEq(stopCalls, 2, '开始时一次 + 到达后一次停止');
+        // 每一步都是单格增量（杜绝 delta=2/3 的跳格）
+        for (const d of deltas) {
+            assert(Math.abs(d[0]) + Math.abs(d[1]) === 1, `每步单格，实际 delta=${JSON.stringify(d)}`);
+        }
+    } finally {
+        globalThis.setInterval = origSetInterval;
+        globalThis.clearInterval = origClearInterval;
+    }
+});
+
+test('handleCanvasClick：路径中某步失败则停止，不累积跳格', () => {
+    const g = makeGame();
+    g.player = { x: 1, y: 1, keys: 0 };
+    let timerCbs = [];
+    const origSetInterval = globalThis.setInterval;
+    const origClearInterval = globalThis.clearInterval;
+    globalThis.setInterval = (cb) => { timerCbs.push(cb); return 1; };
+    globalThis.clearInterval = () => { timerCbs.length = 0; };
+    let stopCalls = 0;
+    // 模拟真实 stopAutoMove：清理定时器（真实实现会 clearInterval）
+    g.stopAutoMove = () => { stopCalls++; timerCbs.length = 0; };
+    let call = 0;
+    g.movePlayer = (dx, dy) => {
+        call++;
+        if (call === 3) return null; // 第 3 步撞墙失败：玩家原地不动
+        g.player.x += dx; g.player.y += dy; return true;
+    };
+    try {
+        InputHandler.handleCanvasClick(g, { clientX: 50, clientY: 450 }); // 目标 {1,9}
+        assertEq(call, 1, '首次走一步');
+        timerCbs[0](); // 第 2 步成功
+        assertEq(g.player.y, 3, '第 2 步到 y=3');
+        timerCbs[0](); // 第 3 步失败 → 停止，定时器清空
+        assertEq(g.player.y, 3, '失败后玩家原地不动（无跳格）');
+        assertEq(stopCalls, 2, '失败触发停止');
+        assertEq(timerCbs.length, 0, '失败后定时器已清空');
+    } finally {
+        globalThis.setInterval = origSetInterval;
+        globalThis.clearInterval = origClearInterval;
+    }
 });
 
 summary('inputHandler 冒烟');

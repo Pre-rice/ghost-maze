@@ -188,7 +188,16 @@ export function bindDpadControls(game) {
                 const move = () => {
                     if (currentStep >= path.length || game.state !== GAME_STATES.PLAYING) { game.stopAutoMove(); return; }
                     const nextPos = path[currentStep];
-                    game.movePlayer(nextPos.x - view.player.x, nextPos.y - view.player.y);
+                    // 每次动态读取当前玩家位置：view 是点击时的闭包快照，若复用它，delta 会
+                    // 相对固定起点累积（第 2 步跳 2 格、第 3 步跳 3 格…）→ 跳格/瞬移。
+                    // 必须基于当前玩家位置计算单格增量。
+                    const current = game.getGameView();
+                    const beforeX = current.player.x; const beforeY = current.player.y;
+                    game.movePlayer(nextPos.x - beforeX, nextPos.y - beforeY);
+                    // 玩家位置未推进（撞墙失败/触发按钮等不移动动作）→ 路径失效，立即停止，
+                    // 防止 currentStep 前进后 delta 累积成跳格。
+                    const after = game.getGameView();
+                    if (after.player.x === beforeX && after.player.y === beforeY) { game.stopAutoMove(); return; }
                     currentStep++;
                 };
                 move();
