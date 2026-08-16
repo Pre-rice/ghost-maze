@@ -225,6 +225,13 @@ export function validateMapForPlay(mapData, editorMode) {
             return { valid: false, error: '地图必须有至少一个活动单元格！' };
         }
     }
+    // 必须存在终点（多层时任意层有终点即可；endPos 为当前层终点，layers 为其余层）
+    const hasEnd = mapData.multiLayerMode
+        ? !!(mapData.endPos || (mapData.layers || []).some(l => l && l.endPos))
+        : !!mapData.endPos;
+    if (!hasEnd) {
+        return { valid: false, error: '请先设置终点！' };
+    }
     return { valid: true };
 }
 

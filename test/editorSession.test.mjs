@@ -6,6 +6,7 @@
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
 import { EditorDocument } from '../src/editor/editorSession.js';
 import { WALL_TYPES as WT, START_ROOM_SIZE, getStartRoomY } from '../src/core/constants.js';
+import { generateFullMaze } from '../src/core/mazeGenerator.js';
 
 suite('editorSession');
 
@@ -116,6 +117,28 @@ test('load: activeCells 缺失时默认全 true', () => {
     const doc = EditorDocument.fromMapData(m);
     assertEq(doc.activeCells.length, 10);
     assertEq(doc.activeCells[9][9], true, '默认全 true');
+});
+
+test('load: 随机生成地图完整保留（进编辑器不丢墙/实体/终点）', () => {
+    // 回归锁：main.js startGame 赋值 this.mapData 后，enterEditorMode 用 fromMapData 装载
+    // 当前地图——必须逐墙逐实体保留，只允许初始房间外的要素「原样进入编辑器」。
+    const mapData = generateFullMaze(10, 10, 3);
+    const doc = EditorDocument.fromMapData(mapData);
+    assertEq(doc.width, 10); assertEq(doc.height, 10);
+    assertEq(doc.mode, 'regular'); assertEq(doc.multiLayerMode, false);
+    for (let y = 0; y <= 10; y++) {
+        for (let x = 0; x < 10; x++) {
+            assertEq(doc.hWalls[y][x].type, mapData.hWalls[y][x].type, `hWalls[${y}][${x}] 保留`);
+        }
+    }
+    for (let y = 0; y < 10; y++) {
+        for (let x = 0; x <= 10; x++) {
+            assertEq(doc.vWalls[y][x].type, mapData.vWalls[y][x].type, `vWalls[${y}][${x}] 保留`);
+        }
+    }
+    assertDeepEq(doc.endPos, mapData.endPos, '终点保留');
+    assertEq(doc.ghosts.length, mapData.initialGhosts.length, '鬼保留');
+    assertEq(doc.items.length, mapData.items.length, '钥匙保留');
 });
 
 test('toMapData: initialGhosts 补 id + layers/stairs 深拷贝', () => {
@@ -552,10 +575,15 @@ test('hasStartPoint: regular 恒有 / free 按起点', () => {
     assertEq(multi.hasStartPoint(), true, '多层层内有起点');
 });
 
-test('validate: free 无起点/无活动格非法；regular 恒合法', () => {
+test('validate: 终点必需（regular/free 同）；free 无起点/无活动格非法', () => {
     const regular = EditorDocument.blank(10, 10, 'regular');
-    assertEq(regular.validate().valid, true, 'regular 恒合法');
+    const r0 = regular.validate();
+    assertEq(r0.valid, false, 'regular 无终点非法');
+    assertEq(r0.error, '请先设置终点！');
+    regular.endPos = { x: 8, y: 8 };
+    assertEq(regular.validate().valid, true, 'regular 有终点合法');
     const free = EditorDocument.blank(10, 10, 'free');
+    free.endPos = { x: 8, y: 8 };
     const r1 = free.validate();
     assertEq(r1.valid, false, 'free 无起点非法');
     assertEq(r1.error, '自由模式必须设置起点！');

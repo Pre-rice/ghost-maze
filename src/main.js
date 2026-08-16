@@ -379,6 +379,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         startGame(mapData) {
+            // 当前地图基线快照：进编辑器时作为「保留当前地图样式」的数据源
+            this.mapData = mapData;
             this.stopAnimationLoop();
             this.state = GAME_STATES.PLAYING;
             this.padding = 15;
@@ -534,12 +536,11 @@ drawEditor() {
 
         enterEditorMode() {
             this.stopAnimationLoop();
-            // 编辑器会话唯一数据源：从当前地图装载；无地图则建空白文档（分享码 = 保存按钮）
-            if (!this.editorDoc) {
-                this.editorDoc = this.mapData
-                    ? EditorDocument.fromMapData(this.mapData)
-                    : EditorDocument.blank(10, 10, 'regular', false);
-            }
+            // 每次进入编辑器都从当前地图（this.mapData，startGame 时赋值）重建会话数据源，
+            // 完整保留当前地图样式；无地图则建空白文档。编辑器 = 临时草稿区，编辑不持久化（分享码 = 保存按钮）。
+            this.editorDoc = this.mapData
+                ? EditorDocument.fromMapData(this.mapData)
+                : EditorDocument.blank(10, 10, 'regular', false);
             this.state = GAME_STATES.EDITOR; this.editor.active = true; this.setEditorTool(EDITOR_TOOLS.WALL);
             document.getElementById('game-controls').style.display = 'none';
             document.getElementById('editor-controls').style.display = 'block';
@@ -687,7 +688,8 @@ drawEditor() {
             if (this.editorDoc.mode === mode) return;
             this.showConfirm(`切换编辑模式将清空当前地图，确定吗？`, () => {
                 this.editorDoc.mode = mode;
-                if (mode === 'free') { this.editorDoc.resetGrids(); this.editorDoc.clearEntities(); }
+                // free 模式无起始房间：重置网格（含清实体）+ 清墙（含初始房间的墙）
+                if (mode === 'free') { this.editorDoc.resetGrids(); this.editorDoc.clearWalls(); }
                 else { this.editorDoc.createBlank(this.editorDoc.width, this.editorDoc.height); }
                 this._syncEditorMirrors();
                 this.updateEditorUIForMode();
@@ -817,9 +819,9 @@ drawEditor() {
 
         playEditedMap() {
             if (this.editorDoc.multiLayerMode) { this.editorDoc.saveCurrentLayer(); }
-            if (this.editorDoc.mode === 'free') {
-                if (!this.editorDoc.hasStartPoint()) { this.showToast('自由模式必须设置起点！', 3000, 'error'); return; }
-            }
+            // 游玩前校验：必须存在终点 + 自由模式必须设置起点（统一走 doc.validate）
+            const check = this.editorDoc.validate();
+            if (!check.valid) { this.showToast(check.error, 3000, 'error'); return; }
             this.editor.active = false;
             document.getElementById('game-controls').style.display = 'block';
             document.getElementById('editor-controls').style.display = 'none';
