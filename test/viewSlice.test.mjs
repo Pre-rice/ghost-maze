@@ -8,7 +8,8 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { test, suite, summary, assert, assertEq } from './_assert.mjs';
-import { createGameView, createEditorView, computeGameView, pruneTrails } from '../src/view/viewSlice.js';
+import { computeGameView, computeEditorView, pruneTrails } from '../src/view/viewSlice.js';
+import { EditorDocument } from '../src/editor/editorSession.js';
 import { MapDefinition } from '../src/core/mapDefinition.js';
 import { GameLogic } from '../src/core/gameLogic.js';
 import * as Renderer from '../src/view/renderer.js';
@@ -20,34 +21,33 @@ suite('viewSlice');
 
 // ---------- 视图快照组装 ----------
 
-test('createGameView: 字段与宿主引用一致（读多写零）', () => {
-    const host = {
-        canvas: {}, staticLayerCanvas: {}, state: 'PLAYING', cellSize: 40, colors: {},
-        drawOffset: { x: 0, y: 0 }, debugVision: false, width: 10, height: 10,
-        activeCells: [], seenCells: [], hWalls: [], vWalls: [], ghosts: [], items: [],
-        buttons: [], stairs: [], endPos: null, player: {}, playerLayer: 0,
-        currentLayer: 0, multiLayerMode: false,
+test('computeEditorView: 投影字段 === EditorDocument 引用（mode 强制取 doc）', () => {
+    const doc = EditorDocument.fromMapData(G1.canonical);
+    // renderParams.editor.mode 故意与 doc.mode 不同，验证 mode 单一来源在 doc
+    const renderParams = {
+        canvas: {}, staticLayerCanvas: {}, state: 'EDITOR', cellSize: 40,
+        colors: {}, padding: 15,
+        editor: { mode: 'free', tool: 3, hoveredWall: { x: 1, y: 1, type: 'h' }, isDragging: true },
     };
-    const view = createGameView(host);
-    assertEq(view.hWalls, host.hWalls, 'hWalls 引用');
-    assertEq(view.player, host.player, 'player 引用');
-    assertEq(view.width, 10);
-    assertEq(view.state, 'PLAYING');
-    assert('staticLayerCanvas' in view, '含静态层画布');
-});
-
-test('createEditorView: 字段与宿主引用一致', () => {
-    const host = {
-        canvas: {}, staticLayerCanvas: {}, state: 'EDITOR', editor: { mode: 'regular' },
-        cellSize: 40, colors: {}, padding: 15, width: 10, height: 10,
-        activeCells: [], hWalls: [], vWalls: [], ghosts: [], items: [], buttons: [],
-        stairs: [], endPos: null, customStartPos: null, startPos: { x: 1, y: 8 },
-        currentLayer: 0,
-    };
-    const view = createEditorView(host);
-    assertEq(view.editor, host.editor, 'editor 引用');
-    assertEq(view.padding, 15);
-    assertEq(view.startPos, host.startPos, 'startPos 引用');
+    const view = computeEditorView(doc, renderParams);
+    assertEq(view.width, doc.width, 'width === doc');
+    assertEq(view.height, doc.height, 'height === doc');
+    assertEq(view.hWalls, doc.hWalls, 'hWalls === doc 引用');
+    assertEq(view.vWalls, doc.vWalls, 'vWalls === doc 引用');
+    assertEq(view.activeCells, doc.activeCells, 'activeCells === doc 引用');
+    assertEq(view.ghosts, doc.ghosts, 'ghosts === doc 引用');
+    assertEq(view.items, doc.items, 'items === doc 引用');
+    assertEq(view.buttons, doc.buttons, 'buttons === doc 引用');
+    assertEq(view.stairs, doc.stairs, 'stairs === doc 引用');
+    assertEq(view.endPos, doc.endPos, 'endPos === doc 引用');
+    assertEq(view.customStartPos, doc.customStartPos, 'customStartPos === doc 引用');
+    assertEq(view.startPos, doc.startPos, 'startPos === doc 引用');
+    assertEq(view.currentLayer, doc.currentLayer, 'currentLayer === doc');
+    assertEq(view.editor.mode, doc.mode, 'editor.mode 强制取 doc（单一来源）');
+    assertEq(view.editor.tool, 3, 'UI 交互态（tool）透传宿主');
+    assertEq(view.editor.hoveredWall, renderParams.editor.hoveredWall, 'hoveredWall 透传宿主');
+    assertEq(view.padding, 15, '宿主渲染参数注入');
+    assertEq(view.state, 'EDITOR', 'state 注入');
 });
 
 // ---------- 权威源投影（Phase 4 computeGameView / pruneTrails） ----------
@@ -260,6 +260,30 @@ test('drawEditor: G1 尺寸全路径跑通（regular 与 free 模式）', () => 
         ...editor, hoveredWall: { x: 1, y: 1, type: 'h', direction: { dx: 1, dy: 0 } },
         tool: 4,
     } });
+    assert(true, '无异常');
+});
+
+test('computeEditorView 投影产物喂渲染层跑通（renderStaticLayer + drawEditor）', () => {
+    const doc = EditorDocument.fromMapData(G1.canonical);
+    const colors = {
+        wall: '#000', ground: '#eee', gridLine: '#ccc', unexplored: '#ddd',
+        player: '#0a0', ghost: '#f00', endPoint: '#00f', key: '#ff0',
+        voidGrid: '#999', text: '#000', border: '#ccc', startRoomHighlight: 'rgba(0,200,0,0.1)',
+        hoverHighlight: '#ff0',
+    };
+    const editor = {
+        active: true, mode: 'regular', tool: 1, isDragging: false, didDrag: false,
+        dragAxis: null, lastDragPos: null, hoveredWall: null, hoveredButtonHotspot: null,
+        gridDragAction: null, stairPlacement: null, isRightClickErasing: false,
+        rightClickMousePos: null, previousToolBeforeRightClick: null,
+    };
+    const view = computeEditorView(doc, {
+        canvas: {}, staticLayerCanvas: {}, state: 'EDITOR', cellSize: 40,
+        colors, padding: 15, editor,
+    });
+    const ctx = makeCtx();
+    Renderer.renderStaticLayer(makeCanvas(ctx), makeCanvas(ctx), view);
+    Renderer.drawEditor(ctx, view);
     assert(true, '无异常');
 });
 

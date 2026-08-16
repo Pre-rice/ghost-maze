@@ -103,6 +103,40 @@ export function computeGameView({ mapDef, gameState, viewLayer }, renderParams) 
 }
 
 /**
+ * computeEditorView - 编辑器态（EDITOR）只读投影
+ * 权威源：EditorDocument（doc）；UI 交互状态（tool/hoveredWall 等）在宿主 editor 对象，
+ * editor.mode 强制取 doc.mode（单一来源，防漂移）。宿主渲染参数经 renderParams 注入。
+ * renderer 消费字段集与 createEditorView 完全一致，渲染层零改动。
+ */
+export function computeEditorView(doc, renderParams) {
+    return {
+        // 宿主渲染参数（非数据源）
+        canvas: renderParams.canvas,
+        staticLayerCanvas: renderParams.staticLayerCanvas,
+        state: renderParams.state,
+        cellSize: renderParams.cellSize,
+        colors: renderParams.colors,
+        padding: renderParams.padding,
+        // 权威源投影（EditorDocument，字段引用不拷贝）
+        width: doc.width,
+        height: doc.height,
+        activeCells: doc.activeCells,
+        hWalls: doc.hWalls,
+        vWalls: doc.vWalls,
+        ghosts: doc.ghosts,
+        items: doc.items,
+        buttons: doc.buttons,
+        stairs: doc.stairs,
+        endPos: doc.endPos,
+        customStartPos: doc.customStartPos,
+        startPos: doc.startPos,
+        currentLayer: doc.currentLayer,
+        // UI 交互状态来自宿主 editor；mode 强制取 doc（数据源唯一）
+        editor: { ...renderParams.editor, mode: doc.mode },
+    };
+}
+
+/**
  * pruneTrails - 在权威源上修剪视觉轨迹（player + viewLayer 层鬼）
  * 原宿主只剪镜像副本（玩家）或同引用（鬼），两不对称（玩家轨迹陈旧泄漏）；
  * 投影化后统一在权威 GameState 上剪，剪与画（view 层）一致。
