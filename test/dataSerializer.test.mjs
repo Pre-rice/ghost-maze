@@ -1,6 +1,6 @@
 /**
- * DataSerializer v2 协议锁测试
- *  1. G1 golden：解码深等 + 重编码确定性 + 码长上限（v2 ≤ v1，防协议膨胀）
+ * DataSerializer v3 协议锁测试
+ *  1. G1 golden：解码深等 + 重编码确定性 + 码长上限（v3 ≤ v1，防协议膨胀）
  *  2. 墙类型全覆盖图：参数队列（LOCKED/ONE_WAY/LETTER_DOOR）往返
  *  3. free 模式（customStartPos + activeCells 位图）往返
  *  4. 多层模式（楼梯 + 各层独立数据）往返
@@ -48,7 +48,7 @@ test('G1: 重编码闭环（码长与 golden 一致 = 确定性序列化）', ()
 test('码长上限：v2 ≤ v1（防协议膨胀回归）', () => {
     const g = golden['G1-demo'];
     assert(g.code.length <= g.v1CodeLength,
-        `v2 码长 ${g.code.length} 应 ≤ v1 的 ${g.v1CodeLength}`);
+        `v3 码长 ${g.code.length} 应 ≤ v1 的 ${g.v1CodeLength}`);
 });
 
 test('G1: 解码产物无 v1 残留字段（mapStartPos/playerStartLayer）', () => {

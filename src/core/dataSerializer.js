@@ -1,22 +1,24 @@
 import { WALL_TYPES } from './constants.js';
 
 // ==================================================
-//  DataSerializer v2: 分享码序列化/反序列化
-//  协议版本 0x02，字节布局见 docs/protocol-v2.md
+//  DataSerializer v3: 分享码序列化/反序列化
+//  协议版本 0x03，字节布局见 docs/protocol-v2.md
 //  设计目标：秒解读（线性位流、零启发式）+ 码尽可能短
 //
-//  编码要点（压缩效率实验结论，10×10 demo 实测）：
-//  1. 墙体类型走 3bit 位流，但「按行打包、行间 flush 对齐」——
-//     行内连续 EMPTY 形成整行 0x00 字节游程，deflate 才能高效压缩。
-//     （连续位流实测码长 92 字符、前缀码 76、行内对齐 60，v1 nibble 为 66。）
+//  编码要点（压缩效率实验结论：墙体前缀码 × 墙密度全谱实测最优）：
+//  1. 墙体类型走变长前缀码位流：类型 t = t 个 1 + 1 个 0（t=0 即 EMPTY 直接 0）。
+//     EMPTY 1bit / SOLID 2bit / DOOR 3bit / LOCKED 4bit / ONE_WAY 5bit /
+//     GLASS 6bit / LETTER_DOOR 7bit——高频类型短码，墙越多越省。
+//     （10×10 墙体流压缩后实测：墙密 50% 时前缀码 61 vs v2 行对齐 103、
+//     v1 nibble 75；G1 真实墙体流前缀码 42 vs v2 40、v1 44——全谱不劣于两者。）
 //  2. 墙体参数（LOCKED keys / ONE_WAY 方向 / LETTER_DOOR letter+state）
-//     走独立字节队列，位于墙体位流之后——参数若交错写进位流会打碎
-//     墙体 0x00 游程；独立队列保持墙体位流纯净，且解码端可按行宽公式
-//     算出墙体位流占用字节数、直接定位参数队列（线性、零启发式）。
-//  3. 其余字段全部字节对齐（版本头/尺寸/模式/终点/实体/位图），同 v1。
+//     走独立字节队列，位于墙体位流之后 + 1 字节长度前缀：参数若交错写进位流
+//     会打碎位流连续性；独立队列保持位流纯净，解码端读完全部墙体类型码后
+//     对齐到字节边界、按长度前缀精确定界本层参数（线性、零启发式）。
+//  3. 其余字段全部字节对齐（版本头/尺寸/模式/终点/实体/位图）。
 // ==================================================
 
-const PROTOCOL_VERSION = 0x02;
+const PROTOCOL_VERSION = 0x03;
 
 // --- 位流写入器（MSB-first） ---
 class BitWriter {
@@ -123,11 +125,18 @@ const readBitArray = (read, width, height) => {
     return rows;
 };
 
-// --- 墙体位流：3bit 类型写入位流；参数（LOCKED/ONE_WAY/LETTER_DOOR）入独立字节队列 ---
+// --- 墙体位流：变长前缀码连续打包（类型 t = t 个 1 + 1 个 0，t=0 即 EMPTY 直接 0）；
+//     参数（LOCKED/ONE_WAY/LETTER_DOOR）入独立字节队列，随墙体位流之后 + 1 字节长度前缀 ---
+const writeWallType = (w, type) => {
+    for (let i = 0; i < type; i++) w.write(1, 1);
+    w.write(0, 1);
+};
+
+// 写一面墙：变长类型码 + 按类型收集参数（参数顺序 = 墙体扫描顺序）
 const writeWall = (wall, w, params) => {
     if (!wall) wall = { type: WALL_TYPES.EMPTY };
     const wt = typeof wall.type === 'number' ? wall.type : WALL_TYPES.EMPTY;
-    w.write(wt, 3);
+    writeWallType(w, wt);
     if (wt === WALL_TYPES.LOCKED) {
         params.push(wall.keys || 0);
     } else if (wt === WALL_TYPES.ONE_WAY) {
@@ -138,16 +147,19 @@ const writeWall = (wall, w, params) => {
     }
 };
 
-// 墙体位流占用字节数：按行 3bit 打包 + 行间对齐（与写端循环严格对称，公式可预计算 → 线性解码）
-const wallBytesFor = (width, height) => {
-    let bytes = 0;
-    for (let y = 0; y <= height; y++) bytes += Math.ceil(width * 3 / 8);
-    for (let y = 0; y < height; y++) bytes += Math.ceil((width + 1) * 3 / 8);
-    return bytes;
+// 解码端读变长前缀码：累计连续 1 的个数直到遇 0，个数即类型（最大 LETTER_DOOR=6 → 6 个 1 + 0）
+const readWallType = (r) => {
+    let t = 0;
+    while (true) {
+        if (r.read(1) === 1) {
+            if (++t > 6) throw new RangeError('分享码墙类型码非法');
+        } else break;
+    }
+    return t;
 };
 
-const readWall = (r, takeParam) => {
-    const type = r.read(3);
+// 按已知类型重建墙（类型码在位流，参数在独立队列）
+const readWallWithType = (type, takeParam) => {
     const wall = { type, keys: 0 };
     if (type === WALL_TYPES.LOCKED) {
         wall.keys = takeParam();
@@ -225,18 +237,17 @@ export const DataSerializer = {
                 buffer.push(b.letter.charCodeAt(0));
             });
 
-            // 墙体位流（第 0 层）：每行 3bit 打包 + 行间 flush 对齐；参数独立字节队列
+            // 墙体位流（第 0 层）：变长前缀码连续打包，全部墙体结束后 flush 一次；参数独立字节队列
             const writeWallStream = (hWalls, vWalls) => {
                 const wallWriter = new BitWriter();
                 const wallParams = [];
                 for (let y = 0; y <= h; y++) {
                     for (let x = 0; x < w; x++) writeWall(hWalls[y][x], wallWriter, wallParams);
-                    wallWriter.flush();
                 }
                 for (let y = 0; y < h; y++) {
                     for (let x = 0; x <= w; x++) writeWall(vWalls[y][x], wallWriter, wallParams);
-                    wallWriter.flush();
                 }
+                wallWriter.flush();
                 buffer.push(...wallWriter.buffer);
                 // 参数队列带 1 字节长度前缀：多层时每层参数之后还有其他数据，
                 // 长度前缀让解码端能精确定界本层参数（线性、零启发式）
@@ -318,7 +329,7 @@ export const DataSerializer = {
                 return inflated[ptr++];
             };
 
-            // 版本号校验（v1 旧码首字节是 width，几乎必然 != 0x02 → 干净报错）
+            // 版本号校验（v1/v2 旧码首字节几乎必然 != 0x03 → 干净报错）
             const version = read();
             if (version !== PROTOCOL_VERSION) {
                 return { success: false, error: '分享码版本不支持。' };
@@ -368,36 +379,39 @@ export const DataSerializer = {
                 return { x, y, direction: codeToDir(dirCode), letter };
             });
 
-            // 墙体位流（第 0 层）：按公式跳过位流本体，读 1 字节参数长度前缀精确取本层参数，
-            // 再逐行读取 + 行间对齐。本层参数之后的字节属于后续层数据，不做「流末尾」校验。
+            // 墙体位流（第 0 层）：变长前缀码。先逐墙读类型（墙数 = (h+1)*w + h*(w+1)
+            // 精确计数），位流读完后对齐到字节边界 → 读 1 字节参数长度前缀精确定界本层参数，
+            // 再按扫描顺序为需要参数的墙依次取参。本层参数之后的字节属于后续层数据。
             const readWallStream = () => {
-                const wallBytes = wallBytesFor(width, height);
-                const paramLen = inflated[ptr + wallBytes];
-                if (paramLen === undefined) throw new RangeError('分享码参数队列长度缺失');
-                const paramsArr = [...inflated.subarray(ptr + wallBytes + 1, ptr + wallBytes + 1 + paramLen)];
+                const bitReader = new BitReader(inflated, ptr);
+                const types = [];
+                const totalWalls = (height + 1) * width + height * (width + 1);
+                for (let i = 0; i < totalWalls; i++) types.push(readWallType(bitReader));
+                bitReader.align();
+                ptr = bitReader.bytePos;
+                const paramLen = read();
+                const paramsArr = [...inflated.subarray(ptr, ptr + paramLen)];
                 if (paramsArr.length !== paramLen) throw new RangeError('分享码参数队列长度不足');
+                ptr += paramLen;
                 let paramIdx = 0;
                 const takeParam = () => {
                     if (paramIdx >= paramsArr.length) throw new RangeError('分享码参数队列不足');
                     return paramsArr[paramIdx++];
                 };
-                const bitReader = new BitReader(inflated, ptr);
+                let ti = 0;
                 const hWalls = [];
                 for (let y = 0; y <= height; y++) {
                     const row = [];
-                    for (let x = 0; x < width; x++) row.push(readWall(bitReader, takeParam));
+                    for (let x = 0; x < width; x++) row.push(readWallWithType(types[ti++], takeParam));
                     hWalls.push(row);
-                    bitReader.align();
                 }
                 const vWalls = [];
                 for (let y = 0; y < height; y++) {
                     const row = [];
-                    for (let x = 0; x <= width; x++) row.push(readWall(bitReader, takeParam));
+                    for (let x = 0; x <= width; x++) row.push(readWallWithType(types[ti++], takeParam));
                     vWalls.push(row);
-                    bitReader.align();
                 }
                 if (paramIdx !== paramsArr.length) throw new RangeError('分享码参数队列未耗尽');
-                ptr = ptr + wallBytes + 1 + paramLen;
                 return { hWalls, vWalls };
             };
             const { hWalls, vWalls } = readWallStream();
