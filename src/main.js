@@ -389,9 +389,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         processAction(action) {
-            if ((this.state !== GAME_STATES.PLAYING && this.state !== GAME_STATES.DEAD) || !this.controller.currentGameState) return;
+            if ((this.state !== GAME_STATES.PLAYING && this.state !== GAME_STATES.DEAD) || !this.controller.currentGameState) return null;
             // 数据流与胜负回调在控制器（onSync 触发渲染）；渲染顺序保持：推进 → 渲染 → 胜负分发
-            this.controller.processAction(action);
+            return this.controller.processAction(action);
         }
 
         calculateDrawOffset() {
@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         useStair() { if (this.controller.mapDefinition?.multiLayerMode) { this.processAction({ type: 'USE_STAIR' }); } }
-        movePlayer(dx, dy) { if (this.state === GAME_STATES.PLAYING) { this.processAction({ type: 'MOVE', payload: { dx, dy } }); } }
+        movePlayer(dx, dy) { if (this.state === GAME_STATES.PLAYING) { return this.processAction({ type: 'MOVE', payload: { dx, dy } }); } return null; }
         pressButton(letter) { this.processAction({ type: 'PRESS_BUTTON', payload: { letter } }); }
 
         updateUIDisplays() {

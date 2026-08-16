@@ -180,8 +180,17 @@ export function bindDpadControls(game) {
             const targetX = Math.floor(pos.x / view.cellSize); const targetY = Math.floor(pos.y / view.cellSize);
             if (targetX < 0 || targetX >= view.width || targetY < 0 || targetY >= view.height) return;
             const dx = targetX - view.player.x; const dy = targetY - view.player.y;
-            if (Math.abs(dx) + Math.abs(dy) === 1) { game.movePlayer(dx, dy); return; }
-            if (!view.seenCells[targetY][targetX] && !view.debugVision) return;
+            if (Math.abs(dx) + Math.abs(dy) === 1) {
+                // 相邻格：先等效方向键单步（支持穿门进黑暗格 / 触发按钮）
+                const result = game.movePlayer(dx, dy);
+                // 已产生效果（移动/按按钮等状态变化）→ 单步完成，结束
+                if (result !== null) return;
+                // 单步无效（撞墙等）且目标非黑暗 → 降级为寻路绕行
+                if (!view.seenCells[targetY][targetX] && !view.debugVision) return;
+            } else if (!view.seenCells[targetY][targetX] && !view.debugVision) {
+                // 远距：目标必须已探索
+                return;
+            }
             const path = findPlayerPath(game, { x: view.player.x, y: view.player.y }, { x: targetX, y: targetY });
             if (path && path.length > 1) {
                 let currentStep = 1;

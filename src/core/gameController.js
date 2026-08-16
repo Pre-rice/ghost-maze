@@ -84,7 +84,11 @@ export class GameController {
         return nextState;
     }
 
-    movePlayer(dx, dy) { this.processAction({ type: 'MOVE', payload: { dx, dy } }); }
+    /**
+     * 移动一步。返回 processAction 结果：有效果（移动/按按钮/开门等）返回新状态，
+     * 无效果（撞墙等）返回 null——供输入层判断「单步是否生效」。
+     */
+    movePlayer(dx, dy) { return this.processAction({ type: 'MOVE', payload: { dx, dy } }); }
     useStair() { this.processAction({ type: 'USE_STAIR' }); }
     pressButton(letter) { this.processAction({ type: 'PRESS_BUTTON', payload: { letter } }); }
 

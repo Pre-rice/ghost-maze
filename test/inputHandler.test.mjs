@@ -83,12 +83,46 @@ test('getMousePos：坐标换算正确（无 ReferenceError）', () => {
     assert(pos.x === 100 && pos.y === 100, `期望 {100,100} 实际 {${pos.x},${pos.y}}`);
 });
 
-test('handleCanvasClick：相邻格走 movePlayer', () => {
+test('handleCanvasClick：相邻格先等效方向键单步（有效果即结束）', () => {
     const g = makeGame();
     let moved = false;
-    g.movePlayer = () => { moved = true; };
+    g.movePlayer = () => { moved = true; return {}; }; // 返回非 null = 有状态变化（移动/按按钮）
     InputHandler.handleCanvasClick(g, { clientX: 50, clientY: 100 }); // (1,1)->(1,2)
     assert(moved, '相邻格点击应触发 movePlayer');
+});
+
+test('handleCanvasClick：相邻格单步无效且目标非黑暗 → 降级寻路', () => {
+    const g = makeGame();
+    const calls = [];
+    g.movePlayer = (dx, dy) => { calls.push([dx, dy]); return null; }; // 撞墙：单步无效果
+    const origSet = globalThis.setInterval, origClear = globalThis.clearInterval;
+    globalThis.__tcb = null;
+    globalThis.setInterval = (cb) => { globalThis.__tcb = cb; return 1; };
+    globalThis.clearInterval = () => { globalThis.__tcb = null; };
+    try {
+        InputHandler.handleCanvasClick(g, { clientX: 50, clientY: 100 }); // 相邻 {1,2}（seenCells 全 true 非黑暗）
+        // 第 1 次是相邻单步尝试；单步无效降级寻路，寻路第一步再次 movePlayer
+        assertEq(calls.length, 2, `单步尝试 + 寻路第一步，实际 ${calls.length} 次`);
+        assertEq(calls[0][0], 0); assertEq(calls[0][1], 1, '先按相邻方向单步');
+    } finally {
+        globalThis.setInterval = origSet; globalThis.clearInterval = origClear; globalThis.__tcb = null;
+    }
+});
+
+test('handleCanvasClick：相邻格单步无效且目标黑暗 → 不寻路', () => {
+    const g = makeGame();
+    g.seenCells = Array.from({ length: 10 }, () => Array(10).fill(false)); // 全黑暗
+    const calls = [];
+    g.movePlayer = (dx, dy) => { calls.push([dx, dy]); return null; };
+    const origSet = globalThis.setInterval, origClear = globalThis.clearInterval;
+    globalThis.setInterval = () => 0;
+    globalThis.clearInterval = () => {};
+    try {
+        InputHandler.handleCanvasClick(g, { clientX: 50, clientY: 100 }); // 相邻 {1,2} 黑暗
+        assertEq(calls.length, 1, '只尝试相邻单步，不降级寻路');
+    } finally {
+        globalThis.setInterval = origSet; globalThis.clearInterval = origClear;
+    }
 });
 
 test('handleCanvasClick：远距点击走寻路（不抛错）', () => {
