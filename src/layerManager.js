@@ -1,4 +1,4 @@
-import { WALL_TYPES } from './constants.js';
+import { WALL_TYPES } from './core/constants.js';
 
 /**
  * LayerManager 模块 - 管理多层地图

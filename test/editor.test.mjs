@@ -9,7 +9,7 @@ import {
     isCellOccupied, isValidStairPlacement,
     createStartRoomLayout, validateMapForPlay, getWallAtPos,
 } from '../src/editor/editor.js';
-import { WALL_TYPES as WT, EDITOR_TOOLS, START_ROOM_SIZE } from '../src/constants.js';
+import { WALL_TYPES as WT, EDITOR_TOOLS, START_ROOM_SIZE } from '../src/core/constants.js';
 
 suite('editor');
 

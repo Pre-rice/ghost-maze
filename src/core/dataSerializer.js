@@ -1,4 +1,4 @@
-import { WALL_TYPES } from '../constants.js';
+import { WALL_TYPES } from './constants.js';
 
 // ==================================================
 //  DataSerializer v2: 分享码序列化/反序列化

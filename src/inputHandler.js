@@ -1,4 +1,4 @@
-import { GAME_STATES } from './constants.js';
+import { GAME_STATES } from './core/constants.js';
 
 /**
  * InputHandler 模块 - 处理所有输入事件（键盘、鼠标、触摸）

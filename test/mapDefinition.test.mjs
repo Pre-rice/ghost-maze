@@ -2,8 +2,8 @@
  * MapDefinition 归一化测试：构造/深拷贝/空层/出生点推导/楼梯过滤
  */
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
-import { MapDefinition } from '../src/mapDefinition.js';
-import { WALL_TYPES as WT } from '../src/constants.js';
+import { MapDefinition } from '../src/core/mapDefinition.js';
+import { WALL_TYPES as WT } from '../src/core/constants.js';
 
 suite('mapDefinition');
 

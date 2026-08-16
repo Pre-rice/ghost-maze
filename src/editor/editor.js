@@ -1,4 +1,4 @@
-import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../constants.js';
+import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../core/constants.js';
 
 /**
  * Editor 模块 - 处理地图编辑器相关功能

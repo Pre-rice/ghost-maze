@@ -1,4 +1,4 @@
-import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS } from './constants.js';
+import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS } from './core/constants.js';
 
 /**
  * Renderer 模块 - 处理所有Canvas绘制相关的功能

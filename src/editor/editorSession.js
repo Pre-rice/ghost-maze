@@ -1,4 +1,4 @@
-import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../constants.js';
+import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../core/constants.js';
 import * as Editor from './editor.js';
 import { createNewLayer, cleanupStairsOnLayerRemove } from '../layerManager.js';
 

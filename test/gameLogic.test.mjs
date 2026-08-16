@@ -10,9 +10,9 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
-import { MapDefinition } from '../src/mapDefinition.js';
-import { GameLogic } from '../src/gameLogic.js';
-import { WALL_TYPES as WT } from '../src/constants.js';
+import { MapDefinition } from '../src/core/mapDefinition.js';
+import { GameLogic } from '../src/core/gameLogic.js';
+import { WALL_TYPES as WT } from '../src/core/constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

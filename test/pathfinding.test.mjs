@@ -2,8 +2,8 @@
  * pathfinding 测试：距离场 BFS / 玩家寻路（墙阻挡、钥匙门）/ 按钮热点
  */
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
-import { calculateDistances, findPlayerPath, getButtonHotspotAtPos } from '../src/pathfinding.js';
-import { WALL_TYPES as WT } from '../src/constants.js';
+import { calculateDistances, findPlayerPath, getButtonHotspotAtPos } from '../src/core/pathfinding.js';
+import { WALL_TYPES as WT } from '../src/core/constants.js';
 
 suite('pathfinding');
 

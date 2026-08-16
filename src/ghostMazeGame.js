@@ -1,16 +1,15 @@
-import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from './constants.js';
-import { MapDefinition } from './mapDefinition.js';
+import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from './core/constants.js';
 import { DataSerializer } from './core/dataSerializer.js';
-import { GameLogic } from './gameLogic.js';
+import { GameController } from './core/gameController.js';
 
 // 导入新的模块化组件
 import * as UI from './ui.js';
 import * as Renderer from './renderer.js';
-import * as MazeGenerator from './mazeGenerator.js';
+import * as MazeGenerator from './core/mazeGenerator.js';
 import * as InputHandler from './inputHandler.js';
 import * as Editor from './editor/editor.js';
 import * as LayerManager from './layerManager.js';
-import * as Pathfinding from './pathfinding.js';
+import * as Pathfinding from './core/pathfinding.js';
 import * as ThemeManager from './themeManager.js';
 
 // 监听DOM内容加载完成事件，确保在操作DOM之前所有元素都已准备好
@@ -148,11 +147,78 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentScale: 1
             };
 
+            // 游戏控制器（纯逻辑数据流；UI 副作用经注入回调回到本类）
+            this.controller = new GameController({
+                onSync: () => {
+                    this._syncFromController();
+                    this._renderStaticLayer();
+                    this.draw();
+                    this.updateUIDisplays();
+                    this.updateLayerPanel();
+                    this.updateHistoryButtons();
+                },
+                onWin: (stats) => {
+                    this.stopAutoMove(); this.stopAnimationLoop(); this.state = GAME_STATES.WON;
+                    this.draw();
+                    document.getElementById('win-stats').textContent = stats.text;
+                    document.getElementById('win-overlay').style.display = 'flex';
+                },
+                onDeath: (stats) => {
+                    this.stopAutoMove(); this.stopAnimationLoop(); this.state = GAME_STATES.DEAD;
+                    this.draw();
+                    if (stats.overlay === 'game-over') {
+                        document.getElementById('game-over-overlay').style.display = 'flex';
+                    } else {
+                        document.getElementById('death-message').textContent = stats.message;
+                        document.getElementById('revive-btn').textContent = '复活';
+                        document.getElementById('death-overlay').style.display = 'flex';
+                    }
+                },
+                onHistoryChange: () => this.updateHistoryButtons()
+            });
+
             // 绑定所有UI事件并显示初始欢迎信息
             this.bindUI();
             this.showInitialMessage();
             // 页面加载时尝试从 URL 查询参数或 hash 读取分享码
             this.loadShareCodeFromURL();
+        }
+
+        /** 把控制器的游戏数据引用同步到本类字段（渲染/输入读取的镜像，Phase 4 投影化后删除） */
+        _syncFromController() {
+            const c = this.controller;
+            this.mapData = c.mapData;
+            this.mapDefinition = c.mapDefinition;
+            this.currentGameState = c.currentGameState;
+            this.history = c.history;
+            this.checkpoints = c.checkpoints;
+            this.currentStep = c.currentStep;
+            this.gameMode = c.gameMode;
+            this.initialHealth = c.initialHealth;
+            this.initialStamina = c.initialStamina;
+            this.loopCount = c.loopCount;
+            this.player = c.player;
+            this.playerLayer = c.playerLayer;
+            this.viewLayer = c.viewLayer;
+            this.currentLayer = c.currentLayer;
+            this.width = c.width;
+            this.height = c.height;
+            this.startPos = c.startPos;
+            this.editor.mode = c.editorMode;
+            this.activeCells = c.activeCells;
+            this.customStartPos = c.customStartPos;
+            this.multiLayerMode = c.multiLayerMode;
+            this.layerCount = c.layerCount;
+            this.stairs = c.stairs;
+            this.layers = c.layers;
+            this.hWalls = c.hWalls;
+            this.vWalls = c.vWalls;
+            this.ghosts = c.ghosts;
+            this.items = c.items;
+            this.buttons = c.buttons;
+            this.endPos = c.endPos;
+            this.seenCells = c.seenCells;
+            this.seenCellsPerLayer = c.seenCellsPerLayer;
         }
 
         updateColors() {
@@ -306,6 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setGameMode(newMode, fromEditor = false) {
             if (this.gameMode === newMode && !fromEditor) return;
             this.gameMode = newMode;
+            this.controller.gameMode = newMode;
             const isExploration = newMode === 'exploration';
             document.getElementById('mode-exploration-btn').classList.toggle('active', isExploration);
             document.getElementById('mode-death-loop-btn').classList.toggle('active', !isExploration);
@@ -355,39 +422,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         startGame(mapData) {
             this.stopAnimationLoop();
-            this.mapData = JSON.parse(JSON.stringify(mapData));
             this.state = GAME_STATES.PLAYING;
-            this.mapDefinition = new MapDefinition({
-                ...mapData,
-                gameMode: this.gameMode,
-                initialHealth: this.initialHealth,
-                initialStamina: this.initialStamina
-            });
-            this.currentGameState = GameLogic.createInitialState(this.mapDefinition);
-            this.history = [this.currentGameState];
-            this.checkpoints = [];
-            this.currentStep = 0;
             this.width = mapData.width;
             this.height = mapData.height;
             this.padding = 15;
             this.cellSize = (canvas.width - 2 * this.padding) / this.width;
-            this.startPos = { x: 1, y: this.height - 2 };
-            this.editor.mode = mapData.editorMode || 'regular';
-            this.activeCells = mapData.activeCells || Array(this.height).fill(null).map(() => Array(this.width).fill(true));
-            this.customStartPos = mapData.customStartPos || mapData.mapStartPos || null;
-            this.multiLayerMode = mapData.multiLayerMode || false;
-            this.layerCount = mapData.layerCount || 1;
-            this.stairs = JSON.parse(JSON.stringify(mapData.stairs || []));
-            this.layers = JSON.parse(JSON.stringify(mapData.layers || []));
-            this.playerLayer = this.currentGameState.player.layer;
-            this.currentLayer = this.playerLayer;
-            this.viewLayer = this.playerLayer;
-            this._syncFromGameState();
+            // 数据流在控制器（onSync 回调触发渲染，cellSize 需先就绪）
+            this.controller.startGame(mapData);
             this.calculateDrawOffset();
-            this._renderStaticLayer();
-            this.updateUIDisplays();
             this.hideAllOverlays();
-            this.updateLayerPanel();
             this.startAnimationLoop();
             setTimeout(() => {
                 const result = this.generateShareCode();
@@ -397,50 +440,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 0);
         }
 
-        _syncFromGameState() {
-            if (!this.currentGameState || !this.mapDefinition) return;
-            const state = this.currentGameState;
-            const mapDef = this.mapDefinition;
-            const viewLayer = this.viewLayer;
-            this.player = { ...state.player };
-            this.playerLayer = state.player.layer;
-            this.loopCount = state.loopCount;
-            const layerDef = mapDef.layers[viewLayer];
-            const layerState = state.layerStates[viewLayer];
-            this.activeCells = layerDef.activeCells;
-            this.hWalls = layerState.wallStates.h;
-            this.vWalls = layerState.wallStates.v;
-            this.ghosts = layerState.ghosts;
-            this.items = layerState.items;
-            this.buttons = layerDef.initialEntities.buttons;
-            this.endPos = layerDef.initialEntities.endPos;
-            this.customStartPos = layerDef.initialEntities.customStartPos;
-            this.seenCells = state.seenCells[viewLayer];
-            this.seenCellsPerLayer = state.seenCells;
-        }
-
         processAction(action) {
-            if ((this.state !== GAME_STATES.PLAYING && this.state !== GAME_STATES.DEAD) || !this.currentGameState || !this.mapDefinition) return;
-            const prevState = this.currentGameState;
-            const nextState = GameLogic.calculateNextState(prevState, action, this.mapDefinition);
-            if (nextState === prevState) return;
-            if (this.currentStep < this.history.length - 1) {
-                this.history = this.history.slice(0, this.currentStep + 1);
-                this.checkpoints = this.checkpoints.filter(cp => cp <= this.currentStep);
-            }
-            this.history.push(nextState);
-            this.currentStep++;
-            this.currentGameState = nextState;
-            this.viewLayer = nextState.player.layer;
-            this.currentLayer = this.viewLayer;
-            this._syncFromGameState();
-            this._renderStaticLayer();
-            this.draw();
-            this.updateUIDisplays();
-            this.updateLayerPanel();
-            this.updateHistoryButtons();
-            if (nextState.isWon) { this.handleWin(); }
-            else if (nextState.isDead) { this.handlePlayerDeath(nextState.deathReason); }
+            if ((this.state !== GAME_STATES.PLAYING && this.state !== GAME_STATES.DEAD) || !this.controller.currentGameState) return;
+            // 数据流与胜负回调在控制器（onSync 触发渲染）；渲染顺序保持：推进 → 渲染 → 胜负分发
+            this.controller.processAction(action);
         }
 
         calculateDrawOffset() {
@@ -475,8 +478,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             // 随机地图总是使用默认的生命和体力值
-            this.initialHealth = 5;
-            this.initialStamina = 100;
+            this.controller.initialHealth = 5;
+            this.controller.initialStamina = 100;
             // 使用 MazeGenerator 模块生成完整地图
             const mapData = MazeGenerator.generateFullMaze(size, size, this.ghostCount);
             this.startGame(mapData);
@@ -606,42 +609,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        handlePlayerDeath(reason = 'ghost') {
-            this.stopAutoMove(); this.stopAnimationLoop(); this.state = GAME_STATES.DEAD;
-            this.draw();
-            if (this.gameMode === 'exploration') {
-                if (this.player.hp > 0) {
-                    document.getElementById('death-message').textContent = `你死了 (剩余血量 ${this.player.hp})`;
-                    document.getElementById('revive-btn').textContent = '复活';
-                    document.getElementById('death-overlay').style.display = 'flex';
-                } else {
-                    document.getElementById('game-over-overlay').style.display = 'flex';
-                }
-            } else {
-                const message = reason === 'stamina_depleted' ? '体力耗尽，你死了' : '你死了';
-                document.getElementById('death-message').textContent = message;
-                document.getElementById('revive-btn').textContent = '复活';
-                document.getElementById('death-overlay').style.display = 'flex';
-            }
-        }
-
         revivePlayer() {
             this.processAction({ type: 'REVIVE' });
             this.state = GAME_STATES.PLAYING;
             this.hideAllOverlays();
             this.startAnimationLoop();
         }
-
-        handleWin() {
-            this.stopAutoMove(); this.stopAnimationLoop(); this.state = GAME_STATES.WON;
-            const winStats = document.getElementById('win-stats');
-            if (this.gameMode === 'exploration') {
-                winStats.textContent = `你以 ${this.player.hp} 点剩余生命和 ${this.player.steps} 步的成绩通关！`;
-            } else {
-                winStats.textContent = `你以 ${this.loopCount} 次循环和 ${this.player.stamina} 点剩余体力的成绩通关！`;
-            }
-            document.getElementById('win-overlay').style.display = 'flex';
-        }
+        // 胜负展示（handleWin/handlePlayerDeath）已迁入构造函数的注入回调（onWin/onDeath）
 
         _renderStaticLayer() {
             this.staticLayerCanvas.width = canvas.width; this.staticLayerCanvas.height = canvas.height;
@@ -1829,17 +1803,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     layerCount: this.layerCount, layers: this.layers, stairs: this.stairs
                 };
             } else {
-                if (!this.mapData) return { success: false, error: '没有地图数据' };
-                sourceData = {
-                    ...this.mapData, gameMode: this.gameMode, initialHealth: this.initialHealth, initialStamina: this.initialStamina,
-                    playerStartLayer: typeof this.mapData.playerStartLayer === 'number' ? this.mapData.playerStartLayer : (this.playerLayer || 0)
-                };
+                // 游戏态分享码装配在控制器
+                const shareData = this.controller.buildShareSourceData();
+                if (!shareData) return { success: false, error: '没有地图数据' };
+                sourceData = shareData;
             }
             return DataSerializer.generateShareCode(sourceData);
         }
 
         loadFromShareCode(code, isEditor = false) {
-            const result = DataSerializer.loadFromShareCode(code);
+            const result = this.controller.loadFromShareCode(code);
             if (result.success) {
                 this._applyLoadedData(result.data.mapData, result.data.gameMode, result.data.initialHealth, result.data.initialStamina, isEditor);
             } else {
@@ -1882,8 +1855,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.updateEditorUIForMode(); this.updateLayerModeUI(); this.updateLayerPanel();
                 this._renderStaticLayer(); this.drawEditor();
             } else {
-                this.initialHealth = health; this.initialStamina = stamina;
-                this.setGameMode(gameMode); this.startGame(mapData);
+                // 游戏态加载：应用参数 + 模式切换 + 开局（控制器内完成数据流）
+                this.controller.applyLoadedMap(mapData, gameMode, health, stamina, (gm) => this.setGameMode(gm));
             }
             this.showToast('地图加载成功！', 2000, 'success');
         }
@@ -1897,33 +1870,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         handleUndo() {
-            if (this.currentStep <= 0) return;
-            if (this.history[this.currentStep] && this.history[this.currentStep].isRevivalPoint && this.currentStep > 0) {
-                this.showToast('无法撤回到复活点之前', 2000, 'error'); return;
-            }
-            this.currentStep--; this.currentGameState = this.history[this.currentStep];
-            this.viewLayer = this.currentGameState.player.layer; this.currentLayer = this.viewLayer;
-            this._syncFromGameState(); this._renderStaticLayer(); this.draw();
-            this.updateUIDisplays(); this.updateLayerPanel(); this.updateHistoryButtons();
+            const r = this.controller.undo();
+            if (!r.ok && r.error) { this.showToast(r.error, 2000, 'error'); }
         }
 
         handleSave() {
-            const lastCheckpoint = this.checkpoints.length > 0 ? this.checkpoints[this.checkpoints.length - 1] : -1;
-            if (this.currentStep <= lastCheckpoint) { this.showToast('请先移动后再存档', 2000, 'error'); return; }
-            this.checkpoints.push(this.currentStep);
-            this.showToast(`已在第 ${this.currentStep} 步创建存档`, 2000, 'success');
-            this.updateHistoryButtons();
+            const r = this.controller.save();
+            if (!r.ok) { this.showToast(r.error, 2000, 'error'); return; }
+            this.showToast(`已在第 ${r.step} 步创建存档`, 2000, 'success');
         }
 
         handleRewind() {
-            const availableCheckpoints = this.checkpoints.filter(cp => cp < this.currentStep);
-            if (availableCheckpoints.length === 0) { this.showToast('没有更早的存档点可供回溯', 2000, 'error'); return; }
-            const targetStep = Math.max(...availableCheckpoints);
-            this.currentStep = targetStep; this.currentGameState = this.history[this.currentStep];
-            this.viewLayer = this.currentGameState.player.layer; this.currentLayer = this.viewLayer;
-            this._syncFromGameState(); this._renderStaticLayer(); this.draw();
-            this.updateUIDisplays(); this.updateLayerPanel(); this.updateHistoryButtons();
-            this.showToast(`已回溯至存档点 (第 ${targetStep} 步)`, 2000, 'success');
+            const r = this.controller.rewind();
+            if (!r.ok) { this.showToast(r.error, 2000, 'error'); return; }
+            this.showToast(`已回溯至存档点 (第 ${r.step} 步)`, 2000, 'success');
         }
 
         copyShareCode(isEditor = false) {

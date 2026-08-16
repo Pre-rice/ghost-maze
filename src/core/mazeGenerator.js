@@ -1,5 +1,5 @@
 import { WALL_TYPES, getStartRoomY } from './constants.js';
-import { isPosInStartRoom, createStartRoomLayout } from './editor/editor.js';
+import { isPosInStartRoom, createStartRoomLayout } from '../editor/editor.js';
 import { calculateDistances } from './pathfinding.js';
 
 /**

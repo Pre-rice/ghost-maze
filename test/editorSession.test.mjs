@@ -5,7 +5,7 @@
  */
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
 import { EditorDocument } from '../src/editor/editorSession.js';
-import { WALL_TYPES as WT, START_ROOM_SIZE, getStartRoomY } from '../src/constants.js';
+import { WALL_TYPES as WT, START_ROOM_SIZE, getStartRoomY } from '../src/core/constants.js';
 
 suite('editorSession');
 
