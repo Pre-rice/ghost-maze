@@ -82,25 +82,33 @@ test('load: 单层深拷贝装载（改编辑器不影响源 mapData）', () => 
     assertEq(source.initialGhosts.length, 2, '源 ghosts 不受影响');
 });
 
-test('load: 多层装载 currentLayer 取 playerStartLayer / customStartPos 层扫描', () => {
+test('load: 多层装载 currentLayer 取 customStartPos 层扫描（无 v1 playerStartLayer 回退）', () => {
     const layers = [
         { hWalls: [], vWalls: [], activeCells: [], ghosts: [{ x: 0, y: 0 }], items: [], buttons: [],
           endPos: null, customStartPos: null },
         { hWalls: [], vWalls: [], activeCells: [], ghosts: [], items: [], buttons: [],
           endPos: { x: 1, y: 1 }, customStartPos: { x: 2, y: 2 } },
     ];
-    // playerStartLayer = 1 → currentLayer = 1
+    // 扫描到 layer 1 有 customStartPos → currentLayer = 1（playerStartLayer 残留字段已忽略）
     const doc1 = EditorDocument.fromMapData(makeMapData({
         multiLayerMode: true, layerCount: 2, layers, playerStartLayer: 1
     }));
-    assertEq(doc1.currentLayer, 1, 'playerStartLayer 生效');
+    assertEq(doc1.currentLayer, 1, 'customStartPos 扫描层索引');
     assertEq(doc1.playerLayer, 1);
     assertDeepEq(doc1.customStartPos, { x: 2, y: 2 }, 'customStartPos 从层数据装载');
-    // 无 playerStartLayer：扫描层内 customStartPos
+    // 无 playerStartLayer：同样扫描层内 customStartPos（行为一致）
     const doc2 = EditorDocument.fromMapData(makeMapData({
         multiLayerMode: true, layerCount: 2, layers, playerStartLayer: undefined
     }));
     assertEq(doc2.currentLayer, 1, 'customStartPos 扫描层索引');
+    // 各层均无 customStartPos → 回退第 0 层
+    const doc3 = EditorDocument.fromMapData(makeMapData({
+        multiLayerMode: true, layerCount: 2, layers: [
+            { hWalls: [], vWalls: [], activeCells: [], ghosts: [], items: [], buttons: [], endPos: null, customStartPos: null },
+            { hWalls: [], vWalls: [], activeCells: [], ghosts: [], items: [], buttons: [], endPos: null, customStartPos: null },
+        ]
+    }));
+    assertEq(doc3.currentLayer, 0, '无 customStartPos 时回退到第 0 层');
 });
 
 test('load: activeCells 缺失时默认全 true', () => {
@@ -124,7 +132,7 @@ test('toMapData: initialGhosts 补 id + layers/stairs 深拷贝', () => {
     assertEq(doc.layers.length, 0, 'layers 深拷贝');
 });
 
-test('toShareMapData: 多层用 layers[0] 作为 layer0Data + playerStartLayer 导出', () => {
+test('toShareMapData: 多层用 layers[0] 作为 layer0Data（不导出 startPos/playerStartLayer）', () => {
     const layers = [
         { hWalls: [[W(WT.EMPTY)]], vWalls: [[W(WT.EMPTY)]], activeCells: [[true]], ghosts: [], items: [],
           buttons: [], endPos: { x: 0, y: 0 }, customStartPos: null },
@@ -137,7 +145,8 @@ test('toShareMapData: 多层用 layers[0] 作为 layer0Data + playerStartLayer �
     assertEq(out.gameMode, 'death-loop');
     assertEq(out.initialHealth, 5);
     assertEq(out.initialStamina, 100);
-    assertEq(out.playerStartLayer, 0);
+    assertEq(out.playerStartLayer, undefined, 'v1 残留字段不再导出');
+    assertEq(out.startPos, undefined, 'startPos 不再导出（出生点由 customStartPos/顶层 startPos 推导）');
     assertDeepEq(out.endPos, { x: 0, y: 0 }, 'layer0Data 取 layers[0]');
 });
 

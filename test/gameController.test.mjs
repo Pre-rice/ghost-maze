@@ -48,7 +48,7 @@ const makeG1Controller = (ui = {}) => {
 
 // ---------- 开局 ----------
 
-test('startGame: G1 初始化（深拷贝/历史/起点/镜像同步/onSync）', () => {
+test('startGame: G1 初始化（深拷贝/历史/起点/onSync）', () => {
     let syncCount = 0;
     const c = makeG1Controller({ onSync: () => syncCount++ });
     assertEq(c.mapData.width, 10);
@@ -66,14 +66,17 @@ test('startGame: G1 初始化（深拷贝/历史/起点/镜像同步/onSync）',
     assertEq(c.currentStep, 0);
     assertEq(c.currentGameState.isRevivalPoint, true, '初始态是复活点');
     // 起点（G1 regular 默认：{1, height-2}={1,8}）
-    assertDeepEq({ x: c.player.x, y: c.player.y }, { x: 1, y: 8 }, '默认起点 {1,8}');
-    assertEq(c.playerLayer, 0);
-    assertEq(c.viewLayer, 0);
-    assertEq(c.currentLayer, 0);
-    assertEq(c.loopCount, 0);
-    // 镜像同步（hWalls 与权威 layerStates 引用一致）
-    assertEq(c.hWalls, c.currentGameState.layerStates[0].wallStates.h, 'hWalls 镜像引用');
-    assertEq(c.ghosts, c.currentGameState.layerStates[0].ghosts, 'ghosts 镜像引用');
+    assertDeepEq({ x: c.currentGameState.player.x, y: c.currentGameState.player.y }, { x: 1, y: 8 }, '默认起点 {1,8}');
+    assertEq(c.currentGameState.player.layer, 0, '玩家在 0 层');
+    assertEq(c.viewLayer, 0, '视图层跟随玩家层');
+    // 镜像已删（Phase 4：权威源唯一）
+    assertEq(c.currentLayer, undefined, 'currentLayer 镜像已删');
+    assertEq(c.player, undefined, 'player 镜像已删');
+    assertEq(c.hWalls, undefined, 'hWalls 镜像已删');
+    assertEq(c.ghosts, undefined, 'ghosts 镜像已删');
+    assertEq(c.loopCount, undefined, 'loopCount 镜像已删');
+    assertEq(c.layers, undefined, 'layers 镜像已删');
+    assertEq(c.seenCells, undefined, 'seenCells 镜像已删');
     assertEq(syncCount, 1, 'startGame 触发一次 onSync');
 });
 
@@ -100,7 +103,7 @@ test('processAction: G1 动作脚本逐步推进，与纯 GameLogic 双跑一致
         assertDeepEq({ x: c.currentGameState.player.x, y: c.currentGameState.player.y },
             { x: ref.player.x, y: ref.player.y }, '玩家位置与权威一致');
         assertEq(c.currentGameState.loopCount, ref.loopCount, 'loopCount 一致');
-        assertEq(c.player.x, ref.player.x, 'player 镜像一致');
+        assertEq(c.currentGameState.player.x, ref.player.x, '玩家位置与权威一致');
         assertEq(c.currentGameState.isDead, ref.isDead);
         assertEq(c.currentGameState.isWon, ref.isWon);
     }
@@ -147,8 +150,8 @@ test('死亡: onDeath 回调（death-loop 模式）', () => {
     assertEq(deathStats.overlay, 'death');
     assertEq(deathStats.message, '你死了');
     assertEq(c.currentGameState.deathReason, 'ghost');
-    assertEq(c.loopCount, 0, '死亡时未复活 loopCount 不变');
-    assertEq(c.player.hp, 5, 'death-loop 死亡不扣血（血量无意义）');
+    assertEq(c.currentGameState.loopCount, 0, '死亡时未复活 loopCount 不变');
+    assertEq(c.currentGameState.player.hp, 5, 'death-loop 死亡不扣血（血量无意义）');
 });
 
 test('死亡: exploration 模式血量 >0 与 =0 的分支', () => {
@@ -162,7 +165,7 @@ test('死亡: exploration 模式血量 >0 与 =0 的分支', () => {
     assertEq(stats[0].overlay, 'death', 'hp>0 时显示死亡浮窗');
     assertEq(stats[0].message, '你死了 (剩余血量 1)');
     c.revive(); // exploration 复活保留当前血量（hp=1，不回满）
-    assertEq(c.player.hp, 1, 'exploration 复活保留血量');
+    assertEq(c.currentGameState.player.hp, 1, 'exploration 复活保留血量');
     step(c, right); // 第二次死亡 → hp→0 → game-over
     assertEq(stats.length, 2);
     assertEq(stats[1].overlay, 'game-over', 'hp=0 显示游戏结束');
@@ -177,8 +180,8 @@ test('REVIVE: 复活点追加历史 + loopCount 递增 + 状态重置', () => {
     assertEq(c.currentGameState.isRevivalPoint, true, '复活后是复活点');
     assertEq(c.currentGameState.isDead, false);
     assertEq(c.currentGameState.loopCount, 1, 'loopCount 递增');
-    assertDeepEq({ x: c.player.x, y: c.player.y }, { x: 1, y: 8 }, '回到起点');
-    assertEq(c.player.stamina, 100, '体力重置');
+    assertDeepEq({ x: c.currentGameState.player.x, y: c.currentGameState.player.y }, { x: 1, y: 8 }, '回到起点');
+    assertEq(c.currentGameState.player.stamina, 100, '体力重置');
 });
 
 // ---------- 历史 / 存档 ----------
@@ -261,7 +264,7 @@ test('buildShareSourceData: 游戏态分享码装配', () => {
     assertEq(src.gameMode, 'death-loop');
     assertEq(src.initialHealth, 5);
     assertEq(src.initialStamina, 100);
-    assertEq(src.playerStartLayer, 0);
+    assertEq(src.playerStartLayer, undefined, 'v1 残留字段不再装配');
     assertEq(src.width, 10);
     assertEq(src.editorMode, 'regular');
 });

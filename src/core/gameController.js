@@ -15,9 +15,8 @@ import { DataSerializer } from './dataSerializer.js';
  *   onDeath(stats)      死亡（stats = {overlay: 'death'|'game-over', message}）
  *   onHistoryChange()   历史/存档按钮状态变化
  *
- * 注：视图数据字段（hWalls/vWalls/ghosts/…）是渲染/输入读取的镜像，
- *     由 _syncFromGameState 与权威源（GameState/MapDefinition）同步；
- *     Phase 4 改为 computeGameView 投影后删除。
+ * 注：渲染/输入一律经 viewSlice 只读投影（computeGameView）读权威源，
+ *     本类不再持有 hWalls/ghosts 等视图数据镜像（Phase 4 已删）。
  */
 export class GameController {
     constructor(ui = {}) {
@@ -25,7 +24,6 @@ export class GameController {
         this.gameMode = 'exploration';
         this.initialHealth = 5;
         this.initialStamina = 100;
-        this.loopCount = 0;
         this.mapData = null;
         this.mapDefinition = null;
         this.currentGameState = null;
@@ -33,27 +31,8 @@ export class GameController {
         this.checkpoints = [];
         this.currentStep = -1;
         this.editorMode = 'regular';
-
-        // 视图数据镜像（Phase 4 投影化后删除）
-        this.player = { x: 1, y: 1, hp: 5, stamina: 100, trail: [], keys: 0, steps: 0 };
-        this.playerLayer = 0;
+        // 视图状态（非镜像）：当前渲染/交互的图层；processAction/undo/rewind 会重置为玩家所在层
         this.viewLayer = 0;
-        this.currentLayer = 0;
-        this.width = 10;
-        this.height = 10;
-        this.startPos = { x: 1, y: 8 };
-        this.activeCells = [];
-        this.hWalls = [];
-        this.vWalls = [];
-        this.ghosts = [];
-        this.items = [];
-        this.buttons = [];
-        this.endPos = null;
-        this.customStartPos = null;
-        this.stairs = [];
-        this.layers = [];
-        this.seenCells = [];
-        this.seenCellsPerLayer = [];
     }
 
     /**
@@ -72,45 +51,10 @@ export class GameController {
         this.history = [this.currentGameState];
         this.checkpoints = [];
         this.currentStep = 0;
-        this.width = mapData.width;
-        this.height = mapData.height;
-        this.startPos = { x: 1, y: this.height - 2 };
         this.editorMode = mapData.editorMode || 'regular';
-        this.activeCells = mapData.activeCells || Array(this.height).fill(null).map(() => Array(this.width).fill(true));
-        // v1 残留：mapStartPos 回退（Phase 4 统一起点解析时移除）
-        this.customStartPos = mapData.customStartPos || mapData.mapStartPos || null;
-        this.multiLayerMode = mapData.multiLayerMode || false;
-        this.layerCount = mapData.layerCount || 1;
-        this.stairs = JSON.parse(JSON.stringify(mapData.stairs || []));
-        this.layers = JSON.parse(JSON.stringify(mapData.layers || []));
-        this.playerLayer = this.currentGameState.player.layer;
-        this.currentLayer = this.playerLayer;
-        this.viewLayer = this.playerLayer;
-        this._syncFromGameState();
+        // 视图层初始为玩家所在层（出生点统一由 mapDef.playerStart 推导）
+        this.viewLayer = this.currentGameState.player.layer;
         this.ui.onSync?.();
-    }
-
-    /** 从权威源（GameState/MapDefinition）同步视图数据镜像 */
-    _syncFromGameState() {
-        if (!this.currentGameState || !this.mapDefinition) return;
-        const state = this.currentGameState;
-        const mapDef = this.mapDefinition;
-        const viewLayer = this.viewLayer;
-        this.player = { ...state.player };
-        this.playerLayer = state.player.layer;
-        this.loopCount = state.loopCount;
-        const layerDef = mapDef.layers[viewLayer];
-        const layerState = state.layerStates[viewLayer];
-        this.activeCells = layerDef.activeCells;
-        this.hWalls = layerState.wallStates.h;
-        this.vWalls = layerState.wallStates.v;
-        this.ghosts = layerState.ghosts;
-        this.items = layerState.items;
-        this.buttons = layerDef.initialEntities.buttons;
-        this.endPos = layerDef.initialEntities.endPos;
-        this.customStartPos = layerDef.initialEntities.customStartPos;
-        this.seenCells = state.seenCells[viewLayer];
-        this.seenCellsPerLayer = state.seenCells;
     }
 
     /**
@@ -131,8 +75,6 @@ export class GameController {
         this.currentStep++;
         this.currentGameState = nextState;
         this.viewLayer = nextState.player.layer;
-        this.currentLayer = this.viewLayer;
-        this._syncFromGameState();
         this.ui.onSync?.();
         if (nextState.isWon) {
             this.ui.onWin?.(this._winStats());
@@ -160,8 +102,6 @@ export class GameController {
         this.currentStep--;
         this.currentGameState = this.history[this.currentStep];
         this.viewLayer = this.currentGameState.player.layer;
-        this.currentLayer = this.viewLayer;
-        this._syncFromGameState();
         this.ui.onSync?.();
         this.ui.onHistoryChange?.();
         return { ok: true };
@@ -184,8 +124,6 @@ export class GameController {
         this.currentStep = targetStep;
         this.currentGameState = this.history[this.currentStep];
         this.viewLayer = this.currentGameState.player.layer;
-        this.currentLayer = this.viewLayer;
-        this._syncFromGameState();
         this.ui.onSync?.();
         this.ui.onHistoryChange?.();
         return { ok: true, step: targetStep };
@@ -198,8 +136,7 @@ export class GameController {
             ...this.mapData,
             gameMode: this.gameMode,
             initialHealth: this.initialHealth,
-            initialStamina: this.initialStamina,
-            playerStartLayer: typeof this.mapData.playerStartLayer === 'number' ? this.mapData.playerStartLayer : (this.playerLayer || 0)
+            initialStamina: this.initialStamina
         };
     }
 
@@ -221,16 +158,18 @@ export class GameController {
     // ---------- 胜负数据（对应原 handleWin/handlePlayerDeath 的文本部分） ----------
 
     _winStats() {
+        const p = this.currentGameState.player;
         if (this.gameMode === 'exploration') {
-            return { text: `你以 ${this.player.hp} 点剩余生命和 ${this.player.steps} 步的成绩通关！` };
+            return { text: `你以 ${p.hp} 点剩余生命和 ${p.steps} 步的成绩通关！` };
         }
-        return { text: `你以 ${this.loopCount} 次循环和 ${this.player.stamina} 点剩余体力的成绩通关！` };
+        return { text: `你以 ${this.currentGameState.loopCount} 次循环和 ${p.stamina} 点剩余体力的成绩通关！` };
     }
 
     _deathStats(reason = 'ghost') {
+        const p = this.currentGameState.player;
         if (this.gameMode === 'exploration') {
-            if (this.player.hp > 0) {
-                return { overlay: 'death', message: `你死了 (剩余血量 ${this.player.hp})` };
+            if (p.hp > 0) {
+                return { overlay: 'death', message: `你死了 (剩余血量 ${p.hp})` };
             }
             return { overlay: 'game-over', message: '' };
         }

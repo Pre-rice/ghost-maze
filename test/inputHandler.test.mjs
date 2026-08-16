@@ -45,6 +45,12 @@ const makeGame = () => {
         ghosts: [], items: [], buttons: [], stairs: [], layers: [],
         customStartPos: null, endPos: null,
         layerCount: 1, currentLayer: 0, multiLayerMode: false,
+        // Phase 4：游戏分支读 controller 权威源（多层判断/视图层）+ getGameView() 投影
+        controller: {
+            mapDefinition: { multiLayerMode: false },
+            viewLayer: 0,
+            currentGameState: { player: { layer: 0 } },
+        },
         editor: {
             active: false, mode: 'regular', tool: 'wall',
             isDragging: false, didDrag: false, dragAxis: null, lastDragPos: null,
@@ -56,6 +62,14 @@ const makeGame = () => {
         _renderStaticLayer() {}, isWallEditable() { return true; },
         isCellOccupiedInEditor() { return false; }, isPosInStartRoom() { return false; },
         showToast() {},
+        getGameView() {
+            return {
+                width: this.width, height: this.height, cellSize: this.cellSize,
+                hWalls: this.hWalls, vWalls: this.vWalls,
+                seenCells: this.seenCells, debugVision: this.debugVision,
+                player: this.player,
+            };
+        },
     };
 };
 

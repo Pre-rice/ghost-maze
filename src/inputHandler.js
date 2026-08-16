@@ -21,8 +21,8 @@ export function bindDpadControls(game) {
     const handleDpadPress = (dx, dy) => {
         if (game.state !== GAME_STATES.PLAYING) return;
 
-        if (game.multiLayerMode && game.currentLayer !== game.playerLayer) {
-            game.switchToLayer(game.playerLayer);
+        if (game.controller.mapDefinition?.multiLayerMode && game.controller.viewLayer !== game.controller.currentGameState?.player?.layer) {
+            game.switchToLayer(game.controller.currentGameState.player.layer);
         }
 
         clearInterval(game.autoMoveInterval);
@@ -34,8 +34,8 @@ export function bindDpadControls(game) {
     const handleCenterPress = () => {
         if (game.state !== GAME_STATES.PLAYING) return;
 
-        if (game.multiLayerMode && game.currentLayer !== game.playerLayer) {
-            game.switchToLayer(game.playerLayer);
+        if (game.controller.mapDefinition?.multiLayerMode && game.controller.viewLayer !== game.controller.currentGameState?.player?.layer) {
+            game.switchToLayer(game.controller.currentGameState.player.layer);
         }
 
         game.useStair();
@@ -85,7 +85,7 @@ export function bindDpadControls(game) {
             }
             if (game.state !== GAME_STATES.PLAYING) return;
             game.stopAutoMove();
-            if (game.multiLayerMode && game.currentLayer !== game.playerLayer) { game.switchToLayer(game.playerLayer); }
+            if (game.controller.mapDefinition?.multiLayerMode && game.controller.viewLayer !== game.controller.currentGameState?.player?.layer) { game.switchToLayer(game.controller.currentGameState.player.layer); }
             let dx = 0, dy = 0;
             switch (e.key) {
                 case 'ArrowUp': case 'w': dy = -1; break;
@@ -175,19 +175,20 @@ export function bindDpadControls(game) {
         export function handleCanvasClick(game, e) {
             if (game.state !== GAME_STATES.PLAYING || game.editor.active) return;
             game.stopAutoMove();
+            const view = game.getGameView();
             const pos = getMousePos(game, e);
-            const targetX = Math.floor(pos.x / game.cellSize); const targetY = Math.floor(pos.y / game.cellSize);
-            if (targetX < 0 || targetX >= game.width || targetY < 0 || targetY >= game.height) return;
-            const dx = targetX - game.player.x; const dy = targetY - game.player.y;
+            const targetX = Math.floor(pos.x / view.cellSize); const targetY = Math.floor(pos.y / view.cellSize);
+            if (targetX < 0 || targetX >= view.width || targetY < 0 || targetY >= view.height) return;
+            const dx = targetX - view.player.x; const dy = targetY - view.player.y;
             if (Math.abs(dx) + Math.abs(dy) === 1) { game.movePlayer(dx, dy); return; }
-            if (!game.seenCells[targetY][targetX] && !game.debugVision) return;
-            const path = findPlayerPath(game, { x: game.player.x, y: game.player.y }, { x: targetX, y: targetY });
+            if (!view.seenCells[targetY][targetX] && !view.debugVision) return;
+            const path = findPlayerPath(game, { x: view.player.x, y: view.player.y }, { x: targetX, y: targetY });
             if (path && path.length > 1) {
                 let currentStep = 1;
                 const move = () => {
                     if (currentStep >= path.length || game.state !== GAME_STATES.PLAYING) { game.stopAutoMove(); return; }
                     const nextPos = path[currentStep];
-                    game.movePlayer(nextPos.x - game.player.x, nextPos.y - game.player.y);
+                    game.movePlayer(nextPos.x - view.player.x, nextPos.y - view.player.y);
                     currentStep++;
                 };
                 move();
@@ -612,13 +613,15 @@ export function bindDpadControls(game) {
         }
 
         export function findPlayerPath(game, start, end) {
+            // 读只读投影（Phase 4：权威源经 computeGameView 投影，不再读宿主镜像）
+            const view = game.getGameView();
             return Pathfinding.findPlayerPath(start, end, {
-                width: game.width,
-                height: game.height,
-                hWalls: game.hWalls,
-                vWalls: game.vWalls,
-                seenCells: game.seenCells,
-                debugVision: game.debugVision,
-                playerKeys: game.player.keys
+                width: view.width,
+                height: view.height,
+                hWalls: view.hWalls,
+                vWalls: view.vWalls,
+                seenCells: view.seenCells,
+                debugVision: view.debugVision,
+                playerKeys: view.player.keys
             });
         }

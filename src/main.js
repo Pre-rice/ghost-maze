@@ -5,7 +5,7 @@ import { GameController } from './core/gameController.js';
 // 导入新的模块化组件
 import * as UI from './ui.js';
 import * as Renderer from './view/renderer.js';
-import { createGameView, createEditorView } from './view/viewSlice.js';
+import { createGameView, createEditorView, computeGameView, pruneTrails } from './view/viewSlice.js';
 import * as MazeGenerator from './core/mazeGenerator.js';
 import * as InputHandler from './inputHandler.js';
 import * as Editor from './editor/editor.js';
@@ -67,22 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
             this.gameMode = 'exploration';
             this.initialHealth = 5;
             this.initialStamina = 100;
-            this.loopCount = 0;
-            this.width = 10;
-            this.height = 10;
             this.padding = 15;
-            this.cellSize = canvas.width / this.width;
+            this.cellSize = 0;  // 无地图时无意义；startGame/enterEditorMode 按地图尺寸重算
             this.mapData = null;
-            
-            // 新架构：核心状态管理
-            this.mapDefinition = null;  // MapDefinition 实例，不可变的地图定义
-            this.currentGameState = null;  // GameState 实例，当前游戏状态
-            this.viewLayer = 0;  // 当前显示的图层（与玩家所在层可能不同）
 
             // 新增：视口偏移（用于居中非标准地图）
             this.drawOffset = { x: 0, y: 0 };
 
-            // 玩家状态（兼容旧代码）
+            // 编辑器工作字段（游戏态不再同步/读取——渲染/输入走 viewSlice 投影与 controller 权威源；
+            // 这些字段仅编辑器方法读写，Step 6 编辑器投影化后删除）
             this.player = { x: 1, y: 1, hp: 5, stamina: 100, trail: [], keys: 0 , steps: 0};
 
             // 鬼和物品
@@ -129,11 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 previousToolBeforeRightClick: null // 右键擦除前的工具，用于松开右键后恢复
             };
 
-            // 历史记录系统状态
-            this.history = [];
-            this.checkpoints = [];
-            this.currentStep = -1;
-
             // 移动端虚拟方向键(D-pad)状态
             this.dpad = {
                 element: document.getElementById('dpad-controls'),
@@ -151,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // 游戏控制器（纯逻辑数据流；UI 副作用经注入回调回到本类）
             this.controller = new GameController({
                 onSync: () => {
-                    this._syncFromController();
                     this._renderStaticLayer();
                     this.draw();
                     this.updateUIDisplays();
@@ -183,43 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.showInitialMessage();
             // 页面加载时尝试从 URL 查询参数或 hash 读取分享码
             this.loadShareCodeFromURL();
-        }
-
-        /** 把控制器的游戏数据引用同步到本类字段（渲染/输入读取的镜像，Phase 4 投影化后删除） */
-        _syncFromController() {
-            const c = this.controller;
-            this.mapData = c.mapData;
-            this.mapDefinition = c.mapDefinition;
-            this.currentGameState = c.currentGameState;
-            this.history = c.history;
-            this.checkpoints = c.checkpoints;
-            this.currentStep = c.currentStep;
-            this.gameMode = c.gameMode;
-            this.initialHealth = c.initialHealth;
-            this.initialStamina = c.initialStamina;
-            this.loopCount = c.loopCount;
-            this.player = c.player;
-            this.playerLayer = c.playerLayer;
-            this.viewLayer = c.viewLayer;
-            this.currentLayer = c.currentLayer;
-            this.width = c.width;
-            this.height = c.height;
-            this.startPos = c.startPos;
-            this.editor.mode = c.editorMode;
-            this.activeCells = c.activeCells;
-            this.customStartPos = c.customStartPos;
-            this.multiLayerMode = c.multiLayerMode;
-            this.layerCount = c.layerCount;
-            this.stairs = c.stairs;
-            this.layers = c.layers;
-            this.hWalls = c.hWalls;
-            this.vWalls = c.vWalls;
-            this.ghosts = c.ghosts;
-            this.items = c.items;
-            this.buttons = c.buttons;
-            this.endPos = c.endPos;
-            this.seenCells = c.seenCells;
-            this.seenCellsPerLayer = c.seenCellsPerLayer;
         }
 
         updateColors() {
@@ -281,11 +231,11 @@ document.addEventListener('DOMContentLoaded', () => {
          * 重置当前地图到初始状态
          */
         resetCurrentMap() {
-            if (!this.mapData) {
+            if (!this.controller.mapData) {
                 this.showToast("没有可重置的地图。请先生成一个新地图。", 3000, 'error');
                 return;
             }
-            this.startGame(this.mapData);
+            this.startGame(this.controller.mapData);
         }
 
         bindUI() {
@@ -399,11 +349,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         startAnimationLoop() {
             if (this.animationFrameId) return;
-            const trailLifetime = 500;
             const loop = () => {
                 const now = Date.now();
-                this.player.trail = this.player.trail.filter(p => now - p.timestamp < trailLifetime);
-                this.ghosts.forEach(g => { g.trail = g.trail.filter(p => now - p.timestamp < trailLifetime); });
+                // 轨迹修剪在权威源上（Phase 4 投影化；原镜像只剪副本，玩家轨迹陈旧泄漏）
+                pruneTrails(this.controller.currentGameState, this.controller.viewLayer, now);
                 if (this.state === GAME_STATES.PLAYING) {
                     this.draw();
                     this.animationFrameId = requestAnimationFrame(loop);
@@ -424,10 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
         startGame(mapData) {
             this.stopAnimationLoop();
             this.state = GAME_STATES.PLAYING;
-            this.width = mapData.width;
-            this.height = mapData.height;
             this.padding = 15;
-            this.cellSize = (canvas.width - 2 * this.padding) / this.width;
+            this.cellSize = (canvas.width - 2 * this.padding) / mapData.width;
             // 数据流在控制器（onSync 回调触发渲染，cellSize 需先就绪）
             this.controller.startGame(mapData);
             this.calculateDrawOffset();
@@ -449,13 +396,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         calculateDrawOffset() {
             if (this.state === GAME_STATES.EDITOR) { this.drawOffset = { x: 0, y: 0 }; return; }
-            let minX = this.width, maxX = 0, minY = this.height, maxY = 0;
+            const md = this.controller.mapDefinition;
+            if (!md) { this.drawOffset = { x: 0, y: 0 }; return; }
+            let minX = md.width, maxX = 0, minY = md.height, maxY = 0;
             let hasActive = false;
-            const layersToCheck = this.multiLayerMode && this.layers.length > 0 ? this.layers : [{ activeCells: this.activeCells }];
-            for (const layerData of layersToCheck) {
+            for (const layerData of md.layers) {
                 if (!layerData || !layerData.activeCells) continue;
-                for (let y = 0; y < this.height; y++) {
-                    for (let x = 0; x < this.width; x++) {
+                for (let y = 0; y < md.height; y++) {
+                    for (let x = 0; x < md.width; x++) {
                         if (layerData.activeCells[y] && layerData.activeCells[y][x]) {
                             hasActive = true;
                             minX = Math.min(minX, x); maxX = Math.max(maxX, x);
@@ -490,15 +438,16 @@ document.addEventListener('DOMContentLoaded', () => {
         handleEditorKeyPress(e) { InputHandler.handleEditorKeyPress(this, e); }
 
 
-        useStair() { if (this.multiLayerMode) { this.processAction({ type: 'USE_STAIR' }); } }
+        useStair() { if (this.controller.mapDefinition?.multiLayerMode) { this.processAction({ type: 'USE_STAIR' }); } }
         movePlayer(dx, dy) { if (this.state === GAME_STATES.PLAYING) { this.processAction({ type: 'MOVE', payload: { dx, dy } }); } }
         pressButton(letter) { this.processAction({ type: 'PRESS_BUTTON', payload: { letter } }); }
 
         updateUIDisplays() {
+            const state = this.controller.currentGameState;
             UI.updateUIDisplays({
                 gameMode: this.gameMode,
-                player: this.player,
-                loopCount: this.loopCount,
+                player: state?.player,
+                loopCount: state?.loopCount ?? 0,
                 healthDisplay: this.healthDisplay,
                 keysDisplay: this.keysDisplay,
                 stepsDisplay: this.stepsDisplay
@@ -507,17 +456,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateProximityWarning() {
+            const state = this.controller.currentGameState;
             // 编辑器模式无实时鬼/视野数据，直接跳过（seenCells 可能为空或旧尺寸，访问会越界崩溃）
-            if (this.state === GAME_STATES.EDITOR || !this.currentGameState) return;
+            if (this.state === GAME_STATES.EDITOR || !state) return;
             // 多层下视图层可能 ≠ 玩家层：警告统计必须针对玩家所在层的数据（鬼、视野），而非当前视图层
-            const layerIndex = this.playerLayer;
-            const layerState = this.currentGameState.layerStates[layerIndex];
-            const seen = this.currentGameState.seenCells[layerIndex];
+            const layerIndex = state.player.layer;
+            const layerState = state.layerStates[layerIndex];
+            const seen = state.seenCells[layerIndex];
             if (!layerState || !seen || !seen.length) return;
             UI.updateProximityWarning({
                 gameMode: this.gameMode,
                 ghosts: layerState.ghosts,
-                player: this.player,
+                player: state.player,
                 seenCells: seen,
                 debugVision: this.debugVision,
                 ghostProximityDisplay: this.ghostProximityDisplay
@@ -533,13 +483,36 @@ document.addEventListener('DOMContentLoaded', () => {
         // 胜负展示（handleWin/handlePlayerDeath）已迁入构造函数的注入回调（onWin/onDeath）
 
 _renderStaticLayer() {
-    Renderer.renderStaticLayer(canvas, this.staticLayerCanvas, createGameView(this));
+    // 编辑器态读镜像（Step 6 换 computeEditorView）；游戏态走权威源投影
+    Renderer.renderStaticLayer(canvas, this.staticLayerCanvas, this.editor.active ? createGameView(this) : this.getGameView());
+}
+
+/** 游戏态只读投影（权威源 = controller.mapDefinition + currentGameState + viewLayer） */
+getGameView() {
+    return computeGameView({
+        mapDef: this.controller.mapDefinition,
+        gameState: this.controller.currentGameState,
+        viewLayer: this.controller.viewLayer
+    }, this._renderParams());
+}
+
+/** 宿主渲染参数（非数据源，供投影注入） */
+_renderParams() {
+    return {
+        canvas,
+        staticLayerCanvas: this.staticLayerCanvas,
+        state: this.state,
+        cellSize: this.cellSize,
+        colors: this.colors,
+        drawOffset: this.drawOffset,
+        debugVision: this.debugVision
+    };
 }
 
 draw() {
     if (this.state === GAME_STATES.MENU) return;
     if (this.editor.active) { this.drawEditor(); return; }
-    Renderer.drawGame(ctx, createGameView(this));
+    Renderer.drawGame(ctx, this.getGameView());
 }
 
 drawEditor() {
@@ -716,15 +689,8 @@ drawEditor() {
                 this._saveCurrentLayerData(); this._switchToLayer(layerIndex);
                 this._renderStaticLayer(); this.drawEditor();
             } else if ([GAME_STATES.PLAYING, GAME_STATES.DEAD, GAME_STATES.WON].includes(this.state)) {
-                this.viewLayer = layerIndex; this.currentLayer = layerIndex;
-                if (this.currentGameState && this.mapDefinition) {
-                    const layerDef = this.mapDefinition.layers[layerIndex];
-                    const layerState = this.currentGameState.layerStates[layerIndex];
-                    this.activeCells = layerDef.activeCells; this.hWalls = layerState.wallStates.h; this.vWalls = layerState.wallStates.v;
-                    this.ghosts = layerState.ghosts; this.items = layerState.items; this.buttons = layerDef.initialEntities.buttons;
-                    this.endPos = layerDef.initialEntities.endPos; this.customStartPos = layerDef.initialEntities.customStartPos;
-                    this.seenCells = this.currentGameState.seenCells[layerIndex];
-                }
+                // 视图层切换（权威源为 controller.viewLayer；渲染/输入经投影读对应层数据）
+                this.controller.viewLayer = layerIndex;
                 this._renderStaticLayer(); this.draw();
             }
             this.updateLayerPanel();
@@ -752,8 +718,13 @@ drawEditor() {
         updateLayerPanel() {
             // 检查是否有起点设置
             let hasStartPoint = false;
+            let multiLayerMode, layerCount, currentLayer, playerLayer;
             if (this.editor.active) {
-                // 编辑器模式下检查
+                // 编辑器模式：读编辑器工作字段（Step 5 后改读 editorDoc）
+                multiLayerMode = this.multiLayerMode;
+                layerCount = this.layerCount;
+                currentLayer = this.currentLayer;
+                playerLayer = this.playerLayer;
                 if (this.editor.mode === 'regular') {
                     hasStartPoint = true; // 常规模式总是有起点
                 } else {
@@ -774,17 +745,19 @@ drawEditor() {
                     }
                 }
             } else {
-                // 游戏模式下总是有起点
+                // 游戏模式：读 controller 权威源（起点恒有）
                 hasStartPoint = true;
+                const md = this.controller.mapDefinition;
+                multiLayerMode = md?.multiLayerMode || false;
+                layerCount = md?.layerCount || 1;
+                currentLayer = this.controller.viewLayer;
+                playerLayer = this.controller.currentGameState?.player?.layer ?? 0;
             }
-            
+
             LayerManager.updateLayerPanelUI({
-                multiLayerMode: this.multiLayerMode,
-                layerCount: this.layerCount,
-                currentLayer: this.currentLayer,
-                playerLayer: this.playerLayer,
+                multiLayerMode, layerCount, currentLayer, playerLayer,
                 editorActive: this.editor.active,
-                hasStartPoint: hasStartPoint,
+                hasStartPoint,
                 onLayerClick: (i) => this.switchToLayer(i)
             });
         }
@@ -1058,7 +1031,7 @@ drawEditor() {
                     gameMode: this.gameMode, initialHealth: parseInt(document.getElementById('editor-initial-health').value) || 5,
                     initialStamina: parseInt(document.getElementById('editor-initial-stamina').value) || 100,
                     activeCells: layer0Data.activeCells, editorMode: this.editor.mode, customStartPos: layer0Data.customStartPos,
-                    startPos: this.startPos, playerStartLayer: this.playerLayer, multiLayerMode: this.multiLayerMode,
+                    multiLayerMode: this.multiLayerMode,
                     layerCount: this.layerCount, layers: this.layers, stairs: this.stairs
                 };
             } else {
@@ -1122,9 +1095,10 @@ drawEditor() {
 
         updateHistoryButtons() {
             UI.updateHistoryButtons({
-                currentStep: this.currentStep,
-                history: this.history,
-                checkpoints: this.checkpoints
+                // Phase 4：读 controller 权威历史（宿主镜像已删）
+                currentStep: this.controller.currentStep,
+                history: this.controller.history,
+                checkpoints: this.controller.checkpoints
             });
         }
 

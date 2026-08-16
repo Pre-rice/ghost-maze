@@ -233,16 +233,8 @@ export function generateFullMaze(width, height, ghostCount = 3) {
         customStartPos: null,
         multiLayerMode: false,
         layerCount: 1,
-        layers: [{
-            hWalls,
-            vWalls,
-            activeCells,
-            ghosts: initialGhosts,
-            items,
-            buttons: [],
-            endPos,
-            customStartPos: null
-        }],
+        // 单层地图不写 layers（MapDefinition 构造时落到顶层 hWalls/vWalls 分支，行为等价）
+        layers: [],
         stairs: []
     };
 }

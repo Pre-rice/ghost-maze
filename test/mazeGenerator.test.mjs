@@ -25,6 +25,7 @@ test('generateFullMaze: 10×10 结构不变量', () => {
     assertEq(maze.hWalls.length, 11);
     assertEq(maze.vWalls.length, 10);
     assertEq(maze.initialGhosts.length, 2, '鬼数量');
+    assertEq(maze.layers.length, 0, '单层地图不写 layers（MapDefinition 走顶层分支）');
     // 墙类型全部合法（0-6）
     const validType = (w) => w.type >= 0 && w.type <= 6;
     for (const row of maze.hWalls) for (const w of row) assert(validType(w), '墙类型非法: ' + w.type);

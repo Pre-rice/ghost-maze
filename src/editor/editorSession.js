@@ -58,7 +58,7 @@ export class EditorDocument {
 
     /**
      * 装载 mapData 为编辑状态（行为逐行对应 enterEditorMode L810-846）。
-     * 注：playerStartLayer 为 v1 残留字段回退，Phase 4 统一起点解析时移除。
+     * 起点层：仅由层内 customStartPos 扫描推导（与 MapDefinition._findPlayerStart 一致，无 v1 残留回退）。
      */
     load(mapData) {
         this.width = mapData.width;
@@ -82,13 +82,10 @@ export class EditorDocument {
         this.stairs = JSON.parse(JSON.stringify(mapData.stairs || []));
         this.layers = JSON.parse(JSON.stringify(mapData.layers || []));
         if (this.multiLayerMode && this.layers.length > 0) {
-            // v1 残留：playerStartLayer 回退 + 层内 customStartPos 扫描（Phase 4 统一）
-            let startLayerIndex = typeof mapData.playerStartLayer === 'number' && mapData.playerStartLayer < this.layerCount
-                ? mapData.playerStartLayer : 0;
-            if (startLayerIndex === 0) {
-                for (let i = 0; i < this.layers.length; i++) {
-                    if (this.layers[i] && this.layers[i].customStartPos) { startLayerIndex = i; break; }
-                }
+            // 起点层：层内 customStartPos 扫描（与 MapDefinition._findPlayerStart free 分支一致）
+            let startLayerIndex = 0;
+            for (let i = 0; i < this.layers.length; i++) {
+                if (this.layers[i] && this.layers[i].customStartPos) { startLayerIndex = i; break; }
             }
             this.currentLayer = startLayerIndex;
             this.playerLayer = startLayerIndex;
@@ -142,7 +139,6 @@ export class EditorDocument {
             buttons: layer0Data.buttons, gameMode: gameMode,
             initialHealth: initialHealth, initialStamina: initialStamina,
             activeCells: layer0Data.activeCells, editorMode: this.mode, customStartPos: layer0Data.customStartPos,
-            startPos: this.startPos, playerStartLayer: this.playerLayer,
             multiLayerMode: this.multiLayerMode, layerCount: this.layerCount,
             layers: this.layers, stairs: this.stairs
         };

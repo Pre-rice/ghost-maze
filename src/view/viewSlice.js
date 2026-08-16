@@ -64,3 +64,53 @@ export function createEditorView(host) {
         currentLayer: host.currentLayer,
     };
 }
+
+/**
+ * computeGameView - 游戏态（PLAYING/DEAD/WON）只读投影
+ * 权威源：MapDefinition（静态）+ GameState（动态）+ 视图层 viewLayer。
+ * 字段引用不拷贝（读多写零）；宿主渲染参数（画布/尺寸/主题等）经 renderParams 注入。
+ * renderer 消费字段集与 createGameView 完全一致，渲染层零改动。
+ */
+export function computeGameView({ mapDef, gameState, viewLayer }, renderParams) {
+    const layerDef = mapDef.layers[viewLayer];
+    const layerState = gameState.layerStates[viewLayer];
+    return {
+        // 宿主渲染参数（非数据源）
+        canvas: renderParams.canvas,
+        staticLayerCanvas: renderParams.staticLayerCanvas,
+        state: renderParams.state,
+        cellSize: renderParams.cellSize,
+        colors: renderParams.colors,
+        drawOffset: renderParams.drawOffset,
+        debugVision: renderParams.debugVision,
+        // 权威源投影（引用，不拷贝）
+        width: mapDef.width,
+        height: mapDef.height,
+        activeCells: layerDef.activeCells,
+        seenCells: gameState.seenCells[viewLayer],
+        hWalls: layerState.wallStates.h,
+        vWalls: layerState.wallStates.v,
+        ghosts: layerState.ghosts,
+        items: layerState.items,
+        buttons: layerDef.initialEntities.buttons,
+        stairs: mapDef.stairs,
+        endPos: layerDef.initialEntities.endPos,
+        player: gameState.player,
+        playerLayer: gameState.player.layer,
+        currentLayer: viewLayer,
+        multiLayerMode: mapDef.multiLayerMode,
+    };
+}
+
+/**
+ * pruneTrails - 在权威源上修剪视觉轨迹（player + viewLayer 层鬼）
+ * 原宿主只剪镜像副本（玩家）或同引用（鬼），两不对称（玩家轨迹陈旧泄漏）；
+ * 投影化后统一在权威 GameState 上剪，剪与画（view 层）一致。
+ * 只就地修改当前 GameState——历史旧状态是不同对象，不跨历史污染。
+ */
+export function pruneTrails(gameState, viewLayer, now, lifetime = 500) {
+    if (!gameState || !gameState.player) return;
+    gameState.player.trail = gameState.player.trail.filter(p => now - p.timestamp < lifetime);
+    const ls = gameState.layerStates[viewLayer];
+    if (ls) ls.ghosts.forEach(g => { if (g.trail) g.trail = g.trail.filter(p => now - p.timestamp < lifetime); });
+}
