@@ -6,6 +6,11 @@ import * as Pathfinding from './core/pathfinding.js';
  * InputHandler 模块 - 处理所有输入事件（键盘、鼠标、触摸）
  */
 
+// 模块级 canvas 引用（与原版 ghostMazeGame.js 的闭包变量一致）。
+// 鼠标坐标换算 getMousePos 需要访问画布尺寸，独立模块内不能依赖 main.js 的闭包，
+// 故在模块顶层获取同一 DOM 元素（index.html 以 type="module" 加载，DOM 已就绪）。
+const canvas = document.getElementById('game-canvas');
+
 /**
  * 绑定D-pad控制器事件
  * @param {object} game - 游戏实例
