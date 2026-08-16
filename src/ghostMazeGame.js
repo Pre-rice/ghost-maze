@@ -1,6 +1,6 @@
 import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS } from './constants.js';
 import { MapDefinition } from './mapDefinition.js';
-import { DataSerializer } from './dataSerializer.js';
+import { DataSerializer } from './core/dataSerializer.js';
 import { GameLogic } from './gameLogic.js';
 
 // 导入新的模块化组件

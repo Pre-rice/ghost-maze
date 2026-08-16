@@ -1,0 +1,1286 @@
+[
+  {
+    "p": {
+      "x": 1,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 100,
+      "keys": 0,
+      "steps": 0,
+      "trailLen": 0
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": true,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        10,
+        3
+      ]
+    ],
+    "itemsLeft": [
+      1
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 1,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 100,
+      "keys": 0,
+      "steps": 0,
+      "trailLen": 0
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": true,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        10,
+        3
+      ]
+    ],
+    "itemsLeft": [
+      1
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 2,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 99,
+      "keys": 0,
+      "steps": 1,
+      "trailLen": 1
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        10,
+        3
+      ]
+    ],
+    "itemsLeft": [
+      1
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 3,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 98,
+      "keys": 1,
+      "steps": 2,
+      "trailLen": 2
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        10,
+        4
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 3,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 98,
+      "keys": 1,
+      "steps": 2,
+      "trailLen": 2
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        10,
+        4
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 4,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 97,
+      "keys": 1,
+      "steps": 3,
+      "trailLen": 3
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        10,
+        5
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 5,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 96,
+      "keys": 1,
+      "steps": 4,
+      "trailLen": 4
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 5,
+      "y": 7,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 95,
+      "keys": 1,
+      "steps": 5,
+      "trailLen": 5
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 5,
+      "y": 7,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 95,
+      "keys": 1,
+      "steps": 5,
+      "trailLen": 5
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 6,
+      "y": 7,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 94,
+      "keys": 1,
+      "steps": 6,
+      "trailLen": 6
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 7,
+      "y": 7,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 93,
+      "keys": 1,
+      "steps": 7,
+      "trailLen": 7
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 7,
+      "y": 7,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 93,
+      "keys": 1,
+      "steps": 7,
+      "trailLen": 7
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 7,
+      "y": 7,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 93,
+      "keys": 1,
+      "steps": 7,
+      "trailLen": 7
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 1,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 100,
+      "keys": 0,
+      "steps": 0,
+      "trailLen": 0
+    },
+    "loopCount": 1,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": true,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      1
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 1,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 100,
+      "keys": 0,
+      "steps": 0,
+      "trailLen": 0
+    },
+    "loopCount": 1,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": true,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      1
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 2,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 99,
+      "keys": 0,
+      "steps": 1,
+      "trailLen": 1
+    },
+    "loopCount": 1,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      1
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 2,
+      "y": 8,
+      "layer": 0,
+      "hp": 5,
+      "stamina": 99,
+      "keys": 0,
+      "steps": 1,
+      "trailLen": 1
+    },
+    "loopCount": 1,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        10,
+        6
+      ]
+    ],
+    "itemsLeft": [
+      1
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "x": 5,
+              "type": 3,
+              "currentState": "closed",
+              "keys": 1
+            }
+          ],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  }
+]
