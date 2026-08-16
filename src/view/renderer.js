@@ -1,7 +1,11 @@
-import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS } from './core/constants.js';
+import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../core/constants.js';
 
 /**
  * Renderer 模块 - 处理所有Canvas绘制相关的功能
+ *
+ * 原子绘制函数（drawWallOrDoor/drawItem/drawStair/drawButton/drawCircle…）与
+ * 组合渲染函数（drawGame/drawEditor/renderStaticLayer/drawCorners）。
+ * 组合渲染函数只读 view 对象（见 view/viewSlice.js），不依赖宿主实例。
  */
 
 /**
@@ -425,4 +429,214 @@ export function shouldDrawBoundary(bx, by, isH, activeCells, width, height) {
         const right = (bx >= 0 && bx < width && activeCells[by]) ? activeCells[by][bx] : false;
         return left !== right;
     }
+}
+
+// ==================== 组合渲染（吸收自 ghostMazeGame 活副本，Phase 3c） ====================
+
+/**
+ * 渲染静态层（地面格 + 网格线；编辑器模式画虚空虚线）
+ * @param {HTMLCanvasElement} mainCanvas - 主画布（尺寸来源）
+ * @param {HTMLCanvasElement} staticCanvas - 静态层画布
+ * @param {object} view - 视图快照（createGameView/createEditorView）
+ */
+export function renderStaticLayer(mainCanvas, staticCanvas, view) {
+    staticCanvas.width = mainCanvas.width;
+    staticCanvas.height = mainCanvas.height;
+    const ctx = staticCanvas.getContext('2d');
+    const cs = view.cellSize;
+    ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+    for (let y = 0; y < view.height; y++) {
+        for (let x = 0; x < view.width; x++) {
+            if (view.activeCells[y] && view.activeCells[y][x]) {
+                ctx.fillStyle = view.colors.ground; ctx.fillRect(x * cs, y * cs, cs, cs);
+                ctx.strokeStyle = view.colors.gridLine; ctx.lineWidth = 1; ctx.strokeRect(x * cs, y * cs, cs, cs);
+            } else if (view.state === GAME_STATES.EDITOR) {
+                ctx.fillStyle = "rgba(0,0,0,0)"; ctx.strokeStyle = view.colors.voidGrid;
+                ctx.lineWidth = 0.5; ctx.setLineDash([2, 2]); ctx.strokeRect(x * cs, y * cs, cs, cs); ctx.setLineDash([]);
+            }
+        }
+    }
+}
+
+/**
+ * 绘制墙线交点处的实心方块（实体墙/活性区边界的连贯视觉）
+ * @param {CanvasRenderingContext2D} ctx - Canvas上下文
+ * @param {object} view - 视图快照
+ * @param {boolean} isEditor - 编辑器模式（跳过视野裁剪）
+ */
+export function drawCorners(ctx, view, isEditor = false) {
+    const cs = view.cellSize; const w = Math.max(2, cs / 10);
+    ctx.fillStyle = view.colors.wall;
+    const { width, height, hWalls, vWalls, activeCells, seenCells, debugVision } = view;
+    const isActive = (cx, cy) => (cx >= 0 && cx < width && cy >= 0 && cy < height) ? activeCells[cy][cx] : false;
+    const hasSolidWall = (type, wx, wy) => {
+        if (type === 'h') {
+            if (wx < 0 || wx >= width) return false;
+            if (hWalls[wy] && hWalls[wy][wx] && hWalls[wy][wx].type === WALL_TYPES.SOLID) return true;
+            return isActive(wx, wy - 1) !== isActive(wx, wy);
+        } else {
+            if (wy < 0 || wy >= height) return false;
+            if (vWalls[wy] && vWalls[wy][wx] && vWalls[wy][wx].type === WALL_TYPES.SOLID) return true;
+            return isActive(wx - 1, wy) !== isActive(wx, wy);
+        }
+    };
+    for (let y = 0; y <= height; y++) {
+        for (let x = 0; x <= width; x++) {
+            const hasHLeft = hasSolidWall('h', x - 1, y); const hasHRight = hasSolidWall('h', x, y);
+            const hasVUp = hasSolidWall('v', x, y - 1); const hasVDown = hasSolidWall('v', x, y);
+            const connectedCount = (hasHLeft ? 1 : 0) + (hasHRight ? 1 : 0) + (hasVUp ? 1 : 0) + (hasVDown ? 1 : 0);
+            if (connectedCount < 2) continue;
+            if (!isEditor && !debugVision) {
+                const isPureInternal = (x > 0 && x < width && y > 0 && y < height &&
+                    isActive(x - 1, y - 1) && isActive(x, y - 1) && isActive(x - 1, y) && isActive(x, y));
+                if (isPureInternal && !(seenCells[y - 1][x - 1] || seenCells[y - 1][x] || seenCells[y][x - 1] || seenCells[y][x])) continue;
+            }
+            ctx.fillRect(x * cs - w / 2, y * cs - w / 2, w, w);
+        }
+    }
+}
+
+/**
+ * 游戏态全量渲染（吸收 ghostMazeGame.draw 活副本）
+ * @param {CanvasRenderingContext2D} ctx - Canvas上下文
+ * @param {object} view - 视图快照（createGameView）
+ */
+export function drawGame(ctx, view) {
+    const cs = view.cellSize; const now = Date.now();
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.save(); ctx.translate(view.drawOffset.x, view.drawOffset.y);
+    ctx.drawImage(view.staticLayerCanvas, 0, 0);
+    const drawTrail = (arr, color) => arr.forEach(p => {
+        if (view.seenCells[p.y][p.x] || view.debugVision) {
+            const age = now - p.timestamp; const alpha = 0.3 * (1 - age / 500);
+            drawCircle(ctx, p.x, p.y, cs, color, alpha);
+        }
+    });
+    drawTrail(view.player.trail, view.colors.player);
+    view.ghosts.forEach(ghost => drawTrail(ghost.trail, view.colors.ghost));
+    for (let y = 0; y < view.height; y++) {
+        for (let x = 0; x < view.width; x++) {
+            if (view.activeCells[y][x] && !view.seenCells[y][x] && !view.debugVision) {
+                ctx.fillStyle = view.colors.unexplored; ctx.fillRect(x * cs, y * cs, cs, cs);
+            }
+        }
+    }
+    ctx.beginPath();
+    for (let y = 0; y <= view.height; y++) {
+        for (let x = 0; x < view.width; x++) {
+            const isBoundary = shouldDrawBoundary(x, y, true, view.activeCells, view.width, view.height);
+            const isActiveRow = (y < view.height && view.activeCells[y][x]) || (y > 0 && view.activeCells[y - 1][x]);
+            if (!isActiveRow && !isBoundary) continue;
+            const isVisible = isBoundary || view.debugVision || (y < view.height && view.activeCells[y][x] && view.seenCells[y][x]) || (y > 0 && view.activeCells[y - 1][x] && view.seenCells[y - 1][x]);
+            if (isVisible) {
+                if (view.hWalls[y][x].type > 0) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, view.hWalls[y][x], cs, view.colors, view.state);
+                else if (isBoundary) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, { type: 1 }, cs, view.colors, view.state);
+            }
+        }
+    }
+    for (let y = 0; y < view.height; y++) {
+        for (let x = 0; x <= view.width; x++) {
+            const isBoundary = shouldDrawBoundary(x, y, false, view.activeCells, view.width, view.height);
+            const isActiveCol = (x < view.width && view.activeCells[y][x]) || (x > 0 && view.activeCells[y][x - 1]);
+            if (!isActiveCol && !isBoundary) continue;
+            const isVisible = isBoundary || view.debugVision || (x < view.width && view.activeCells[y][x] && view.seenCells[y][x]) || (x > 0 && view.activeCells[y][x - 1] && view.seenCells[y][x - 1]);
+            if (isVisible) {
+                if (view.vWalls[y][x].type > 0) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, view.vWalls[y][x], cs, view.colors, view.state);
+                else if (isBoundary) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, { type: 1 }, cs, view.colors, view.state);
+            }
+        }
+    }
+    ctx.stroke();
+    drawCorners(ctx, view, false);
+    view.stairs.filter(s => s.layer === view.currentLayer).forEach(stair => {
+        if (view.seenCells[stair.y][stair.x] || view.debugVision) { drawStair(ctx, stair, cs, view.colors); }
+    });
+    if (view.endPos && (view.seenCells[view.endPos.y][view.endPos.x] || view.debugVision)) { drawCircle(ctx, view.endPos.x, view.endPos.y, cs, view.colors.endPoint); }
+    view.ghosts.forEach(ghost => { if (view.seenCells[ghost.y][ghost.x] || view.debugVision) { drawCircle(ctx, ghost.x, ghost.y, cs, view.colors.ghost); } });
+    if (!view.multiLayerMode || view.currentLayer === view.playerLayer) { drawCircle(ctx, view.player.x, view.player.y, cs, view.colors.player); }
+    view.items.forEach(item => { if (view.seenCells[item.y][item.x] || view.debugVision) { drawItem(ctx, item, cs, view.colors); } });
+    view.buttons.forEach(button => { if (view.seenCells[button.y][button.x] || view.debugVision) { drawButton(ctx, button, cs, view.colors); } });
+    drawWallOverlays(ctx, { ...view, inGame: true });
+    ctx.restore();
+}
+
+/**
+ * 编辑器态全量渲染（吸收 ghostMazeGame.drawEditor 活副本）
+ * @param {CanvasRenderingContext2D} ctx - Canvas上下文
+ * @param {object} view - 视图快照（createEditorView）
+ */
+export function drawEditor(ctx, view) {
+    const cs = view.cellSize;
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.save(); ctx.translate(view.padding, view.padding);
+    ctx.drawImage(view.staticLayerCanvas, 0, 0);
+    if (view.editor.mode === 'free') {
+        ctx.beginPath(); ctx.strokeStyle = view.colors.voidGrid; ctx.lineWidth = 1; ctx.setLineDash([5, 5]);
+        for (let y = 0; y < view.height; y++) { for (let x = 0; x < view.width; x++) { if (!view.activeCells[y][x]) { ctx.strokeRect(x * cs, y * cs, cs, cs); } } }
+        ctx.strokeRect(0, 0, view.width * cs, view.height * cs); ctx.setLineDash([]);
+    }
+    if (view.editor.mode === 'regular') { ctx.fillStyle = view.colors.startRoomHighlight; ctx.fillRect(0, getStartRoomY(view.height) * cs, START_ROOM_SIZE * cs, START_ROOM_SIZE * cs); }
+    ctx.beginPath();
+    for (let y = 0; y <= view.height; y++) {
+        for (let x = 0; x < view.width; x++) {
+            const isActiveRow = (y < view.height && view.activeCells[y][x]) || (y > 0 && view.activeCells[y - 1][x]);
+            if (!isActiveRow) continue;
+            if (view.hWalls[y][x].type > 0) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, view.hWalls[y][x], cs, view.colors, view.state);
+            else if (view.editor.mode === 'free' && shouldDrawBoundary(x, y, true, view.activeCells, view.width, view.height)) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, { type: 1 }, cs, view.colors, view.state);
+        }
+    }
+    for (let y = 0; y < view.height; y++) {
+        for (let x = 0; x <= view.width; x++) {
+            const isActiveCol = (x < view.width && view.activeCells[y][x]) || (x > 0 && view.activeCells[y][x - 1]);
+            if (!isActiveCol) continue;
+            if (view.vWalls[y][x].type > 0) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, view.vWalls[y][x], cs, view.colors, view.state);
+            else if (view.editor.mode === 'free' && shouldDrawBoundary(x, y, false, view.activeCells, view.width, view.height)) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, { type: 1 }, cs, view.colors, view.state);
+        }
+    }
+    ctx.stroke();
+    drawCorners(ctx, view, true);
+    drawWallOverlays(ctx, { ...view, inGame: false });
+    if (view.editor.tool === EDITOR_TOOLS.GRID && view.editor.hoveredWall) {
+        const { x, y } = view.editor.hoveredWall;
+        if (x >= 0 && x < view.width && y >= 0 && y < view.height) { ctx.fillStyle = "rgba(255, 255, 0, 0.3)"; ctx.fillRect(x * cs, y * cs, cs, cs); }
+    } else if (view.editor.hoveredWall && !view.editor.isDragging) {
+        const { x, y, type, direction } = view.editor.hoveredWall;
+        let wallType = 1;
+        switch (view.editor.tool) {
+            case EDITOR_TOOLS.DOOR: wallType = 2; break; case EDITOR_TOOLS.GLASS: wallType = 5; break;
+            case EDITOR_TOOLS.LOCK: wallType = 3; break; case EDITOR_TOOLS.ONE_WAY: wallType = 4; break;
+            case EDITOR_TOOLS.LETTER_DOOR: wallType = 6; break; default: wallType = 1;
+        }
+        const isValidWall = (type === 'h') ? (y > 0 && view.activeCells[y - 1][x]) || (y < view.height && view.activeCells[y][x]) : (x > 0 && view.activeCells[y][x - 1]) || (x < view.width && view.activeCells[y][x]);
+        if (isValidWall) {
+            ctx.beginPath(); const wallObject = { type: wallType, keys: '?', direction: direction };
+            if (type === 'h') drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, wallObject, cs, view.colors, view.state, true);
+            else drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, wallObject, cs, view.colors, view.state, true);
+            ctx.stroke();
+            if (wallObject.type === WALL_TYPES.ONE_WAY && wallObject.direction) {
+                if (type === 'h') { drawArrow(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, direction, 'white', false, cs); }
+                else { drawArrow(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, direction, 'white', false, cs); }
+            }
+        }
+    }
+    view.stairs.filter(s => s.layer === view.currentLayer).forEach(s => drawStair(ctx, s, cs, view.colors));
+    if (view.editor.tool === EDITOR_TOOLS.STAIR && view.editor.stairPlacement) { drawStair(ctx, view.editor.stairPlacement, cs, view.colors, !view.editor.isDragging); }
+    view.items.forEach(item => drawItem(ctx, item, cs, view.colors));
+    if (view.endPos) drawCircle(ctx, view.endPos.x, view.endPos.y, cs, view.colors.endPoint);
+    if (view.customStartPos) drawCircle(ctx, view.customStartPos.x, view.customStartPos.y, cs, view.colors.player);
+    view.ghosts.forEach(g => drawCircle(ctx, g.x, g.y, cs, view.colors.ghost));
+    view.buttons.forEach(b => drawButton(ctx, b, cs, view.colors));
+    if (view.editor.mode === 'regular') drawCircle(ctx, view.startPos.x, view.startPos.y, cs, view.colors.player);
+    if (view.editor.hoveredButtonHotspot) {
+        const virtualButton = { x: view.editor.hoveredButtonHotspot.x, y: view.editor.hoveredButtonHotspot.y, direction: view.editor.hoveredButtonHotspot.direction };
+        drawButton(ctx, virtualButton, cs, view.colors, true);
+    }
+    // 橡皮擦工具或右键橡皮擦时显示浅灰色大圆点提示
+    if ((view.editor.tool === EDITOR_TOOLS.ERASER || view.editor.isRightClickErasing) && view.editor.rightClickMousePos) {
+        ctx.fillStyle = '#aaaaaa';
+        ctx.beginPath();
+        ctx.arc(view.editor.rightClickMousePos.x, view.editor.rightClickMousePos.y, 8, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+    ctx.restore();
 }

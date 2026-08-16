@@ -4,7 +4,8 @@ import { GameController } from './core/gameController.js';
 
 // 导入新的模块化组件
 import * as UI from './ui.js';
-import * as Renderer from './renderer.js';
+import * as Renderer from './view/renderer.js';
+import { createGameView, createEditorView } from './view/viewSlice.js';
 import * as MazeGenerator from './core/mazeGenerator.js';
 import * as InputHandler from './inputHandler.js';
 import * as Editor from './editor/editor.js';
@@ -617,154 +618,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // 胜负展示（handleWin/handlePlayerDeath）已迁入构造函数的注入回调（onWin/onDeath）
 
-        _renderStaticLayer() {
-            this.staticLayerCanvas.width = canvas.width; this.staticLayerCanvas.height = canvas.height;
-            const ctx = this.staticLayerCtx; const cs = this.cellSize;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let y = 0; y < this.height; y++) {
-                for (let x = 0; x < this.width; x++) {
-                    if (this.activeCells[y] && this.activeCells[y][x]) {
-                        ctx.fillStyle = this.colors.ground; ctx.fillRect(x * cs, y * cs, cs, cs);
-                        ctx.strokeStyle = this.colors.gridLine; ctx.lineWidth = 1; ctx.strokeRect(x * cs, y * cs, cs, cs);
-                    } else if (this.state === GAME_STATES.EDITOR) {
-                        ctx.fillStyle = "rgba(0,0,0,0)"; ctx.strokeStyle = this.colors.voidGrid;
-                        ctx.lineWidth = 0.5; ctx.setLineDash([2, 2]); ctx.strokeRect(x * cs, y * cs, cs, cs); ctx.setLineDash([]);
-                    }
-                }
-            }
-        }
+_renderStaticLayer() {
+    Renderer.renderStaticLayer(canvas, this.staticLayerCanvas, createGameView(this));
+}
 
-        drawCorners(isEditor = false) {
-            const cs = this.cellSize; const w = Math.max(2, cs / 10);
-            ctx.fillStyle = this.colors.wall;
-            const isActive = (cx, cy) => (cx >= 0 && cx < this.width && cy >= 0 && cy < this.height) ? this.activeCells[cy][cx] : false;
-            const hasSolidWall = (type, wx, wy) => {
-                if (type === 'h') {
-                    if (wx < 0 || wx >= this.width) return false;
-                    if (this.hWalls[wy] && this.hWalls[wy][wx] && this.hWalls[wy][wx].type === WALL_TYPES.SOLID) return true;
-                    return isActive(wx, wy - 1) !== isActive(wx, wy);
-                } else {
-                    if (wy < 0 || wy >= this.height) return false;
-                    if (this.vWalls[wy] && this.vWalls[wy][wx] && this.vWalls[wy][wx].type === WALL_TYPES.SOLID) return true;
-                    return isActive(wx - 1, wy) !== isActive(wx, wy);
-                }
-            };
-            for (let y = 0; y <= this.height; y++) {
-                for (let x = 0; x <= this.width; x++) {
-                    const hasHLeft = hasSolidWall('h', x - 1, y); const hasHRight = hasSolidWall('h', x, y);
-                    const hasVUp = hasSolidWall('v', x, y - 1); const hasVDown = hasSolidWall('v', x, y);
-                    const connectedCount = (hasHLeft ? 1 : 0) + (hasHRight ? 1 : 0) + (hasVUp ? 1 : 0) + (hasVDown ? 1 : 0);
-                    if (connectedCount < 2) continue;
-                    if (!isEditor && !this.debugVision) {
-                        const isPureInternal = (x > 0 && x < this.width && y > 0 && y < this.height &&
-                            isActive(x - 1, y - 1) && isActive(x, y - 1) && isActive(x - 1, y) && isActive(x, y));
-                        if (isPureInternal && !(this.seenCells[y - 1][x - 1] || this.seenCells[y - 1][x] || this.seenCells[y][x - 1] || this.seenCells[y][x])) continue;
-                    }
-                    ctx.fillRect(x * cs - w / 2, y * cs - w / 2, w, w);
-                }
-            }
-        }
+draw() {
+    if (this.state === GAME_STATES.MENU) return;
+    if (this.editor.active) { this.drawEditor(); return; }
+    Renderer.drawGame(ctx, createGameView(this));
+}
 
-        draw() {
-            if (this.state === GAME_STATES.MENU) return;
-            if (this.editor.active) { this.drawEditor(); return; }
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save(); ctx.translate(this.drawOffset.x, this.drawOffset.y);
-            const cs = this.cellSize; const now = Date.now();
-            ctx.drawImage(this.staticLayerCanvas, 0, 0);
-            const drawTrail = (arr, color) => arr.forEach(p => {
-                if (this.seenCells[p.y][p.x] || this.debugVision) {
-                    const age = now - p.timestamp; const alpha = 0.3 * (1 - age / 500);
-                    this.drawCircle(p.x, p.y, color, alpha);
-                }
-            });
-            drawTrail(this.player.trail, this.colors.player);
-            this.ghosts.forEach(ghost => drawTrail(ghost.trail, this.colors.ghost));
-            for (let y = 0; y < this.height; y++) {
-                for (let x = 0; x < this.width; x++) {
-                    if (this.activeCells[y][x] && !this.seenCells[y][x] && !this.debugVision) {
-                        ctx.fillStyle = this.colors.unexplored; ctx.fillRect(x * cs, y * cs, cs, cs);
-                    }
-                }
-            }
-            ctx.beginPath();
-            for (let y = 0; y <= this.height; y++) {
-                for (let x = 0; x < this.width; x++) {
-                    const isBoundary = Renderer.shouldDrawBoundary(x, y, true, this.activeCells, this.width, this.height);
-                    const isActiveRow = (y < this.height && this.activeCells[y][x]) || (y > 0 && this.activeCells[y - 1][x]);
-                    if (!isActiveRow && !isBoundary) continue;
-                    const isVisible = isBoundary || this.debugVision || (y < this.height && this.activeCells[y][x] && this.seenCells[y][x]) || (y > 0 && this.activeCells[y - 1][x] && this.seenCells[y - 1][x]);
-                    if (isVisible) {
-                        if (this.hWalls[y][x].type > 0) this.drawWallOrDoor(x * cs, y * cs, (x + 1) * cs, y * cs, this.hWalls[y][x]);
-                        else if (isBoundary) this.drawWallOrDoor(x * cs, y * cs, (x + 1) * cs, y * cs, { type: 1 });
-                    }
-                }
-            }
-            for (let y = 0; y < this.height; y++) {
-                for (let x = 0; x <= this.width; x++) {
-                    const isBoundary = Renderer.shouldDrawBoundary(x, y, false, this.activeCells, this.width, this.height);
-                    const isActiveCol = (x < this.width && this.activeCells[y][x]) || (x > 0 && this.activeCells[y][x - 1]);
-                    if (!isActiveCol && !isBoundary) continue;
-                    const isVisible = isBoundary || this.debugVision || (x < this.width && this.activeCells[y][x] && this.seenCells[y][x]) || (x > 0 && this.activeCells[y][x - 1] && this.seenCells[y][x - 1]);
-                    if (isVisible) {
-                        if (this.vWalls[y][x].type > 0) this.drawWallOrDoor(x * cs, y * cs, x * cs, (y + 1) * cs, this.vWalls[y][x]);
-                        else if (isBoundary) this.drawWallOrDoor(x * cs, y * cs, x * cs, (y + 1) * cs, { type: 1 });
-                    }
-                }
-            }
-            ctx.stroke();
-            this.drawCorners(false);
-            this.stairs.filter(s => s.layer === this.currentLayer).forEach(stair => {
-                if (this.seenCells[stair.y][stair.x] || this.debugVision) { this.drawStair(stair); }
-            });
-            if (this.endPos && (this.seenCells[this.endPos.y][this.endPos.x] || this.debugVision)) { this.drawCircle(this.endPos.x, this.endPos.y, this.colors.endPoint); }
-            this.ghosts.forEach(ghost => { if (this.seenCells[ghost.y][ghost.x] || this.debugVision) { this.drawCircle(ghost.x, ghost.y, this.colors.ghost); } });
-            if (!this.multiLayerMode || this.currentLayer === this.playerLayer) { this.drawCircle(this.player.x, this.player.y, this.colors.player); }
-            this.items.forEach(item => { if (this.seenCells[item.y][item.x] || this.debugVision) { this.drawItem(item); } });
-            this.buttons.forEach(button => { if (this.seenCells[button.y][button.x] || this.debugVision) { this.drawButton(button); } });
-            this.drawWallOverlays(true);
-            ctx.restore();
-        }
+drawEditor() {
+    Renderer.drawEditor(ctx, createEditorView(this));
+}
 
-        drawWallOrDoor(x1, y1, x2, y2, wallObject, isHighlight = false) {
-            Renderer.drawWallOrDoor(ctx, x1, y1, x2, y2, wallObject, this.cellSize, this.colors, this.state, isHighlight);
-        }
-
-        drawArrow(x1, y1, x2, y2, direction, color, withStroke) {
-            Renderer.drawArrow(ctx, x1, y1, x2, y2, direction, color, withStroke, this.cellSize);
-        }
-
-        drawWallOverlays(inGame = false) {
-            Renderer.drawWallOverlays(ctx, {
-                width: this.width,
-                height: this.height,
-                cellSize: this.cellSize,
-                hWalls: this.hWalls,
-                vWalls: this.vWalls,
-                activeCells: this.activeCells,
-                seenCells: this.seenCells,
-                debugVision: this.debugVision,
-                colors: this.colors,
-                inGame,
-                drawArrowFn: (x1, y1, x2, y2, dir, color, stroke) => this.drawArrow(x1, y1, x2, y2, dir, color, stroke)
-            });
-        }
-
-        drawCircle(x, y, color, alpha = 1.0) {
-            Renderer.drawCircle(ctx, x, y, this.cellSize, color, alpha);
-        }
-
-        drawItem(item) {
-            Renderer.drawItem(ctx, item, this.cellSize, this.colors);
-        }
-
-        drawStair(stair, isHighlight = false, alpha = 1.0) {
-            Renderer.drawStair(ctx, stair, this.cellSize, this.colors, isHighlight, alpha);
-        }
-
-        drawButton(button, isHighlight = false) {
-            Renderer.drawButton(ctx, button, this.cellSize, this.colors, isHighlight);
-        }
 
         enterEditorMode() {
             this.stopAnimationLoop();
@@ -1161,79 +1028,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         drawEditor() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save(); ctx.translate(this.padding, this.padding);
-            const cs = this.cellSize;
-            ctx.drawImage(this.staticLayerCanvas, 0, 0);
-            if (this.editor.mode === 'free') {
-                ctx.beginPath(); ctx.strokeStyle = this.colors.voidGrid; ctx.lineWidth = 1; ctx.setLineDash([5, 5]);
-                for (let y = 0; y < this.height; y++) { for (let x = 0; x < this.width; x++) { if (!this.activeCells[y][x]) { ctx.strokeRect(x * cs, y * cs, cs, cs); } } }
-                ctx.strokeRect(0, 0, this.width * cs, this.height * cs); ctx.setLineDash([]);
-            }
-            if (this.editor.mode === 'regular') { ctx.fillStyle = this.colors.startRoomHighlight; ctx.fillRect(0, getStartRoomY(this.height) * cs, START_ROOM_SIZE * cs, START_ROOM_SIZE * cs); }
-            ctx.beginPath();
-            for (let y = 0; y <= this.height; y++) {
-                for (let x = 0; x < this.width; x++) {
-                    const isActiveRow = (y < this.height && this.activeCells[y][x]) || (y > 0 && this.activeCells[y - 1][x]);
-                    if (!isActiveRow) continue;
-                    if (this.hWalls[y][x].type > 0) this.drawWallOrDoor(x * cs, y * cs, (x + 1) * cs, y * cs, this.hWalls[y][x]);
-                    else if (this.editor.mode === 'free' && Renderer.shouldDrawBoundary(x, y, true, this.activeCells, this.width, this.height)) this.drawWallOrDoor(x * cs, y * cs, (x + 1) * cs, y * cs, { type: 1 });
-                }
-            }
-            for (let y = 0; y < this.height; y++) {
-                for (let x = 0; x <= this.width; x++) {
-                    const isActiveCol = (x < this.width && this.activeCells[y][x]) || (x > 0 && this.activeCells[y][x - 1]);
-                    if (!isActiveCol) continue;
-                    if (this.vWalls[y][x].type > 0) this.drawWallOrDoor(x * cs, y * cs, x * cs, (y + 1) * cs, this.vWalls[y][x]);
-                    else if (this.editor.mode === 'free' && Renderer.shouldDrawBoundary(x, y, false, this.activeCells, this.width, this.height)) this.drawWallOrDoor(x * cs, y * cs, x * cs, (y + 1) * cs, { type: 1 });
-                }
-            }
-            ctx.stroke();
-            this.drawCorners(true); this.drawWallOverlays();
-            if (this.editor.tool === EDITOR_TOOLS.GRID && this.editor.hoveredWall) {
-                const { x, y } = this.editor.hoveredWall;
-                if (x >= 0 && x < this.width && y >= 0 && y < this.height) { ctx.fillStyle = "rgba(255, 255, 0, 0.3)"; ctx.fillRect(x * cs, y * cs, cs, cs); }
-            } else if (this.editor.hoveredWall && !this.editor.isDragging) {
-                const { x, y, type, direction } = this.editor.hoveredWall;
-                let wallType = 1;
-                switch (this.editor.tool) {
-                    case EDITOR_TOOLS.DOOR: wallType = 2; break; case EDITOR_TOOLS.GLASS: wallType = 5; break;
-                    case EDITOR_TOOLS.LOCK: wallType = 3; break; case EDITOR_TOOLS.ONE_WAY: wallType = 4; break;
-                    case EDITOR_TOOLS.LETTER_DOOR: wallType = 6; break; default: wallType = 1;
-                }
-                const isValidWall = (type === 'h') ? (y > 0 && this.activeCells[y - 1][x]) || (y < this.height && this.activeCells[y][x]) : (x > 0 && this.activeCells[y][x - 1]) || (x < this.width && this.activeCells[y][x]);
-                if (isValidWall) {
-                    ctx.beginPath(); const wallObject = { type: wallType, keys: '?', direction: direction };
-                    if (type === 'h') this.drawWallOrDoor(x * cs, y * cs, (x + 1) * cs, y * cs, wallObject, true);
-                    else this.drawWallOrDoor(x * cs, y * cs, x * cs, (y + 1) * cs, wallObject, true);
-                    ctx.stroke();
-                    if (wallObject.type === WALL_TYPES.ONE_WAY && wallObject.direction) {
-                        if (type === 'h') { this.drawArrow(x * cs, y * cs, (x + 1) * cs, y * cs, direction, 'white', false); }
-                        else { this.drawArrow(x * cs, y * cs, x * cs, (y + 1) * cs, direction, 'white', false); }
-                    }
-                }
-            }
-            this.stairs.filter(s => s.layer === this.currentLayer).forEach(s => this.drawStair(s));
-            if (this.editor.tool === EDITOR_TOOLS.STAIR && this.editor.stairPlacement) { this.drawStair(this.editor.stairPlacement, !this.editor.isDragging); }
-            this.items.forEach(item => this.drawItem(item));
-            if (this.endPos) this.drawCircle(this.endPos.x, this.endPos.y, this.colors.endPoint);
-            if (this.customStartPos) this.drawCircle(this.customStartPos.x, this.customStartPos.y, this.colors.player);
-            this.ghosts.forEach(g => this.drawCircle(g.x, g.y, this.colors.ghost));
-            this.buttons.forEach(b => this.drawButton(b));
-            if (this.editor.mode === 'regular') this.drawCircle(this.startPos.x, this.startPos.y, this.colors.player);
-            if (this.editor.hoveredButtonHotspot) {
-                const virtualButton = { x: this.editor.hoveredButtonHotspot.x, y: this.editor.hoveredButtonHotspot.y, direction: this.editor.hoveredButtonHotspot.direction };
-                this.drawButton(virtualButton, true);
-            }
-            // 橡皮擦工具或右键橡皮擦时显示浅灰色大圆点提示
-            if ((this.editor.tool === EDITOR_TOOLS.ERASER || this.editor.isRightClickErasing) && this.editor.rightClickMousePos) {
-                ctx.fillStyle = '#aaaaaa';
-                ctx.beginPath();
-                ctx.arc(this.editor.rightClickMousePos.x, this.editor.rightClickMousePos.y, 8, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-            ctx.restore();
+            Renderer.drawEditor(ctx, createEditorView(this));
         }
+
 
         getMousePos(e) {
             const rect = canvas.getBoundingClientRect();
