@@ -459,7 +459,7 @@ export function renderStaticLayer(mainCanvas, staticCanvas, view) {
 }
 
 /**
- * 绘制墙线交点处的实心方块（实体墙/活性区边界的连贯视觉）
+ * 绘制墙线交点处的实心方块（实体墙/门/活性区边界的连贯视觉）
  * @param {CanvasRenderingContext2D} ctx - Canvas上下文
  * @param {object} view - 视图快照
  * @param {boolean} isEditor - 编辑器模式（跳过视野裁剪）
@@ -469,21 +469,25 @@ export function drawCorners(ctx, view, isEditor = false) {
     ctx.fillStyle = view.colors.wall;
     const { width, height, hWalls, vWalls, activeCells, seenCells, debugVision } = view;
     const isActive = (cx, cy) => (cx >= 0 && cx < width && cy >= 0 && cy < height) ? activeCells[cy][cx] : false;
-    const hasSolidWall = (type, wx, wy) => {
+    // 参与直角补块的墙类型：实心墙 + 门（DOOR/LOCKED/ONE_WAY/LETTER_DOOR）——墙/门与墙/门
+    // 成直角时交点补一个方块，保证直角边缘连贯（无折线）。GLASS 画装饰短斜线，不参与。
+    const isCornerWall = (wt) => wt === WALL_TYPES.SOLID || wt === WALL_TYPES.DOOR ||
+        wt === WALL_TYPES.LOCKED || wt === WALL_TYPES.ONE_WAY || wt === WALL_TYPES.LETTER_DOOR;
+    const hasCornerWall = (type, wx, wy) => {
         if (type === 'h') {
             if (wx < 0 || wx >= width) return false;
-            if (hWalls[wy] && hWalls[wy][wx] && hWalls[wy][wx].type === WALL_TYPES.SOLID) return true;
+            if (hWalls[wy] && hWalls[wy][wx] && isCornerWall(hWalls[wy][wx].type)) return true;
             return isActive(wx, wy - 1) !== isActive(wx, wy);
         } else {
             if (wy < 0 || wy >= height) return false;
-            if (vWalls[wy] && vWalls[wy][wx] && vWalls[wy][wx].type === WALL_TYPES.SOLID) return true;
+            if (vWalls[wy] && vWalls[wy][wx] && isCornerWall(vWalls[wy][wx].type)) return true;
             return isActive(wx - 1, wy) !== isActive(wx, wy);
         }
     };
     for (let y = 0; y <= height; y++) {
         for (let x = 0; x <= width; x++) {
-            const hasHLeft = hasSolidWall('h', x - 1, y); const hasHRight = hasSolidWall('h', x, y);
-            const hasVUp = hasSolidWall('v', x, y - 1); const hasVDown = hasSolidWall('v', x, y);
+            const hasHLeft = hasCornerWall('h', x - 1, y); const hasHRight = hasCornerWall('h', x, y);
+            const hasVUp = hasCornerWall('v', x, y - 1); const hasVDown = hasCornerWall('v', x, y);
             const connectedCount = (hasHLeft ? 1 : 0) + (hasHRight ? 1 : 0) + (hasVUp ? 1 : 0) + (hasVDown ? 1 : 0);
             if (connectedCount < 2) continue;
             if (!isEditor && !debugVision) {

@@ -167,6 +167,24 @@ const makeCtx = () => new Proxy({
 
 const makeCanvas = (ctx) => ({ width: 800, height: 800, getContext: () => ctx });
 
+// 记录 fillRect 调用的 mock ctx（用于断言「交点补块」像素级行为）
+const makeRecordingCtx = () => {
+    const records = { fillRect: [] };
+    const ctx = new Proxy({
+        measureText: () => ({ width: 0 }),
+    }, {
+        get(t, p) {
+            if (p in records) return (...args) => records[p].push(args);
+            if (p in t) return t[p];
+            if (typeof p === 'string') { if (!(p in t)) t[p] = () => {}; return t[p]; }
+            return undefined;
+        },
+        set(t, p, v) { t[p] = v; return true; },
+    });
+    return { ctx, records };
+};
+const wallGrid = (rows, cols) => Array.from({ length: rows }, () => Array(cols).fill(null).map(() => ({ type: 0 })));
+
 const fullCells = (w, h) => Array.from({ length: h }, () => Array(w).fill(true));
 const seenAll = (w, h) => Array.from({ length: h }, () => Array(w).fill(true));
 
@@ -226,6 +244,53 @@ test('drawCorners: 游戏态与编辑器态跑通', () => {
     Renderer.drawCorners(ctx, view, false);
     Renderer.drawCorners(ctx, view, true);
     assert(true, '无异常');
+});
+
+test('drawCorners: 门与墙成直角处补方块（门参与直角补块，玻璃除外）', () => {
+    const cs = 40, w = Math.max(2, cs / 10);
+    const cornerView = (overrides) => ({
+        canvas: {}, staticLayerCanvas: {}, state: 'EDITOR', cellSize: cs,
+        colors: { wall: '#000' }, width: 3, height: 3, debugVision: true,
+        activeCells: fullCells(3, 3), seenCells: fullCells(3, 3),
+        editor: { mode: 'regular' },
+        hWalls: wallGrid(4, 3), vWalls: wallGrid(3, 4),
+        ...overrides,
+    });
+    const filledAt = (ctx, records, px, py) => records.fillRect.some(
+        r => r[0] === px && r[1] === py && r[2] === w && r[3] === w);
+
+    // 场景 1：横 DOOR + 竖 SOLID 成直角 → 交点补块（旧逻辑只认 SOLID 则不补）
+    {
+        const { ctx, records } = makeRecordingCtx();
+        const view = cornerView({
+            hWalls: (() => { const g = wallGrid(4, 3); g[1][1] = { type: 2 }; return g; })(),
+            vWalls: (() => { const g = wallGrid(3, 4); g[1][1] = { type: 1 }; return g; })(),
+        });
+        Renderer.drawCorners(ctx, view, true);
+        assert(filledAt(ctx, records, cs - w / 2, cs - w / 2), '门×墙直角交点必须补方块');
+    }
+
+    // 场景 2：纯 SOLID 直角仍补块（回归保护）
+    {
+        const { ctx, records } = makeRecordingCtx();
+        const view = cornerView({
+            hWalls: (() => { const g = wallGrid(4, 3); g[1][1] = { type: 1 }; return g; })(),
+            vWalls: (() => { const g = wallGrid(3, 4); g[1][1] = { type: 1 }; return g; })(),
+        });
+        Renderer.drawCorners(ctx, view, true);
+        assert(filledAt(ctx, records, cs - w / 2, cs - w / 2), '实心墙×实心墙直角仍应补块');
+    }
+
+    // 场景 3：横 DOOR + 竖 GLASS 成直角 → 不补块（玻璃为装饰短斜线，不参与）
+    {
+        const { ctx, records } = makeRecordingCtx();
+        const view = cornerView({
+            hWalls: (() => { const g = wallGrid(4, 3); g[1][1] = { type: 2 }; return g; })(),
+            vWalls: (() => { const g = wallGrid(3, 4); g[1][1] = { type: 5 }; return g; })(),
+        });
+        Renderer.drawCorners(ctx, view, true);
+        assert(!filledAt(ctx, records, cs - w / 2, cs - w / 2), '玻璃×门直角不应补块');
+    }
 });
 
 test('drawEditor: G1 尺寸全路径跑通（regular 与 free 模式）', () => {
