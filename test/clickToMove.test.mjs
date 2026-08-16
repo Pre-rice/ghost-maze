@@ -90,6 +90,55 @@ test('G1 直线 2 步 {1,8}→{3,8}：每步单格，经过 {2,8}，精确到达
     }
 });
 
+// 确定性带门小地图：玩家 {1,1}，向右穿过 DOOR 到 {3,1}
+const doorMap = () => {
+    const W = 4, H = 3;
+    const hWalls = Array(H + 1).fill(null).map((_, y) => Array(W).fill(null).map((_, x) => ({ type: (y === 0 || y === H || x === 0 || x === W - 1) ? 1 : 0, keys: 0 })));
+    const vWalls = Array(H).fill(null).map((_, y) => Array(W + 1).fill(null).map((_, x) => ({ type: (x === 0 || x === W || y === 0 || y === H - 1) ? 1 : 0, keys: 0 })));
+    vWalls[1][2] = { type: 2, keys: 0 }; // DOOR：格 (2,1) 左侧
+    return {
+        width: W, height: H, startPos: { x: 1, y: 1 },
+        hWalls, vWalls, endPos: null, initialGhosts: [], items: [], buttons: [],
+        activeCells: Array(H).fill(null).map(() => Array(W).fill(true)),
+        editorMode: 'regular', customStartPos: null,
+        multiLayerMode: false, layerCount: 1, layers: [], stairs: []
+    };
+};
+
+test('确定性带门地图 {1,1}→{3,1}：穿过 DOOR 精确到达', () => {
+    const c = new GameController({});
+    c.gameMode = 'death-loop'; c.initialHealth = 5; c.initialStamina = 100;
+    c.startGame(doorMap());
+    const game = {
+        state: 'playing', cellSize: 50, drawOffset: { x: 0, y: 0 }, autoMoveInterval: null,
+        controller: c, editor: { active: false }, debugVision: true,
+        getGameView() {
+            return computeGameView(
+                { mapDef: c.mapDefinition, gameState: c.currentGameState, viewLayer: c.viewLayer },
+                { canvas: canvasEl, staticLayerCanvas: canvasEl, state: game.state, cellSize: 50, colors: {}, drawOffset: { x: 0, y: 0 }, debugVision: true }
+            );
+        },
+        movePlayer(dx, dy) { return c.movePlayer(dx, dy); },
+        stopAutoMove() { if (game.autoMoveInterval) { clearInterval(game.autoMoveInterval); game.autoMoveInterval = null; } },
+    };
+    const deltas = [];
+    const origMove = game.movePlayer;
+    game.movePlayer = (dx, dy) => { deltas.push([dx, dy]); return origMove(dx, dy); };
+    const origSet = globalThis.setInterval, origClear = globalThis.clearInterval;
+    globalThis.__timerCb = null;
+    globalThis.setInterval = (cb) => { globalThis.__timerCb = cb; return 1; };
+    globalThis.clearInterval = () => { globalThis.__timerCb = null; };
+    try {
+        InputHandler.handleCanvasClick(game, { clientX: 3 * 50 + 25, clientY: 1 * 50 + 25 });
+        for (let i = 0; i < 20 && globalThis.__timerCb; i++) globalThis.__timerCb();
+        assertDeepEq({ x: c.currentGameState.player.x, y: c.currentGameState.player.y }, { x: 3, y: 1 }, '穿过 DOOR 精确到达 {3,1}');
+        assertEq(deltas.length, 2, '恰好 2 步');
+        for (const d of deltas) assert(Math.abs(d[0]) + Math.abs(d[1]) === 1, `每步单格，实际 ${JSON.stringify(d)}`);
+    } finally {
+        globalThis.setInterval = origSet; globalThis.clearInterval = origClear; globalThis.__timerCb = null;
+    }
+});
+
 test('G1 直线 7 步 {1,8}→{8,8}（debugVision）：每步单格，精确到达，无跳格', () => {
     const { c, game } = makeG1();
     game._debugVision = true; // 全开视野：BFS 可达远距离目标
