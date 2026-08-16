@@ -35,7 +35,8 @@ index.html
       ├── view/                 # 渲染与投影
       │   ├── viewSlice.js        权威源 → 渲染/输入只读投影
       │   └── renderer.js         Canvas 渲染（只读 view 对象）
-      ├── ui.js                  纯 UI 工具（无依赖）
+      ├── ui.js                  纯 UI 工具（依赖 storage.js）
+      ├── storage.js             localStorage 安全读写（safeGet/safeSet 静默降级）
       ├── layerManager.js        多层地图图层/层面板
       ├── inputHandler.js        键盘/D-pad/鼠标输入
       └── themeManager.js        明/暗/自动三档主题
@@ -59,6 +60,16 @@ index.html
 - `GhostMazeGame`（[main.js](src/main.js)）：主类——绑定 UI / 渲染调度（`draw`/`drawEditor` 走投影）/ 编辑器薄委托（写操作转发 `editorDoc.*`）/ 分享码 URL / D-pad。
 
 **已知死代码**：无（Phase 1/7 已清理；`historyManager.js`、`ghostMazeGame.js` 已删除）。
+
+**命名与错误处理契约（Phase 5）**：
+
+- **应用状态 vs 游戏数据状态**：`GhostMazeGame.state`（`GAME_STATES` 枚举：MENU/PLAYING/DEAD/WON/EDITOR）是**应用状态**；`controller.currentGameState` 是**游戏数据状态**（GameState 快照）。两者勿混用。
+- **视图层命名**：游戏态当前渲染层 = `controller.viewLayer`（非镜像，processAction/undo/rewind 重置为玩家所在层）；编辑器态当前编辑层 = `editorDoc.currentLayer`。viewLayer 只在 controller、currentLayer 只在 editorDoc，各司其职。
+- **魔法数字入常量**：起始房间 `START_ROOM_SIZE`/`getStartRoomY`、画布边距 `EDITOR_PADDING`、地图尺寸 `MAP_SIZE_MIN`/`MAP_SIZE_MAX`、默认鬼数 `DEFAULT_GHOST_COUNT`、移动间隔 `MOVE_INTERVAL_MS` 一律取自 [constants.js](src/core/constants.js)，代码中不出现裸数字。
+- **墙类型枚举**：墙类型判定/赋值一律用 `WALL_TYPES.*`；「非空墙」判定写 `!== WALL_TYPES.EMPTY`（不用 `> 0`）。
+- **localStorage**：一律经 [storage.js](src/storage.js) 的 `safeGet/safeSet`（try/catch 静默降级，兼容隐私模式），禁止直调 `localStorage.getItem/setItem`。
+- **用户输入**：prompt 收敛为 inputHandler 的 `askForInput` 统一出口（仍用全局 prompt；将来换异步模态框只改这一处）。
+- **解码器边界**：分享码 v3 位流越界/码非法统一抛 `RangeError` → 上层干净失败路径（「分享码无效」），不允许静默 NaN 或死循环。
 
 ## 3. 核心数据结构
 
@@ -220,3 +231,4 @@ index.html
 - **数据源纪律（Phase 4 红线）**：游戏态读 `computeGameView`/controller 权威源，编辑器态读 `computeEditorView`/`editorDoc`；**禁止**在 main/inputHandler 里直读已删除的宿主镜像字段（width/hWalls/ghosts 等）。写操作一律走 `editorDoc.*`（编辑器）或 `controller.*`（游戏）。
 - 修改生成器时，唯一调用点 [main.js](src/main.js) `generateNewRandomMap` 期望返回完整的 `mapData` 结构（见 3.3），尺寸限制 8–20。
 - **改代码后跑 `npm test`**：11 个测试文件（dataSerializer/gameLogic/mapDefinition/editor/editorSession/gameController/mazeGenerator/pathfinding/inputHandler/viewSlice/clickToMove），含 golden 快照（[test/golden/](test/golden/)）。
+- **golden 采集/更新**（[test/golden/maps.json](test/golden/maps.json) 存 G1-G4 官方地图 canonical）：浏览器制作地图 → 导出 v3 分享码 → 更新 canonical 与对应码 → `npm test` 保证 `decode === canonical` 深等 + 重编码闭环 + 码长 ≤ v1 对照不回归。

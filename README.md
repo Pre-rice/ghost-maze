@@ -93,3 +93,11 @@
 ## 🚀 如何游玩
 
 [点此游玩](https://ghostmaze.novic.cc)
+
+---
+
+## 🛠️ 开发者入口
+
+* 纯前端：原生 ES Module + Canvas 2D，**零构建、零新依赖**；入口 `index.html` → `src/main.js`。
+* 本地运行需静态 HTTP 服务器（如 `npx serve`），不能直接 `file://` 打开。
+* 测试：`npm test`（Node 内置运行器，11 个测试文件）。开发指南见 [CLAUDE.md](CLAUDE.md)。
