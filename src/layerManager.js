@@ -26,48 +26,6 @@ export function createNewLayer(width, height) {
 }
 
 /**
- * 保存当前层数据
- * @param {object} currentData - 当前层的数据
- * @param {number} layerIndex - 层索引
- * @param {Array} layers - 所有层的数组
- */
-export function saveLayerData(currentData, layerIndex, layers) {
-    if (layers.length === 0) return;
-    layers[layerIndex] = {
-        hWalls: currentData.hWalls,
-        vWalls: currentData.vWalls,
-        activeCells: currentData.activeCells,
-        ghosts: currentData.ghosts,
-        items: currentData.items,
-        buttons: currentData.buttons,
-        stairs: currentData.stairs.filter(s => s.layer === layerIndex),
-        endPos: currentData.endPos,
-        customStartPos: currentData.customStartPos
-    };
-}
-
-/**
- * 加载层数据
- * @param {number} layerIndex - 层索引
- * @param {Array} layers - 所有层的数组
- * @returns {object|null} 层数据
- */
-export function loadLayerData(layerIndex, layers) {
-    if (!layers[layerIndex]) return null;
-    const layer = layers[layerIndex];
-    return {
-        hWalls: layer.hWalls,
-        vWalls: layer.vWalls,
-        activeCells: layer.activeCells,
-        ghosts: layer.ghosts,
-        items: layer.items,
-        buttons: layer.buttons,
-        endPos: layer.endPos,
-        customStartPos: layer.customStartPos
-    };
-}
-
-/**
  * 删除层时清理楼梯引用
  * @param {Array} layers - 所有层的数组
  * @param {number} removedLayerIndex - 被删除的层索引

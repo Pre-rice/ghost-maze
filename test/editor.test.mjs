@@ -5,7 +5,7 @@
  */
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
 import {
-    createBlankEditorMap, createEmptyWalls, isPosInStartRoom, isWallEditable,
+    createEmptyWalls, isPosInStartRoom, isWallEditable,
     isCellOccupied, isValidStairPlacement,
     createStartRoomLayout, validateMapForPlay, getWallAtPos,
 } from '../src/editor/editor.js';
@@ -146,16 +146,6 @@ test('getWallAtPos: GRID 工具格命中 / 越界未命中', () => {
     assertDeepEq(hit, { x: 1, y: 1, type: 'cell' }, '格命中');
     const miss = getWallAtPos(35, 15, 10, 3, 3, EDITOR_TOOLS.GRID);
     assertEq(miss, null, '越界未命中');
-});
-
-test('createBlankEditorMap: 尺寸与墙维度', () => {
-    const m = createBlankEditorMap(10, 10, 'regular');
-    assertEq(m.width, 10);
-    assertEq(m.height, 10);
-    assertEq(m.hWalls.length, 11, 'hWalls 行数 = height+1');
-    assertEq(m.hWalls[0].length, 10, 'hWalls 列数 = width');
-    assertEq(m.vWalls.length, 10, 'vWalls 行数 = height');
-    assertEq(m.vWalls[0].length, 11, 'vWalls 列数 = width+1');
 });
 
 test('createEmptyWalls: 按 h/v 类型生成，边界为 SOLID', () => {

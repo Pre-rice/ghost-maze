@@ -80,29 +80,23 @@ export class MapDefinition {
     }
 
     _findPlayerStart(data) {
-        // 优先使用明确指定的 playerStartLayer
-        const startLayer = typeof data.playerStartLayer === 'number' ? data.playerStartLayer : 0;
-        
         if (this.editorMode === 'free') {
             // 自由模式：查找带有 customStartPos 的图层
             for (let i = 0; i < this.layerCount; i++) {
                 const layer = this.layers[i];
                 if (layer && layer.initialEntities.customStartPos) {
-                    return { 
-                        x: layer.initialEntities.customStartPos.x, 
-                        y: layer.initialEntities.customStartPos.y, 
-                        layer: i 
+                    return {
+                        x: layer.initialEntities.customStartPos.x,
+                        y: layer.initialEntities.customStartPos.y,
+                        layer: i
                     };
                 }
             }
-            // 如果没找到，使用 mapStartPos 或默认
-            if (data.mapStartPos) {
-                return { x: data.mapStartPos.x, y: data.mapStartPos.y, layer: startLayer };
-            }
         }
-        
+
         // 常规模式或回退：使用 startPos 或默认
+        // （v2 出生点解析统一走正式字段；playerStartLayer/mapStartPos v1 残留已删，回退层恒 0）
         const defaultStart = data.startPos || { x: 1, y: this.height - 2 };
-        return { x: defaultStart.x, y: defaultStart.y, layer: startLayer };
+        return { x: defaultStart.x, y: defaultStart.y, layer: 0 };
     }
 }

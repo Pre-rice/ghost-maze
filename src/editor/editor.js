@@ -5,46 +5,6 @@ import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../cor
  */
 
 /**
- * 创建空白编辑器地图
- * @param {number} width - 地图宽度
- * @param {number} height - 地图高度
- * @param {string} editorMode - 编辑模式 ('regular' | 'free')
- * @returns {object} 地图数据
- */
-export function createBlankEditorMap(width, height, editorMode) {
-    const wall = () => ({ type: WALL_TYPES.SOLID, keys: 0 });
-    const empty = () => ({ type: WALL_TYPES.EMPTY, keys: 0 });
-    
-    const hWalls = Array(height + 1).fill(null).map((_, y) => 
-        Array(width).fill(null).map(() => (y === 0 || y === height) ? wall() : empty())
-    );
-    const vWalls = Array(height).fill(null).map(() => 
-        Array(width + 1).fill(null).map((_, x) => (x === 0 || x === width) ? wall() : empty())
-    );
-    
-    let activeCells;
-    if (editorMode === 'regular') {
-        activeCells = Array(height).fill(null).map(() => Array(width).fill(true));
-    } else {
-        activeCells = Array(height).fill(null).map(() => Array(width).fill(false));
-    }
-    
-    return {
-        width,
-        height,
-        hWalls,
-        vWalls,
-        activeCells,
-        endPos: null,
-        customStartPos: null,
-        ghosts: [],
-        items: [],
-        buttons: [],
-        stairs: []
-    };
-}
-
-/**
  * 创建空墙数据
  * @param {string} type - 'h' 或 'v'
  * @param {number} width - 宽度

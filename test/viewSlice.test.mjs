@@ -1,6 +1,6 @@
 /**
  * viewSlice / renderer 组合渲染测试
- *  1. createGameView/createEditorView 组装：字段与宿主引用一致
+ *  1. computeGameView/computeEditorView 投影：字段与权威源引用一致
  *  2. renderStaticLayer/drawGame/drawEditor/drawCorners 用 mock canvas 跑通
  *     G1 尺寸的完整渲染路径（不抛异常 = 组合函数自足，未访问 undefined 字段）
  */

@@ -437,7 +437,7 @@ export function shouldDrawBoundary(bx, by, isH, activeCells, width, height) {
  * 渲染静态层（地面格 + 网格线；编辑器模式画虚空虚线）
  * @param {HTMLCanvasElement} mainCanvas - 主画布（尺寸来源）
  * @param {HTMLCanvasElement} staticCanvas - 静态层画布
- * @param {object} view - 视图快照（createGameView/createEditorView）
+ * @param {object} view - 视图快照（computeGameView/computeEditorView 投影产物）
  */
 export function renderStaticLayer(mainCanvas, staticCanvas, view) {
     staticCanvas.width = mainCanvas.width;
@@ -499,7 +499,7 @@ export function drawCorners(ctx, view, isEditor = false) {
 /**
  * 游戏态全量渲染（吸收 ghostMazeGame.draw 活副本）
  * @param {CanvasRenderingContext2D} ctx - Canvas上下文
- * @param {object} view - 视图快照（createGameView）
+ * @param {object} view - 视图快照（computeGameView 投影产物）
  */
 export function drawGame(ctx, view) {
     const cs = view.cellSize; const now = Date.now();
@@ -563,7 +563,7 @@ export function drawGame(ctx, view) {
 /**
  * 编辑器态全量渲染（吸收 ghostMazeGame.drawEditor 活副本）
  * @param {CanvasRenderingContext2D} ctx - Canvas上下文
- * @param {object} view - 视图快照（createEditorView）
+ * @param {object} view - 视图快照（computeEditorView 投影产物）
  */
 export function drawEditor(ctx, view) {
     const cs = view.cellSize;

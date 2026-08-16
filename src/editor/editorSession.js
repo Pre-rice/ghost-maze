@@ -146,7 +146,7 @@ export class EditorDocument {
 
     // ---------- 尺寸 / 图层 ----------
 
-    /** 创建空白编辑状态（对应 createBlankEditorMap 纯数据部分） */
+    /** 创建空白编辑状态（内联原 editor.createBlankEditorMap 纯数据逻辑） */
     createBlank(width, height) {
         this.width = width;
         this.height = height;
