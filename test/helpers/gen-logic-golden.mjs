@@ -8,8 +8,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { MapDefinition } from '../../src/mapDefinition.js';
-import { GameLogic } from '../../src/gameLogic.js';
+import { MapDefinition } from '../../src/core/mapDefinition.js';
+import { GameLogic } from '../../src/core/gameLogic.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const goldenMaps = JSON.parse(readFileSync(join(__dirname, '../golden/maps.json'), 'utf-8'));

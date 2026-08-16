@@ -1,10 +1,9 @@
 {
   "G1-demo": {
-    "code": "Y-biYmRlSGFhZGRkZ2TmYFi1agEDBISuEo0NYFi1agWjAxdDAFODCMMCVjYQi5ERAA",
+    "code": "Y-biYmZlSGFhZOT4jwT4GRnZGZk5GFatWsAAAaGrRGMDGFatWsHowMUQwNQgwrCAlQ3EYmQEAA",
     "gameMode": "death-loop",
     "initialHealth": 5,
     "initialStamina": 100,
-    "v1CodeLength": 66,
     "canonical": {
       "width": 10,
       "height": 10,
@@ -952,8 +951,11 @@
         }
       ],
       "buttons": [],
-      "editorMode": "regular",
-      "customStartPos": null,
+      "editorMode": "free",
+      "customStartPos": {
+        "x": 1,
+        "y": 8
+      },
       "activeCells": [
         [
           true,

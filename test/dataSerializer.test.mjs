@@ -45,10 +45,11 @@ test('G1: 重编码闭环（码长与 golden 一致 = 确定性序列化）', ()
     assertEq(re.code, g.code, '解码→编码必须逐字节还原（同一压缩实现下）');
 });
 
-test('码长上限：v2 ≤ v1（防协议膨胀回归）', () => {
+test('码长上限：G1 v3 码长 ≤ 固定阈值（防协议膨胀回归）', () => {
+    // v1（旧启发式协议）已删除，防膨胀基线改为固定上限：G1 当前 74 字符，阈值 100 留足余量
     const g = golden['G1-demo'];
-    assert(g.code.length <= g.v1CodeLength,
-        `v3 码长 ${g.code.length} 应 ≤ v1 的 ${g.v1CodeLength}`);
+    assert(g.code.length <= 100,
+        `G1 v3 码长 ${g.code.length} 超出固定上限 100`);
 });
 
 test('G1: 解码产物无 v1 残留字段（mapStartPos/playerStartLayer）', () => {

@@ -266,7 +266,8 @@ test('buildShareSourceData: 游戏态分享码装配', () => {
     assertEq(src.initialStamina, 100);
     assertEq(src.playerStartLayer, undefined, 'v1 残留字段不再装配');
     assertEq(src.width, 10);
-    assertEq(src.editorMode, 'regular');
+    assertEq(src.editorMode, 'free');
+    assertDeepEq(src.customStartPos, { x: 1, y: 8 }, 'free 模式出生点随图');
 });
 
 test('loadFromShareCode: G1 分享码解码往返', () => {
