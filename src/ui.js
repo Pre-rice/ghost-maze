@@ -2,6 +2,7 @@
  * UI 模块 - 处理所有用户界面相关的功能
  * 包括: Toast通知、确认对话框、浮层管理、D-pad控制等
  */
+import { safeGet, safeSet } from './storage.js';
 
 /**
  * 显示一个短暂的顶部通知 (Toast)
@@ -69,9 +70,9 @@ export function hideAllOverlays() {
  * @param {object} dpad - D-pad状态对象
  */
 export function initializeDpadTouchControls(dpad) {
-    const savedLeft = localStorage.getItem('dpadLeft');
-    const savedTop = localStorage.getItem('dpadTop');
-    const savedScale = localStorage.getItem('dpadScale');
+    const savedLeft = safeGet('dpadLeft');
+    const savedTop = safeGet('dpadTop');
+    const savedScale = safeGet('dpadScale');
     
     if (savedScale) {
         dpad.currentScale = parseFloat(savedScale);
@@ -147,11 +148,11 @@ export function initializeDpadTouchControls(dpad) {
             if (scaleMatch) {
                 dpad.currentScale = parseFloat(scaleMatch[1]);
             }
-            localStorage.setItem('dpadScale', dpad.currentScale);
+            safeSet('dpadScale', dpad.currentScale);
         }
         if (dpad.isDragging) {
-            localStorage.setItem('dpadLeft', dpad.element.style.left);
-            localStorage.setItem('dpadTop', dpad.element.style.top);
+            safeSet('dpadLeft', dpad.element.style.left);
+            safeSet('dpadTop', dpad.element.style.top);
         }
         dpad.isDragging = false;
         dpad.isResizing = false;

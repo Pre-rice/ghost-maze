@@ -1,4 +1,4 @@
-import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from './core/constants.js';
+import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY, EDITOR_PADDING, MAP_SIZE_MIN, MAP_SIZE_MAX, DEFAULT_GHOST_COUNT } from './core/constants.js';
 import { DataSerializer } from './core/dataSerializer.js';
 import { GameController } from './core/gameController.js';
 
@@ -63,12 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // 从CSS变量中获取颜色值，便于在Canvas绘图中统一风格
             this.updateColors();
             
-            // 核心游戏状态
+            // 应用状态（菜单/游玩/死亡/胜利/编辑器），与 controller.currentGameState（游戏数据状态）区分
             this.state = GAME_STATES.MENU;
             this.gameMode = 'exploration';
             this.initialHealth = 5;
             this.initialStamina = 100;
-            this.padding = 15;
+            this.padding = EDITOR_PADDING;
             this.cellSize = 0;  // 无地图时无意义；startGame/enterEditorMode 按地图尺寸重算
             this.mapData = null;
 
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.drawOffset = { x: 0, y: 0 };
 
             // 鬼数量（随机生成用）
-            this.ghostCount = 3;
+            this.ghostCount = DEFAULT_GHOST_COUNT;
 
             // 视野调试开关（渲染投影经 _renderParams 注入）
             this.debugVision = false;
@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.mapData = mapData;
             this.stopAnimationLoop();
             this.state = GAME_STATES.PLAYING;
-            this.padding = 15;
+            this.padding = EDITOR_PADDING;
             this.cellSize = (canvas.width - 2 * this.padding) / mapData.width;
             // 数据流在控制器（onSync 回调触发渲染，cellSize 需先就绪）
             this.controller.startGame(mapData);
@@ -408,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         generateNewRandomMap() {
             const size = parseInt(this.mapSizeInput.value);
-            if (size < 8 || size > 20) {
+            if (size < MAP_SIZE_MIN || size > MAP_SIZE_MAX) {
                 this.showToast('地图大小必须在 8 到 20 之间。', 3000, 'error');
                 return;
             }
@@ -525,7 +525,7 @@ draw() {
             this.state = GAME_STATES.EDITOR; this.editor.active = true; this.setEditorTool(EDITOR_TOOLS.WALL);
             document.getElementById('game-controls').style.display = 'none';
             document.getElementById('editor-controls').style.display = 'block';
-            this.editorMapSizeInput.value = this.editorDoc.width; this.padding = 15;
+            this.editorMapSizeInput.value = this.editorDoc.width; this.padding = EDITOR_PADDING;
             this.cellSize = (canvas.width - 2 * this.padding) / this.editorDoc.width;
             this.updateEditorUIForMode(); this.updateLayerModeUI(); this.updateLayerPanel();
             this._renderStaticLayer(); this.drawEditor(); this.updateDpadVisibility();
@@ -741,7 +741,7 @@ draw() {
 
         resizeAndClearEditor() {
             const size = parseInt(this.editorMapSizeInput.value);
-            if (size < 8 || size > 20) {
+            if (size < MAP_SIZE_MIN || size > MAP_SIZE_MAX) {
                 this.showToast('地图大小必须在 8 到 20 之间。', 3000, 'error');
                 this.editorMapSizeInput.value = this.editorDoc.width; return;
             }
@@ -890,7 +890,7 @@ draw() {
                 // 编辑器数据源 = EditorDocument（fromMapData 深拷贝装载；playerStartLayer v1 残留已由扫描替代）
                 this.editorDoc = EditorDocument.fromMapData(mapData);
                 this.editorMapSizeInput.value = this.editorDoc.width;
-                this.padding = 15; this.cellSize = (canvas.width - 2 * this.padding) / this.editorDoc.width;
+                this.padding = EDITOR_PADDING; this.cellSize = (canvas.width - 2 * this.padding) / this.editorDoc.width;
                 this.updateEditorUIForMode(); this.updateLayerModeUI(); this.updateLayerPanel();
                 this._renderStaticLayer(); this.drawEditor();
             } else {

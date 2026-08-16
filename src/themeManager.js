@@ -1,6 +1,7 @@
 /**
  * ThemeManager 模块 - 管理应用主题切换
  */
+import { safeGet, safeSet } from './storage.js';
 
 const sunIcon = `
     <path d="M12 4.5V2m0 20v-2.5M4.93 4.93 3.51 3.51m16.98 16.98-1.42-1.42M4.5 12H2m20 0h-2.5M4.93 19.07l-1.42 1.42m16.98-16.98-1.42 1.42M12 7.5A4.5 4.5 0 1 1 7.5 12 4.505 4.505 0 0 1 12 7.5z"/>
@@ -65,10 +66,10 @@ export function getNextTheme(current) {
  * @param {function} onThemeChange - 主题变更回调
  */
 function handleThemeToggle(onThemeChange) {
-    const current = localStorage.getItem("theme") || "auto";
+    const current = safeGet("theme", "auto");
     const next = getNextTheme(current);
     applyTheme(next);
-    localStorage.setItem("theme", next);
+    safeSet("theme", next);
     if (onThemeChange) {
         onThemeChange();
     }
@@ -79,7 +80,7 @@ function handleThemeToggle(onThemeChange) {
  * @param {function} onThemeChange - 主题变更回调
  */
 export function initThemeManager(onThemeChange) {
-    const saved = localStorage.getItem("theme") || "auto";
+    const saved = safeGet("theme", "auto");
     applyTheme(saved);
     
     // 绑定游戏模式的主题切换

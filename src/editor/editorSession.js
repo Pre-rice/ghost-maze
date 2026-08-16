@@ -509,10 +509,10 @@ export class EditorDocument {
             this.items = this.items.filter(i => i.x !== x || i.y !== y);
             this.buttons = this.buttons.filter(b => b.x !== x || b.y !== y);
             this.eraseStairAt(x, y, this.currentLayer);
-            this.hWalls[y][x] = { type: 0 };
-            this.hWalls[y + 1][x] = { type: 0 };
-            this.vWalls[y][x] = { type: 0 };
-            this.vWalls[y][x + 1] = { type: 0 };
+            this.hWalls[y][x] = { type: WALL_TYPES.EMPTY };
+            this.hWalls[y + 1][x] = { type: WALL_TYPES.EMPTY };
+            this.vWalls[y][x] = { type: WALL_TYPES.EMPTY };
+            this.vWalls[y][x + 1] = { type: WALL_TYPES.EMPTY };
         }
     }
 

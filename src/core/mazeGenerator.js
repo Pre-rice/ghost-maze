@@ -1,4 +1,4 @@
-import { WALL_TYPES, getStartRoomY } from './constants.js';
+import { WALL_TYPES, getStartRoomY, DEFAULT_GHOST_COUNT } from './constants.js';
 import { isPosInStartRoom, createStartRoomLayout } from '../editor/editor.js';
 import { calculateDistances } from './pathfinding.js';
 
@@ -26,10 +26,10 @@ export function findFarthestEndCell(startPos, width, height, hWalls, vWalls) {
             if (x === 0 || x === width - 1 || y === 0 || y === height - 1) {
                 // 检查是否有足够多的墙（死角更好）
                 let wallCount = 0;
-                if (hWalls[y][x].type > 0) wallCount++;
-                if (hWalls[y + 1][x].type > 0) wallCount++;
-                if (vWalls[y][x].type > 0) wallCount++;
-                if (vWalls[y][x + 1].type > 0) wallCount++;
+                if (hWalls[y][x].type !== WALL_TYPES.EMPTY) wallCount++;
+                if (hWalls[y + 1][x].type !== WALL_TYPES.EMPTY) wallCount++;
+                if (vWalls[y][x].type !== WALL_TYPES.EMPTY) wallCount++;
+                if (vWalls[y][x + 1].type !== WALL_TYPES.EMPTY) wallCount++;
                 
                 if (wallCount >= 3 && distances[y][x] > maxDist) {
                     maxDist = distances[y][x];
@@ -48,7 +48,7 @@ export function findFarthestEndCell(startPos, width, height, hWalls, vWalls) {
  * @param {number} ghostCount - 鬼数量
  * @returns {object} 完整的地图数据
  */
-export function generateFullMaze(width, height, ghostCount = 3) {
+export function generateFullMaze(width, height, ghostCount = DEFAULT_GHOST_COUNT) {
     const solid = () => ({ type: WALL_TYPES.SOLID, keys: 0 });
     const empty = () => ({ type: WALL_TYPES.EMPTY, keys: 0 });
     const door = () => ({ type: WALL_TYPES.DOOR, keys: 0 });
@@ -190,10 +190,10 @@ export function generateFullMaze(width, height, ghostCount = 3) {
             if (!occupied.has(`${x},${y}`)) {
                 validCells.push({ x, y });
                 let wallCount = 0;
-                if (hWalls[y][x].type > 0) wallCount++;
-                if (hWalls[y + 1][x].type > 0) wallCount++;
-                if (vWalls[y][x].type > 0) wallCount++;
-                if (vWalls[y][x + 1].type > 0) wallCount++;
+                if (hWalls[y][x].type !== WALL_TYPES.EMPTY) wallCount++;
+                if (hWalls[y + 1][x].type !== WALL_TYPES.EMPTY) wallCount++;
+                if (vWalls[y][x].type !== WALL_TYPES.EMPTY) wallCount++;
+                if (vWalls[y][x + 1].type !== WALL_TYPES.EMPTY) wallCount++;
                 if (wallCount >= 3) preferredCells.push({ x, y });
             }
         }

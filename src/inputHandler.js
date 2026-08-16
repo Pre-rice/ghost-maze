@@ -1,4 +1,4 @@
-import { GAME_STATES, WALL_TYPES, EDITOR_TOOLS } from './core/constants.js';
+import { GAME_STATES, WALL_TYPES, EDITOR_TOOLS, MOVE_INTERVAL_MS } from './core/constants.js';
 import * as Editor from './editor/editor.js';
 import * as Pathfinding from './core/pathfinding.js';
 
@@ -10,6 +10,9 @@ import * as Pathfinding from './core/pathfinding.js';
 // 鼠标坐标换算 getMousePos 需要访问画布尺寸，独立模块内不能依赖 main.js 的闭包，
 // 故在模块顶层获取同一 DOM 元素（index.html 以 type="module" 加载，DOM 已就绪）。
 const canvas = document.getElementById('game-canvas');
+
+// 统一用户输入出口（行为零风险，仍用全局 prompt；将来若换异步模态输入框，只改这一处）
+const askForInput = (message, defaultValue) => prompt(message, defaultValue);
 
 /**
  * 绑定D-pad控制器事件
@@ -28,7 +31,7 @@ export function bindDpadControls(game) {
         clearInterval(game.autoMoveInterval);
         clearInterval(dpadInterval);
         game.movePlayer(dx, dy);
-        dpadInterval = setInterval(() => game.movePlayer(dx, dy), 200);
+        dpadInterval = setInterval(() => game.movePlayer(dx, dy), MOVE_INTERVAL_MS);
     };
 
     const handleCenterPress = () => {
@@ -210,7 +213,7 @@ export function bindDpadControls(game) {
                     currentStep++;
                 };
                 move();
-                if (path.length > 2) { game.autoMoveInterval = setInterval(move, 200); }
+                if (path.length > 2) { game.autoMoveInterval = setInterval(move, MOVE_INTERVAL_MS); }
             }
         }
 
@@ -446,7 +449,7 @@ export function bindDpadControls(game) {
                     if (game.editor.tool === EDITOR_TOOLS.DOOR) {
                         game.toggleDoor(wall);
                     } else if (game.editor.tool === EDITOR_TOOLS.LOCK) {
-                        const numStr = prompt('请输入锁需要的钥匙数量:', '0');
+                        const numStr = askForInput('请输入锁需要的钥匙数量:', '0');
                         if (numStr !== null) {
                             const keys = parseInt(numStr);
                             if (!isNaN(keys) && keys >= 0) { game.setLocked(wall, keys); }
@@ -456,7 +459,7 @@ export function bindDpadControls(game) {
                         const wallRef = wall.type === 'h' ? game.editorDoc.hWalls[wall.y][wall.x] : game.editorDoc.vWalls[wall.y][wall.x];
                         if (wallRef.type === WALL_TYPES.LETTER_DOOR) { game.toggleLetterDoor(wall, 'A'); }
                         else {
-                            const letter = prompt('请输入一个字母:', 'A');
+                            const letter = askForInput('请输入一个字母:', 'A');
                             if (letter && /^[a-zA-Z]$/.test(letter)) { game.toggleLetterDoor(wall, letter); }
                             else if (letter !== null) { game.showToast('请输入单个英文字母。', 3000, 'error'); }
                         }
@@ -468,7 +471,7 @@ export function bindDpadControls(game) {
                         const existingButtonIndex = game.editorDoc.buttons.findIndex(b => b.x === hotspot.x && b.y === hotspot.y && b.direction.dx === hotspot.direction.dx && b.direction.dy === hotspot.direction.dy);
                         if (existingButtonIndex > -1) { game.toggleButton(hotspot, 'A'); }
                         else {
-                            const letter = prompt('请输入一个字母:', 'A');
+                            const letter = askForInput('请输入一个字母:', 'A');
                             if (letter && /^[a-zA-Z]$/.test(letter)) { game.toggleButton(hotspot, letter); }
                             else if (letter !== null) { game.showToast('请输入单个英文字母。', 3000, 'error'); }
                         }

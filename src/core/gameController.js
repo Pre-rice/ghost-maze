@@ -169,6 +169,7 @@ export class GameController {
             }
             return { overlay: 'game-over', message: '' };
         }
-        return { overlay: 'death', message: reason === 'stamina_depleted' ? '体力耗尽，你死了' : '你死了' };
+        // gameLogic 实际写出的死亡原因：'ghost'（被鬼抓）/ 'no_hp'（探索模式血量耗尽）/ 'no_stamina'（死亡循环体力耗尽）
+        return { overlay: 'death', message: reason === 'no_stamina' ? '体力耗尽，你死了' : '你死了' };
     }
 }
