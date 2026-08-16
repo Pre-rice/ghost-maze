@@ -284,17 +284,4 @@ test('loadFromShareCode: G1 分享码解码往返', () => {
     assert(bad.error, '有错误信息');
 });
 
-test('applyLoadedMap: 参数应用 + setMode 回调 + 开局', () => {
-    const c = makeG1Controller();
-    let modeArg = null;
-    // 宿主（ghostMazeGame.setGameMode）会同步 controller.gameMode；此处模拟
-    c.applyLoadedMap(G1.canonical, 'exploration', 7, 80, (gm) => { modeArg = gm; c.gameMode = gm; });
-    assertEq(modeArg, 'exploration', 'setMode 回调收到模式');
-    assertEq(c.gameMode, 'exploration', '模式已切换');
-    assertEq(c.initialHealth, 7);
-    assertEq(c.initialStamina, 80);
-    assertEq(c.mapDefinition.gameMode, 'exploration', '新开局使用新模式');
-    assertEq(c.history.length, 1, '重新开局');
-});
-
 summary('gameController');

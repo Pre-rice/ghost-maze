@@ -194,7 +194,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (!code) return;
             this.showToast("检测到分享码，正在加载…", 2000);
-            this.loadFromShareCode(code);
+            // try/catch 兜底：解码或开局（_applyLoadedData）任一环节异常都不让启动流程崩掉，
+            // 页面保持可用的 MENU 态并给出干净错误提示
+            try {
+                this.loadFromShareCode(code);
+            } catch (e) {
+                console.error('URL 分享码加载失败', e);
+                this.showToast('分享码无效或已损坏。', 3000, 'error');
+            }
         }
 
         showInitialMessage() {
@@ -444,14 +451,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateUIDisplays() {
             const state = this.controller.currentGameState;
-            UI.updateUIDisplays({
-                gameMode: this.gameMode,
-                player: state?.player,
-                loopCount: state?.loopCount ?? 0,
-                healthDisplay: this.healthDisplay,
-                keysDisplay: this.keysDisplay,
-                stepsDisplay: this.stepsDisplay
-            });
+            // 空安全：URL 启动加载时 setGameMode 会在开局前触发本函数（currentGameState 尚为 null），
+            // player 未定义时跳过状态栏文本更新（HTML 默认值保留），否则直接读 player.hp 会崩溃
+            if (state?.player) {
+                UI.updateUIDisplays({
+                    gameMode: this.gameMode,
+                    player: state.player,
+                    loopCount: state.loopCount ?? 0,
+                    healthDisplay: this.healthDisplay,
+                    keysDisplay: this.keysDisplay,
+                    stepsDisplay: this.stepsDisplay
+                });
+            }
             this.updateProximityWarning();
         }
 
@@ -1087,8 +1098,14 @@ drawEditor() {
                 this.updateEditorUIForMode(); this.updateLayerModeUI(); this.updateLayerPanel();
                 this._renderStaticLayer(); this.drawEditor();
             } else {
-                // 游戏态加载：应用参数 + 模式切换 + 开局（控制器内完成数据流）
-                this.controller.applyLoadedMap(mapData, gameMode, health, stamina, (gm) => this.setGameMode(gm));
+                // 游戏态加载：应用参数 + 模式切换 + 完整开局。
+                // 必须走 main.startGame()（而非仅 controller.applyLoadedMap）：启动时 URL 加载
+                // 处于 state=MENU、cellSize 未就绪，只有 main.startGame 会设置 state=PLAYING /
+                // cellSize / 动画循环 / drawOffset——否则地图数据虽进了控制器，却渲染不出、输入全失效。
+                this.controller.initialHealth = health;
+                this.controller.initialStamina = stamina;
+                this.setGameMode(gameMode);
+                this.startGame(mapData);
             }
             this.showToast('地图加载成功！', 2000, 'success');
         }

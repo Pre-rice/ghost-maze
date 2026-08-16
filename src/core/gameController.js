@@ -151,14 +151,6 @@ export class GameController {
         return { success: false, error: result.error };
     }
 
-    /** 应用分享码参数并开局（对应原 _applyLoadedData 游戏分支） */
-    applyLoadedMap(mapData, gameMode, health, stamina, setMode) {
-        this.initialHealth = health;
-        this.initialStamina = stamina;
-        setMode(gameMode);
-        this.startGame(mapData);
-    }
-
     // ---------- 胜负数据（对应原 handleWin/handlePlayerDeath 的文本部分） ----------
 
     _winStats() {

@@ -304,4 +304,22 @@ test('非法输入: 尺寸超界（width > 64）生成拒绝', () => {
     assertEq(r.error, '地图尺寸无效。');
 });
 
+// ==================== URL 往返（v3 字符集必须 URL 安全） ====================
+
+test('v3 码字符集 URL 安全（仅 [A-Za-z0-9_-]）：URL query 往返无损，URL 加载与粘贴等价', () => {
+    const g = golden['G1-demo'];
+    // 1. 字符集：无标准 base64 的 +/=，URL 编码往返零丢失
+    assert(/^[A-Za-z0-9_-]+$/.test(g.code), `码含非 URL 安全字符: ${g.code}`);
+    // 2. 模拟 updateURLWithShareCode（searchParams.set 自动编码）→ 刷新读取（get 自动解码）
+    const url = new URL('https://ghostmaze.novic.cc/');
+    url.searchParams.set('map', g.code);
+    url.hash = '';
+    const fromURL = new URLSearchParams(new URL(url.toString()).search).get('map');
+    assertEq(fromURL, g.code, 'URL query 往返必须逐字符还原');
+    // 3. URL 取回的码与 golden 解码结果深等（URL 加载 = 粘贴加载）
+    const r = DataSerializer.loadFromShareCode(fromURL);
+    assert(r.success, r.error);
+    assertDeepEq(r.data.mapData, g.canonical, 'URL 取回的码解码必须与 golden 一致');
+});
+
 summary('dataSerializer');
