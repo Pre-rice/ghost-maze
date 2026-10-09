@@ -9,6 +9,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { runInNewContext } from 'node:vm';
 import { installBrowserEnv } from './helpers/browser-env.mjs';
 installBrowserEnv();
 
@@ -321,6 +322,55 @@ test('v3 码字符集 URL 安全（仅 [A-Za-z0-9_-]）：URL query 往返无损
     const r = DataSerializer.loadFromShareCode(fromURL);
     assert(r.success, r.error);
     assertDeepEq(r.data.mapData, g.canonical, 'URL 取回的码解码必须与 golden 一致');
+});
+
+// 使用页面实际携带的 pako 验证，避免只用 Node zlib 代替浏览器压缩库。
+const browserPako = runInNewContext(readFileSync(join(__dirname, '../src/vendor/pako.js'), 'utf8') + '; pako;', {});
+const TWIN_CODE = 'Y-bgYGZlSGFkZGJlkBORkeFhYGBiZGRiYmBmYmV0ZGJkcGJhYXZatWrVqiWr9nut-BsqGgoDdX9AwnWrVqxaCeYHcDkyODE4MTgyOjEAAA';
+
+test('本地 pako 与 zlib 互通，旧 v3 码与新压缩码解码结果一致', () => {
+    const shim = window.pako;
+    try {
+        for (const code of [...Object.values(golden).map(g => g.code), TWIN_CODE]) {
+            window.pako = shim;
+            const expected = DataSerializer.loadFromShareCode(code);
+            assert(expected.success, expected.error);
+            window.pako = browserPako;
+            const decoded = DataSerializer.loadFromShareCode(code);
+            assert(decoded.success, decoded.error);
+            assertDeepEq(decoded.data, expected.data);
+            const encoded = DataSerializer.generateShareCode({ ...decoded.data.mapData, ...decoded.data });
+            assert(encoded.success, encoded.error);
+            window.pako = shim;
+            assertDeepEq(DataSerializer.loadFromShareCode(encoded.code).data, expected.data);
+        }
+    } finally { window.pako = shim; }
+});
+
+test('真实 pako 压缩不会比默认策略更长，旧分享码与新码保留同一 v3 字节流', () => {
+    const shim = window.pako;
+    try {
+        const twin = DataSerializer.loadFromShareCode(TWIN_CODE).data;
+        const fixtures = [...Object.values(golden).map(g => ({ ...g.canonical, gameMode: g.gameMode,
+            initialHealth: g.initialHealth, initialStamina: g.initialStamina })),
+            { ...FULL_TYPES, gameMode: 'death-loop', initialHealth: 5, initialStamina: 100 },
+            { ...MULTI_LAYER, gameMode: 'death-loop', initialHealth: 5, initialStamina: 100 },
+            { ...twin.mapData, gameMode: twin.gameMode, initialHealth: twin.initialHealth, initialStamina: twin.initialStamina }];
+        for (const fixture of fixtures) {
+            window.pako = { ...browserPako, deflateRaw: data => browserPako.deflateRaw(data) };
+            const baseline = DataSerializer.generateShareCode(fixture);
+            window.pako = browserPako;
+            const selected = DataSerializer.generateShareCode(fixture);
+            assert(baseline.success && selected.success);
+            assert(selected.code.length <= baseline.code.length, '压缩优化不得增加码长');
+            const payload = code => Array.from(browserPako.inflateRaw(Buffer.from(code, 'base64url')));
+            assertDeepEq(payload(selected.code), payload(baseline.code), '压缩前 v3 数据必须完全相同');
+            if (fixture === fixtures.at(-1)) {
+                assert(selected.code.length < TWIN_CODE.length, '本地 pako 重编码应短于现有双鬼分享码');
+                assertDeepEq(payload(selected.code), payload(TWIN_CODE), '现有双鬼分享码的字节流保持原样');
+            }
+        }
+    } finally { window.pako = shim; }
 });
 
 summary('dataSerializer');

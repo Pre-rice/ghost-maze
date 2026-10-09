@@ -10,7 +10,7 @@ import { deflateRawSync, inflateRawSync } from 'node:zlib';
 export function installBrowserEnv() {
     globalThis.window = globalThis.window || {};
     globalThis.window.pako = {
-        deflateRaw: (data) => deflateRawSync(data),
+        deflateRaw: (data, options) => deflateRawSync(data, options),
         inflateRaw: (data) => inflateRawSync(data)
     };
     if (typeof globalThis.atob !== 'function') {

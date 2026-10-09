@@ -474,22 +474,26 @@ export function drawCorners(ctx, view, isEditor = false) {
     const isCornerWall = (wt) => wt === WALL_TYPES.SOLID || wt === WALL_TYPES.DOOR ||
         wt === WALL_TYPES.LOCKED || wt === WALL_TYPES.ONE_WAY || wt === WALL_TYPES.LETTER_DOOR;
     const hasCornerWall = (type, wx, wy) => {
-        if (type === 'h') {
-            if (wx < 0 || wx >= width) return false;
-            if (hWalls[wy] && hWalls[wy][wx] && isCornerWall(hWalls[wy][wx].type)) return true;
-            return isActive(wx, wy - 1) !== isActive(wx, wy);
-        } else {
-            if (wy < 0 || wy >= height) return false;
-            if (vWalls[wy] && vWalls[wy][wx] && isCornerWall(vWalls[wy][wx].type)) return true;
-            return isActive(wx - 1, wy) !== isActive(wx, wy);
-        }
+        const isH = type === 'h';
+        if (wx < 0 || wy < 0 || wx >= (isH ? width : width + 1) || wy >= (isH ? height + 1 : height)) return false;
+        const ax = isH ? wx : wx - 1, ay = isH ? wy - 1 : wy;
+        const firstActive = isActive(ax, ay), secondActive = isActive(wx, wy);
+        if (!firstActive && !secondActive) return false;
+        const isBoundary = firstActive !== secondActive;
+        if (!isEditor && !debugVision && !isBoundary &&
+            !(firstActive && seenCells[ay][ax]) && !(secondActive && seenCells[wy][wx])) return false;
+        const wall = (isH ? hWalls : vWalls)[wy][wx];
+        if (wall.type === WALL_TYPES.EMPTY) return isBoundary && (!isEditor || view.editor.mode === 'free');
+        if (wall.type === WALL_TYPES.LETTER_DOOR &&
+            (isEditor ? wall.initialState : wall.currentState) === 'open') return false;
+        return isCornerWall(wall.type);
     };
     for (let y = 0; y <= height; y++) {
         for (let x = 0; x <= width; x++) {
             const hasHLeft = hasCornerWall('h', x - 1, y); const hasHRight = hasCornerWall('h', x, y);
             const hasVUp = hasCornerWall('v', x, y - 1); const hasVDown = hasCornerWall('v', x, y);
-            const connectedCount = (hasHLeft ? 1 : 0) + (hasHRight ? 1 : 0) + (hasVUp ? 1 : 0) + (hasVDown ? 1 : 0);
-            if (connectedCount < 2) continue;
+            // 只有实际绘出的横、竖墙段相交才补角；同一直线的接缝不补方块。
+            if (!(hasHLeft || hasHRight) || !(hasVUp || hasVDown)) continue;
             if (!isEditor && !debugVision) {
                 const isPureInternal = (x > 0 && x < width && y > 0 && y < height &&
                     isActive(x - 1, y - 1) && isActive(x, y - 1) && isActive(x - 1, y) && isActive(x, y));

@@ -19,6 +19,8 @@ import { WALL_TYPES } from './constants.js';
 // ==================================================
 
 const PROTOCOL_VERSION = 0x03;
+const DEFLATE_LEVEL_MAX = 9;
+const DEFLATE_STRATEGY_RLE = 3;
 
 // --- 位流写入器（MSB-first） ---
 class BitWriter {
@@ -287,7 +289,12 @@ export const DataSerializer = {
             }
 
             const uint8Data = new Uint8Array(buffer);
-            const compressed = window.pako.deflateRaw(uint8Data);
+            // 保持 v3 字节流不变；在默认、最高压缩与游程压缩中取最短结果，平局保留默认。
+            let compressed = window.pako.deflateRaw(uint8Data);
+            for (const options of [{ level: DEFLATE_LEVEL_MAX }, { level: DEFLATE_LEVEL_MAX, strategy: DEFLATE_STRATEGY_RLE }]) {
+                const candidate = window.pako.deflateRaw(uint8Data, options);
+                if (candidate.byteLength < compressed.byteLength) compressed = candidate;
+            }
             let binaryString = '';
             for (let i = 0; i < compressed.byteLength; i++) {
                 binaryString += String.fromCharCode(compressed[i]);
