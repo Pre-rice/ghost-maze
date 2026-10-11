@@ -159,43 +159,6 @@ export function createStartRoomLayout(hWalls, vWalls, roomY) {
 }
 
 /**
- * 验证地图数据是否可以游玩
- * @param {object} mapData - 地图数据
- * @param {string} editorMode - 编辑模式
- * @returns {object} {valid: boolean, error?: string}
- */
-export function validateMapForPlay(mapData, editorMode) {
-    if (editorMode === 'free') {
-        // 自由模式必须有起点
-        if (!mapData.customStartPos) {
-            return { valid: false, error: '自由模式必须设置起点！' };
-        }
-        // 检查是否有至少一个活动单元格
-        let hasActive = false;
-        for (let y = 0; y < mapData.height; y++) {
-            for (let x = 0; x < mapData.width; x++) {
-                if (mapData.activeCells[y][x]) {
-                    hasActive = true;
-                    break;
-                }
-            }
-            if (hasActive) break;
-        }
-        if (!hasActive) {
-            return { valid: false, error: '地图必须有至少一个活动单元格！' };
-        }
-    }
-    // 必须存在终点（多层时任意层有终点即可；endPos 为当前层终点，layers 为其余层）
-    const hasEnd = mapData.multiLayerMode
-        ? !!(mapData.endPos || (mapData.layers || []).some(l => l && l.endPos))
-        : !!mapData.endPos;
-    if (!hasEnd) {
-        return { valid: false, error: '请先设置终点！' };
-    }
-    return { valid: true };
-}
-
-/**
  * 获取墙位置
  * @param {number} mouseX - 鼠标X
  * @param {number} mouseY - 鼠标Y

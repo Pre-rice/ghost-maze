@@ -1,3 +1,4 @@
+import { validateMapData } from '../src/core/mapDataUtils.js';
 /**
  * MapDefinition 归一化测试：构造/深拷贝/空层/出生点推导/楼梯过滤
  */
@@ -28,7 +29,7 @@ test('单层构造: 尺寸/模式/层数/实体展开', () => {
     assertEq(md.height, 2);
     assertEq(md.gameMode, 'death-loop');
     assertEq(md.initialHealth, 5);
-    assertEq(md.initialStamina, 100);
+    assertEq(md.initialStamina, undefined);
     assertEq(md.layerCount, 1);
     assertEq(md.layers.length, 1);
     // 第 0 层展开
@@ -61,15 +62,10 @@ test('深拷贝隔离: 修改源数据不影响 mapDef', () => {
     assertEq(md.layers[0].initialEntities.endPos.x, 2, '终点深拷贝隔离');
 });
 
-test('空层: layerCount=2 且无 layers[1] → 全 EMPTY + 空实体', () => {
-    const md = new MapDefinition(baseData({ layerCount: 2, multiLayerMode: true }));
-    assertEq(md.layers.length, 2);
-    const l1 = md.layers[1];
-    assertEq(l1.initialWalls.h.length, 3, '空层墙维度正确');
-    assertEq(l1.initialWalls.h[0][0].type, WT.EMPTY, '空层全 EMPTY');
-    assertEq(l1.initialEntities.ghosts.length, 0);
-    assertEq(l1.initialEntities.endPos, null);
-    assertEq(l1.activeCells[0][0], true);
+test('正式入口拒绝缺失的层数据', () => {
+    const result = validateMapData(baseData({ width: 8, height: 8, layerCount: 2, multiLayerMode: true }));
+    assertEq(result.valid, false);
+    assertEq(result.error, '缺少层数据');
 });
 
 test('出生点: regular 模式默认 {1, height-2}', () => {

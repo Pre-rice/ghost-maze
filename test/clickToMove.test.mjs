@@ -38,9 +38,8 @@ suite('点击移动端到端（真实引擎）');
 
 const makeG1 = () => {
     const c = new GameController({});
-    c.gameMode = G1.gameMode;
-    c.initialHealth = G1.initialHealth;
-    c.initialStamina = G1.initialStamina;
+
+
     c.startGame(G1.canonical);
     const game = {
         state: 'playing', cellSize: 50, drawOffset: { x: 0, y: 0 }, autoMoveInterval: null,
@@ -92,13 +91,13 @@ test('G1 直线 2 步 {1,8}→{3,8}：每步单格，经过 {2,8}，精确到达
 
 // 确定性带门小地图：玩家 {1,1}，向右穿过 DOOR 到 {3,1}
 const doorMap = () => {
-    const W = 4, H = 3;
+    const W = 8, H = 8;
     const hWalls = Array(H + 1).fill(null).map((_, y) => Array(W).fill(null).map((_, x) => ({ type: (y === 0 || y === H || x === 0 || x === W - 1) ? 1 : 0, keys: 0 })));
     const vWalls = Array(H).fill(null).map((_, y) => Array(W + 1).fill(null).map((_, x) => ({ type: (x === 0 || x === W || y === 0 || y === H - 1) ? 1 : 0, keys: 0 })));
     vWalls[1][2] = { type: 2, keys: 0 }; // DOOR：格 (2,1) 左侧
     return {
         width: W, height: H, startPos: { x: 1, y: 1 },
-        hWalls, vWalls, endPos: null, initialGhosts: [], items: [], buttons: [],
+        hWalls, vWalls, endPos: { x: 7, y: 7 }, initialGhosts: [], items: [], buttons: [],
         activeCells: Array(H).fill(null).map(() => Array(W).fill(true)),
         editorMode: 'regular', customStartPos: null,
         multiLayerMode: false, layerCount: 1, layers: [], stairs: []
@@ -107,7 +106,6 @@ const doorMap = () => {
 
 test('确定性带门地图 {1,1}→{3,1}：穿过 DOOR 精确到达', () => {
     const c = new GameController({});
-    c.gameMode = 'death-loop'; c.initialHealth = 5; c.initialStamina = 100;
     c.startGame(doorMap());
     const game = {
         state: 'playing', cellSize: 50, drawOffset: { x: 0, y: 0 }, autoMoveInterval: null,
@@ -141,13 +139,13 @@ test('确定性带门地图 {1,1}→{3,1}：穿过 DOOR 精确到达', () => {
 
 // 相邻格降级寻路：玩家 {1,1} 下方 {1,2} 隔 SOLID 墙，但 {1,2} 可经 {2,1}→{2,2} 绕行到达
 const wallAdjacentMap = () => {
-    const W = 4, H = 4;
+    const W = 8, H = 8;
     const hWalls = Array(H + 1).fill(null).map((_, y) => Array(W).fill(null).map((_, x) => ({ type: (y === 0 || y === H || x === 0 || x === W - 1) ? 1 : 0, keys: 0 })));
     hWalls[2][1] = { type: 1, keys: 0 }; // {1,1} 与 {1,2} 之间实心墙
     const vWalls = Array(H).fill(null).map((_, y) => Array(W + 1).fill(null).map((_, x) => ({ type: (x === 0 || x === W || y === 0 || y === H - 1) ? 1 : 0, keys: 0 })));
     return {
         width: W, height: H, startPos: { x: 1, y: 1 },
-        hWalls, vWalls, endPos: null, initialGhosts: [], items: [], buttons: [],
+        hWalls, vWalls, endPos: { x: 7, y: 7 }, initialGhosts: [], items: [], buttons: [],
         activeCells: Array(H).fill(null).map(() => Array(W).fill(true)),
         editorMode: 'regular', customStartPos: null,
         multiLayerMode: false, layerCount: 1, layers: [], stairs: []
@@ -156,13 +154,13 @@ const wallAdjacentMap = () => {
 
 // 相邻穿门：玩家 {1,1}，{2,1} 左侧 DOOR，点击 {2,1} 单步穿门直接到达
 const doorAdjacentMap = () => {
-    const W = 3, H = 3;
+    const W = 8, H = 8;
     const hWalls = Array(H + 1).fill(null).map((_, y) => Array(W).fill(null).map((_, x) => ({ type: (y === 0 || y === H || x === 0 || x === W - 1) ? 1 : 0, keys: 0 })));
     const vWalls = Array(H).fill(null).map((_, y) => Array(W + 1).fill(null).map((_, x) => ({ type: (x === 0 || x === W || y === 0 || y === H - 1) ? 1 : 0, keys: 0 })));
     vWalls[1][2] = { type: 2, keys: 0 }; // DOOR：{2,1} 左侧
     return {
         width: W, height: H, startPos: { x: 1, y: 1 },
-        hWalls, vWalls, endPos: null, initialGhosts: [], items: [], buttons: [],
+        hWalls, vWalls, endPos: { x: 7, y: 7 }, initialGhosts: [], items: [], buttons: [],
         activeCells: Array(H).fill(null).map(() => Array(W).fill(true)),
         editorMode: 'regular', customStartPos: null,
         multiLayerMode: false, layerCount: 1, layers: [], stairs: []
@@ -171,8 +169,8 @@ const doorAdjacentMap = () => {
 
 test('相邻格单步撞墙且非黑暗 → 降级寻路绕行到达', () => {
     const c = new GameController({});
-    c.gameMode = 'death-loop'; c.initialHealth = 5; c.initialStamina = 100;
     c.startGame(wallAdjacentMap());
+    c.currentGameState.seenCells[0][2][1] = true; c.currentGameState.seenCells[0][2][2] = true;
     const game = {
         state: 'playing', cellSize: 50, drawOffset: { x: 0, y: 0 }, autoMoveInterval: null,
         controller: c, editor: { active: false }, debugVision: false,
@@ -205,7 +203,6 @@ test('相邻格单步撞墙且非黑暗 → 降级寻路绕行到达', () => {
 
 test('相邻格单步穿门（等效方向键）直接到达，不寻路', () => {
     const c = new GameController({});
-    c.gameMode = 'death-loop'; c.initialHealth = 5; c.initialStamina = 100;
     c.startGame(doorAdjacentMap());
     const game = {
         state: 'playing', cellSize: 50, drawOffset: { x: 0, y: 0 }, autoMoveInterval: null,

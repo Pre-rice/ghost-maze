@@ -79,7 +79,7 @@ test('G1 行为快照：17 步全等 golden（机制变更必须先更新快照�
     const snapshot = (s) => ({
         p: {
             x: s.player.x, y: s.player.y, layer: s.player.layer,
-            hp: s.player.hp, stamina: s.player.stamina, keys: s.player.keys,
+            hp: s.player.hp, keys: s.player.keys,
             steps: s.player.steps, trailLen: s.player.trail.length
         },
         loopCount: s.loopCount, isDead: s.isDead, isWon: s.isWon,
@@ -229,16 +229,16 @@ test('GLASS 不挡视线（_canGhostSeePlayer 直接断言，对照 DOOR）', ()
         false, 'DOOR 挡鬼视线');
 });
 
-test('按钮开门: PRESS_BUTTON 打开字母门（再按关闭 = toggle 语义）', () => {
+test('按钮开门: 站位方向操作打开字母门（再按关闭 = toggle 语义）', () => {
     // 1×3 走廊：LETTER_DOOR vWalls[0][1]（closed），按钮 {0,0} 朝右
     const mapDef = makeDef({
         width: 3, height: 1,
         vWalls: [[W(WT.EMPTY), W(WT.LETTER_DOOR, { letter: 'A', initialState: 'closed' }), W(WT.EMPTY), W(WT.EMPTY)]],
         buttons: [{ x: 0, y: 0, direction: right, letter: 'A' }],
     });
-    const s1 = GameLogic.calculateNextState(GameLogic.createInitialState(mapDef), { type: 'PRESS_BUTTON', payload: { letter: 'A' } }, mapDef);
+    const s1 = GameLogic.calculateNextState(GameLogic.createInitialState(mapDef), MOVE(right), mapDef);
     assertEq(s1.layerStates[0].wallStates.v[0][1].currentState, 'open', '按钮后门开');
-    const s2 = GameLogic.calculateNextState(s1, { type: 'PRESS_BUTTON', payload: { letter: 'A' } }, mapDef);
+    const s2 = GameLogic.calculateNextState(s1, MOVE(right), mapDef);
     assertEq(s2.layerStates[0].wallStates.v[0][1].currentState, 'closed', '再按关闭（toggle）');
 });
 
@@ -283,7 +283,7 @@ test('REVIVE: 死亡后复活回存档点并重置', () => {
     assertEq(s2.isDead, false, '复活后未死');
     assertEq(s2.loopCount, 1, '循环次数 +1');
     assertEq(s2.player.hp, 5, '血量重置');
-    assertEq(s2.player.stamina, 100, '体力重置');
+    assertEq(s2.player.stamina, undefined, '不再有体力字段');
     assertDeepEq({ x: s2.player.x, y: s2.player.y }, { x: 1, y: 0 }, '回到玩家出生点（playerStart）');
 });
 

@@ -1,6 +1,7 @@
 import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../core/constants.js';
 import * as Editor from './editor.js';
 import { createNewLayer, cleanupStairsOnLayerRemove } from '../layerManager.js';
+import { normalizeMapData, validateMapData } from '../core/mapDataUtils.js';
 
 /**
  * EditorDocument - 编辑器会话的唯一数据源（纯逻辑，零 DOM）
@@ -20,6 +21,7 @@ export class EditorDocument {
     constructor() {
         this.width = 10;
         this.height = 10;
+        this.gameMode = 'exploration'; this.initialHealth = 5;
         this.mode = 'regular';           // 'regular' | 'free'
         this.multiLayerMode = false;
         this.layerCount = 1;
@@ -60,88 +62,38 @@ export class EditorDocument {
      * 装载 mapData 为编辑状态（行为逐行对应 enterEditorMode L810-846）。
      * 起点层：仅由层内 customStartPos 扫描推导（与 MapDefinition._findPlayerStart 一致，无 v1 残留回退）。
      */
-    load(mapData) {
-        this.width = mapData.width;
-        this.height = mapData.height;
+    load(source) {
+        const mapData = normalizeMapData(source);
+        this.width = mapData.width; this.height = mapData.height;
+        this.mode = mapData.editorMode; this.gameMode = mapData.gameMode; this.initialHealth = mapData.initialHealth;
         this.startPos = { x: 1, y: this.height - 2 };
-        this.customStartPos = mapData.customStartPos || null;
-        if (mapData.multiLayerMode && mapData.layers) {
-            this.customStartPos = null;
-            for (let i = 0; i < mapData.layers.length; i++) {
-                if (mapData.layers[i] && mapData.layers[i].customStartPos) {
-                    this.customStartPos = mapData.layers[i].customStartPos;
-                    break;
-                }
-            }
-        }
-        this.activeCells = mapData.activeCells || Array(this.height).fill(null).map(() => Array(this.width).fill(true));
-        this.mode = mapData.editorMode || 'regular';
-        this.multiLayerMode = mapData.multiLayerMode || false;
-        this.layerCount = mapData.layerCount || 1;
-        this.currentLayer = 0;
-        this.stairs = JSON.parse(JSON.stringify(mapData.stairs || []));
-        this.layers = JSON.parse(JSON.stringify(mapData.layers || []));
-        if (this.multiLayerMode && this.layers.length > 0) {
-            // 起点层：层内 customStartPos 扫描（与 MapDefinition._findPlayerStart free 分支一致）
-            let startLayerIndex = 0;
-            for (let i = 0; i < this.layers.length; i++) {
-                if (this.layers[i] && this.layers[i].customStartPos) { startLayerIndex = i; break; }
-            }
-            this.currentLayer = startLayerIndex;
-            this.playerLayer = startLayerIndex;
-            const layerData = this.layers[this.currentLayer];
-            if (layerData) {
-                this.hWalls = layerData.hWalls;
-                this.vWalls = layerData.vWalls;
-                this.endPos = layerData.endPos;
-                this.ghosts = layerData.ghosts;
-                this.items = layerData.items;
-                this.buttons = layerData.buttons;
-                this.activeCells = layerData.activeCells;
-                this.customStartPos = layerData.customStartPos;
-            }
-        } else {
-            this.hWalls = JSON.parse(JSON.stringify(mapData.hWalls));
-            this.vWalls = JSON.parse(JSON.stringify(mapData.vWalls));
-            this.endPos = mapData.endPos ? { ...mapData.endPos } : null;
-            this.ghosts = JSON.parse(JSON.stringify(mapData.initialGhosts || []));
-            this.items = JSON.parse(JSON.stringify(mapData.items || []));
-            this.buttons = JSON.parse(JSON.stringify(mapData.buttons || []));
-        }
+        this.multiLayerMode = mapData.multiLayerMode; this.layerCount = mapData.layerCount;
+        this.stairs = mapData.stairs; this.layers = mapData.layers;
+        this.playerLayer = Math.max(0, this.layers.findIndex(layer => layer.customStartPos));
+        this.currentLayer = this.playerLayer;
+        const layer = this.layers[this.currentLayer];
+        for (const key of ['hWalls', 'vWalls', 'activeCells', 'ghosts', 'items', 'buttons', 'endPos', 'customStartPos']) this[key] = layer[key];
     }
 
-    /** 导出游玩用 mapData（对应 playEditedMap 的 editedMapData） */
+    /** 导出只有一份层数据的地图，开局设置属于作者。 */
     toMapData() {
-        return {
-            width: this.width, height: this.height, hWalls: this.hWalls, vWalls: this.vWalls,
-            endPos: this.endPos,
-            initialGhosts: this.ghosts.map((g, i) => ({ x: g.x, y: g.y, id: i })),
-            items: this.items, buttons: this.buttons,
-            activeCells: this.activeCells, editorMode: this.mode, customStartPos: this.customStartPos,
-            multiLayerMode: this.multiLayerMode, layerCount: this.layerCount,
-            layers: JSON.parse(JSON.stringify(this.layers)),
-            stairs: JSON.parse(JSON.stringify(this.stairs))
+        this.saveCurrentLayer();
+        const layer = {
+            hWalls: this.hWalls, vWalls: this.vWalls, activeCells: this.activeCells,
+            ghosts: this.ghosts, items: this.items, buttons: this.buttons,
+            endPos: this.endPos, customStartPos: this.mode === 'regular' ? this.startPos : this.customStartPos
         };
+        return normalizeMapData({
+            width: this.width, height: this.height, editorMode: this.mode,
+            gameMode: this.gameMode, initialHealth: this.initialHealth,
+            layerCount: this.multiLayerMode ? this.layerCount : 1,
+            layers: this.multiLayerMode ? this.layers : [layer], stairs: this.stairs
+        });
     }
 
-    /** 导出分享码用 mapData（对应 generateShareCode 编辑器分支 sourceData） */
-    toShareMapData(gameMode, initialHealth, initialStamina) {
-        this.saveCurrentLayer();
-        let layer0Data = {
-            hWalls: this.hWalls, vWalls: this.vWalls, endPos: this.endPos,
-            ghosts: this.ghosts, items: this.items, buttons: this.buttons || [],
-            activeCells: this.activeCells, customStartPos: this.customStartPos
-        };
-        if (this.multiLayerMode && this.layers && this.layers[0]) { layer0Data = this.layers[0]; }
-        return {
-            width: this.width, height: this.height, hWalls: layer0Data.hWalls, vWalls: layer0Data.vWalls,
-            endPos: layer0Data.endPos, initialGhosts: layer0Data.ghosts, items: layer0Data.items,
-            buttons: layer0Data.buttons, gameMode: gameMode,
-            initialHealth: initialHealth, initialStamina: initialStamina,
-            activeCells: layer0Data.activeCells, editorMode: this.mode, customStartPos: layer0Data.customStartPos,
-            multiLayerMode: this.multiLayerMode, layerCount: this.layerCount,
-            layers: this.layers, stairs: this.stairs
-        };
+    toShareMapData(gameMode = this.gameMode, initialHealth = this.initialHealth) {
+        this.gameMode = gameMode; this.initialHealth = initialHealth;
+        return this.toMapData();
     }
 
     // ---------- 尺寸 / 图层 ----------
@@ -620,7 +572,7 @@ export class EditorDocument {
 
     /** 游玩前校验（自由模式：必须设置起点 + 至少一个活动格） */
     validate() {
-        return Editor.validateMapForPlay(this.toMapData(), this.mode);
+        return validateMapData(this.toMapData());
     }
 
     // ---------- 查询 ----------

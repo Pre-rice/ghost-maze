@@ -161,12 +161,12 @@ export function initializeDpadTouchControls(dpad) {
 
 /**
  * 更新D-pad可见性
- * @param {boolean} editorActive - 编辑器是否激活
+ * @param {boolean} inactive - 当前是否不能操作游戏
  */
-export function updateDpadVisibility(editorActive) {
+export function updateDpadVisibility(inactive) {
     const dpadToggle = document.getElementById('dpad-toggle');
     const dpadControls = document.getElementById('dpad-controls');
-    const shouldShow = dpadToggle.checked && !editorActive;
+    const shouldShow = window.matchMedia('(max-width: 768px)').matches && dpadToggle.checked && !inactive;
     dpadControls.classList.toggle('hidden', !shouldShow);
 }
 
@@ -174,69 +174,13 @@ export function updateDpadVisibility(editorActive) {
  * 更新游戏状态UI显示
  * @param {object} config - 配置对象
  */
-export function updateUIDisplays(config) {
-    const { gameMode, player, loopCount, healthDisplay, keysDisplay, stepsDisplay } = config;
-    
-    if (gameMode === 'exploration') {
-        healthDisplay.textContent = `生命: ${player.hp}`;
-        keysDisplay.textContent = `钥匙: ${player.keys}`;
-        stepsDisplay.textContent = `步数: ${player.steps}`;
-    } else {
-        document.getElementById('loop-count-display').textContent = `循环次数: ${loopCount}`;
-        document.getElementById('player-keys-display-death-loop').textContent = `钥匙: ${player.keys}`;
-        document.getElementById('player-stamina-display').textContent = `剩余体力: ${player.stamina}`;
-    }
+export function updateUIDisplays({ gameMode, player, loopCount, healthDisplay, keysDisplay, stepsDisplay }) {
+    healthDisplay.textContent = gameMode === 'exploration' ? '生命: ' + player.hp : '循环: ' + loopCount;
+    stepsDisplay.textContent = '步数: ' + player.steps;
+    keysDisplay.textContent = '钥匙: ' + player.keys;
 }
 
-/**
- * 更新周围鬼数量警告
- * @param {object} config - 配置对象
- */
-export function updateProximityWarning(config) {
-    const { gameMode, ghosts, player, seenCells, debugVision, ghostProximityDisplay } = config;
-    
-    if (gameMode === 'death-loop') {
-        document.body.classList.remove('danger-bg');
-        ghostProximityDisplay.classList.remove('warning');
-        return;
-    }
-
-    let totalNearbyGhosts = 0;
-    let invisibleNearbyGhosts = 0;
-
-    for (const ghost of ghosts) {
-        if (Math.abs(ghost.x - player.x) <= 1 && Math.abs(ghost.y - player.y) <= 1) {
-            totalNearbyGhosts++;
-            if (!seenCells[ghost.y]?.[ghost.x] && !debugVision) {
-                invisibleNearbyGhosts++;
-            }
-        }
-    }
-
-    ghostProximityDisplay.textContent = `周围鬼数: ${totalNearbyGhosts}`;
-    document.body.classList.toggle('danger-bg', invisibleNearbyGhosts > 0);
-    ghostProximityDisplay.classList.toggle('warning', invisibleNearbyGhosts > 0);
+/** 两模式都按玩家所在层的真实鬼位计数，含斜邻。 */
+export function updateProximityWarning({ ghosts, player, ghostProximityDisplay }) {
+    ghostProximityDisplay.textContent = '周围鬼数: ' + ghosts.filter(g => Math.abs(g.x - player.x) <= 1 && Math.abs(g.y - player.y) <= 1).length;
 }
-
-/**
- * 更新历史记录按钮状态
- * @param {object} config - 配置对象
- */
-export function updateHistoryButtons(config) {
-    const { currentStep, history, checkpoints } = config;
-    
-    const undoBtn = document.getElementById('undo-btn');
-    const saveBtn = document.getElementById('save-btn');
-    const rewindBtn = document.getElementById('rewind-btn');
-
-    const canUndo = currentStep > 0 && !history[currentStep].isRevivalPoint;
-    undoBtn.disabled = !canUndo;
-
-    const lastCheckpoint = checkpoints.length > 0 ? checkpoints[checkpoints.length - 1] : -1;
-    const canSave = currentStep > lastCheckpoint;
-    saveBtn.disabled = !canSave;
-
-    const canRewind = checkpoints.some(cp => cp < currentStep);
-    rewindBtn.disabled = !canRewind;
-}
-

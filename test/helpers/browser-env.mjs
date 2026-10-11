@@ -11,7 +11,11 @@ export function installBrowserEnv() {
     globalThis.window = globalThis.window || {};
     globalThis.window.pako = {
         deflateRaw: (data, options) => deflateRawSync(data, options),
-        inflateRaw: (data) => inflateRawSync(data)
+        inflateRaw: (data, options = {}) => {
+            const result = inflateRawSync(data, { ...options, info: true });
+            if (result.engine.bytesWritten !== data.length) throw new RangeError('压缩内容有多余数据');
+            return result.buffer;
+        }
     };
     if (typeof globalThis.atob !== 'function') {
         globalThis.atob = (s) => Buffer.from(s, 'base64').toString('binary');

@@ -22,6 +22,32 @@ function getWallInDirection(x, y, dx, dy, hWalls, vWalls) {
     return null;
 }
 
+/** 检查按钮是否仍依附在实心墙或活动区边界上 */
+export function isValidButtonAttachment(button, config = {}) {
+    const { width, height, activeCells, hWalls, vWalls, editorMode } = config;
+    const { x, y, direction } = button || {};
+    const isCardinal = direction && ((direction.dx === 0 && Math.abs(direction.dy) === 1) ||
+        (direction.dy === 0 && Math.abs(direction.dx) === 1));
+    if (!Number.isInteger(width) || !Number.isInteger(height) || !Number.isInteger(x) || !Number.isInteger(y) ||
+        x < 0 || x >= width || y < 0 || y >= height || !isCardinal) return false;
+    const isActive = (cx, cy) => cx >= 0 && cx < width && cy >= 0 && cy < height &&
+        (activeCells ? activeCells[cy]?.[cx] === true : true);
+    if (!isActive(x, y)) return false;
+
+    const nx = x + direction.dx, ny = y + direction.dy;
+    let wall;
+    if (direction.dx === 1) wall = vWalls?.[y]?.[x + 1];
+    else if (direction.dx === -1) wall = vWalls?.[y]?.[x];
+    else if (direction.dy === 1) wall = hWalls?.[y + 1]?.[x];
+    else wall = hWalls?.[y]?.[x];
+    if (!wall || (wall.type !== WALL_TYPES.SOLID && isActive(nx, ny))) return false;
+
+    const roomYStart = getStartRoomY(height);
+    const isTopBoundary = direction.dy === -1 && y === roomYStart && x < 3;
+    const isRightBoundary = direction.dx === 1 && x === 2 && y >= roomYStart;
+    return !(editorMode === 'regular' && (isTopBoundary || isRightBoundary));
+}
+
 /**
  * 计算从起点到所有可达点的距离（BFS）
  * @param {object} startNode - 起点 {x, y}
@@ -181,38 +207,6 @@ export function getButtonHotspotAtPos(mouseX, mouseY, config) {
     
     if (!direction) return null;
     
-    const isActive = (x, y) => (x >= 0 && x < width && y >= 0 && y < height) ? activeCells[y][x] : false;
-    let isAttachable = false;
-    
-    if (direction.dy === -1) {
-        if (hWalls[cellY][cellX].type === WALL_TYPES.SOLID || (isActive(cellX, cellY) && !isActive(cellX, cellY - 1))) {
-            isAttachable = true;
-        }
-    } else if (direction.dy === 1) {
-        if (hWalls[cellY + 1][cellX].type === WALL_TYPES.SOLID || (isActive(cellX, cellY) && !isActive(cellX, cellY + 1))) {
-            isAttachable = true;
-        }
-    } else if (direction.dx === -1) {
-        if (vWalls[cellY][cellX].type === WALL_TYPES.SOLID || (isActive(cellX, cellY) && !isActive(cellX - 1, cellY))) {
-            isAttachable = true;
-        }
-    } else if (direction.dx === 1) {
-        if (vWalls[cellY][cellX + 1].type === WALL_TYPES.SOLID || (isActive(cellX, cellY) && !isActive(cellX + 1, cellY))) {
-            isAttachable = true;
-        }
-    }
-    
-    if (isAttachable) {
-        const roomYStart = getStartRoomY(height);
-        const isTopBoundary = direction.dy === -1 && cellY === roomYStart && cellX >= 0 && cellX < 3;
-        const isRightBoundary = direction.dx === 1 && cellX === 2 && cellY >= roomYStart && cellY < height;
-        
-        if (editorMode === 'regular' && (isTopBoundary || isRightBoundary)) {
-            return null;
-        }
-        
-        return { x: cellX, y: cellY, direction: direction };
-    }
-    
-    return null;
+    const button = { x: cellX, y: cellY, direction };
+    return isValidButtonAttachment(button, { width, height, activeCells, hWalls, vWalls, editorMode }) ? button : null;
 }

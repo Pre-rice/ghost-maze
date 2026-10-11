@@ -5,7 +5,6 @@
       "y": 8,
       "layer": 0,
       "hp": 5,
-      "stamina": 100,
       "keys": 0,
       "steps": 0,
       "trailLen": 0
@@ -83,7 +82,6 @@
       "y": 8,
       "layer": 0,
       "hp": 5,
-      "stamina": 100,
       "keys": 0,
       "steps": 0,
       "trailLen": 0
@@ -161,7 +159,6 @@
       "y": 8,
       "layer": 0,
       "hp": 5,
-      "stamina": 99,
       "keys": 0,
       "steps": 1,
       "trailLen": 1
@@ -239,7 +236,6 @@
       "y": 8,
       "layer": 0,
       "hp": 5,
-      "stamina": 98,
       "keys": 1,
       "steps": 2,
       "trailLen": 2
@@ -317,7 +313,6 @@
       "y": 8,
       "layer": 0,
       "hp": 5,
-      "stamina": 98,
       "keys": 1,
       "steps": 2,
       "trailLen": 2
@@ -395,7 +390,6 @@
       "y": 8,
       "layer": 0,
       "hp": 5,
-      "stamina": 97,
       "keys": 1,
       "steps": 3,
       "trailLen": 3
@@ -473,7 +467,6 @@
       "y": 8,
       "layer": 0,
       "hp": 5,
-      "stamina": 96,
       "keys": 1,
       "steps": 4,
       "trailLen": 4
@@ -551,7 +544,6 @@
       "y": 7,
       "layer": 0,
       "hp": 5,
-      "stamina": 95,
       "keys": 1,
       "steps": 5,
       "trailLen": 5
@@ -622,7 +614,6 @@
       "y": 7,
       "layer": 0,
       "hp": 5,
-      "stamina": 95,
       "keys": 1,
       "steps": 5,
       "trailLen": 5
@@ -693,7 +684,6 @@
       "y": 7,
       "layer": 0,
       "hp": 5,
-      "stamina": 94,
       "keys": 1,
       "steps": 6,
       "trailLen": 6
@@ -764,7 +754,6 @@
       "y": 7,
       "layer": 0,
       "hp": 5,
-      "stamina": 93,
       "keys": 1,
       "steps": 7,
       "trailLen": 7
@@ -835,7 +824,6 @@
       "y": 7,
       "layer": 0,
       "hp": 5,
-      "stamina": 93,
       "keys": 1,
       "steps": 7,
       "trailLen": 7
@@ -906,7 +894,6 @@
       "y": 7,
       "layer": 0,
       "hp": 5,
-      "stamina": 93,
       "keys": 1,
       "steps": 7,
       "trailLen": 7
@@ -973,172 +960,15 @@
   },
   {
     "p": {
-      "x": 1,
-      "y": 8,
+      "x": 7,
+      "y": 7,
       "layer": 0,
       "hp": 5,
-      "stamina": 100,
-      "keys": 0,
-      "steps": 0,
-      "trailLen": 0
+      "keys": 1,
+      "steps": 7,
+      "trailLen": 7
     },
-    "loopCount": 1,
-    "isDead": false,
-    "isWon": false,
-    "deathReason": "",
-    "isRevivalPoint": true,
-    "ghosts": [
-      [
-        {
-          "x": 1,
-          "y": 7
-        }
-      ]
-    ],
-    "seen": [
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        5,
-        10,
-        5
-      ]
-    ],
-    "itemsLeft": [
-      1
-    ],
-    "doorStates": [
-      {
-        "h": [
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [
-            {
-              "x": 5,
-              "type": 3,
-              "currentState": "closed",
-              "keys": 1
-            }
-          ],
-          [],
-          []
-        ],
-        "v": [
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ]
-      }
-    ]
-  },
-  {
-    "p": {
-      "x": 1,
-      "y": 8,
-      "layer": 0,
-      "hp": 5,
-      "stamina": 100,
-      "keys": 0,
-      "steps": 0,
-      "trailLen": 0
-    },
-    "loopCount": 1,
-    "isDead": false,
-    "isWon": false,
-    "deathReason": "",
-    "isRevivalPoint": true,
-    "ghosts": [
-      [
-        {
-          "x": 1,
-          "y": 7
-        }
-      ]
-    ],
-    "seen": [
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        5,
-        10,
-        5
-      ]
-    ],
-    "itemsLeft": [
-      1
-    ],
-    "doorStates": [
-      {
-        "h": [
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [
-            {
-              "x": 5,
-              "type": 3,
-              "currentState": "closed",
-              "keys": 1
-            }
-          ],
-          [],
-          []
-        ],
-        "v": [
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          [],
-          []
-        ]
-      }
-    ]
-  },
-  {
-    "p": {
-      "x": 2,
-      "y": 8,
-      "layer": 0,
-      "hp": 5,
-      "stamina": 99,
-      "keys": 0,
-      "steps": 1,
-      "trailLen": 1
-    },
-    "loopCount": 1,
+    "loopCount": 0,
     "isDead": false,
     "isWon": false,
     "deathReason": "",
@@ -1166,7 +996,7 @@
       ]
     ],
     "itemsLeft": [
-      1
+      0
     ],
     "doorStates": [
       {
@@ -1179,14 +1009,7 @@
           [],
           [],
           [],
-          [
-            {
-              "x": 5,
-              "type": 3,
-              "currentState": "closed",
-              "keys": 1
-            }
-          ],
+          [],
           [],
           []
         ],
@@ -1207,16 +1030,15 @@
   },
   {
     "p": {
-      "x": 2,
-      "y": 8,
+      "x": 7,
+      "y": 7,
       "layer": 0,
       "hp": 5,
-      "stamina": 99,
-      "keys": 0,
-      "steps": 1,
-      "trailLen": 1
+      "keys": 1,
+      "steps": 7,
+      "trailLen": 7
     },
-    "loopCount": 1,
+    "loopCount": 0,
     "isDead": false,
     "isWon": false,
     "deathReason": "",
@@ -1244,7 +1066,7 @@
       ]
     ],
     "itemsLeft": [
-      1
+      0
     ],
     "doorStates": [
       {
@@ -1257,14 +1079,147 @@
           [],
           [],
           [],
-          [
-            {
-              "x": 5,
-              "type": 3,
-              "currentState": "closed",
-              "keys": 1
-            }
-          ],
+          [],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 8,
+      "y": 7,
+      "layer": 0,
+      "hp": 5,
+      "keys": 1,
+      "steps": 8,
+      "trailLen": 8
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        5,
+        10,
+        5
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "v": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "p": {
+      "x": 8,
+      "y": 6,
+      "layer": 0,
+      "hp": 5,
+      "keys": 1,
+      "steps": 9,
+      "trailLen": 9
+    },
+    "loopCount": 0,
+    "isDead": false,
+    "isWon": false,
+    "deathReason": "",
+    "isRevivalPoint": false,
+    "ghosts": [
+      [
+        {
+          "x": 1,
+          "y": 7
+        }
+      ]
+    ],
+    "seen": [
+      [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        10,
+        5,
+        10,
+        5
+      ]
+    ],
+    "itemsLeft": [
+      0
+    ],
+    "doorStates": [
+      {
+        "h": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
           [],
           []
         ],

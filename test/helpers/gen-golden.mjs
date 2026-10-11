@@ -1,42 +1,16 @@
-/**
- * 一次性 golden 采集脚本（不入测试流程）：
- *   从 ghost-maze-ai 的 demo-map.json 生成 G1 的 v3 分享码。
- * 运行：node test/helpers/gen-golden.mjs
- * 说明：仅只读运行 ghost-maze-ai 的 demo 地图数据（路径写死，本机项目布局），不修改该仓库。
- *       v1（旧启发式协议）已在重构中删除，码长防膨胀改为测试里的固定上限断言。
- */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { installBrowserEnv } from './browser-env.mjs';
+import { DataSerializer } from '../../src/core/dataSerializer.js';
 installBrowserEnv();
-
-const { DataSerializer } = await import('../../src/core/dataSerializer.js');
-
-const demoPath = 'e:/编程/ghost-maze-ai/examples/demo-map.json';
-const demo = JSON.parse(readFileSync(demoPath, 'utf-8'));
-
-// 模拟游戏端装配：补上 gameMode/initialHealth/initialStamina（demo-map.json 缺 initialHealth）
-const sourceData = {
-    ...demo.mapData,
-    gameMode: demo.mapData.gameMode || 'death-loop',
-    initialHealth: demo.mapData.initialHealth ?? 5,
-    initialStamina: demo.mapData.initialStamina ?? 100
-};
-
-const v3 = DataSerializer.generateShareCode(sourceData);
-if (!v3.success) throw new Error(`v3 生成失败: ${v3.error}`);
-const decoded = DataSerializer.loadFromShareCode(v3.code);
-if (!decoded.success) throw new Error(`v3 解码失败: ${decoded.error}`);
-
-const golden = {
-    'G1-demo': {
-        code: v3.code,
-        gameMode: decoded.data.gameMode,
-        initialHealth: decoded.data.initialHealth,
-        initialStamina: decoded.data.initialStamina,
-        canonical: decoded.data.mapData
-    }
-};
-
-writeFileSync('test/golden/maps.json', JSON.stringify(golden, null, 2));
-console.log(`G1 golden 已写入 test/golden/maps.json`);
-console.log(`v3 码长: ${v3.code.length}`);
+// 从现有原始地图更新测试码；不尝试解码已弃用格式。
+const path = new URL('../golden/maps.json', import.meta.url);
+const maps = JSON.parse(readFileSync(path, 'utf8'));
+for (const entry of Object.values(maps)) {
+    const encoded = DataSerializer.generateShareCode({ ...entry.canonical, gameMode: entry.gameMode, initialHealth: entry.initialHealth });
+    if (!encoded.success) throw new Error(encoded.error);
+    const decoded = DataSerializer.loadFromShareCode(encoded.code);
+    entry.code = encoded.code; entry.canonical = decoded.data.mapData;
+    delete entry.initialStamina;
+}
+writeFileSync(path, JSON.stringify(maps, null, 2) + '\n');
+console.log('测试地图已按新格式更新');

@@ -1,175 +1,131 @@
 import { MapDefinition } from './mapDefinition.js';
 import { GameLogic } from './gameLogic.js';
 import { DataSerializer } from './dataSerializer.js';
+import { ReplaySerializer } from './replaySerializer.js';
+import { validateMapData } from './mapDataUtils.js';
+import { actionToName } from './actions.js';
+import { ActionHistory, mergeSeen } from './actionHistory.js';
 
-/**
- * GameController - 游戏控制器（纯逻辑，零 DOM）
- *
- * 负责游戏局的全部数据流：开局 / 动作推进（含历史）/ 复活 / 存档回溯 /
- * 胜负数据 / 分享码装配与解析。UI 副作用（渲染、浮窗、toast、URL）一律经
- * 注入回调 ui 留在宿主（main.js / GhostMazeGame），本类可在 Node 中独立测试。
- *
- * 回调约定：
- *   onSync()            数据已推进，宿主需同步视图（渲染 + 状态栏）
- *   onWin(stats)        通关（stats = {text} 战绩文案）
- *   onDeath(stats)      死亡（stats = {overlay: 'death'|'game-over', message}）
- *   onHistoryChange()   历史/存档按钮状态变化
- *
- * 注：渲染/输入一律经 viewSlice 只读投影（computeGameView）读权威源，
- *     本类不再持有 hWalls/ghosts 等视图数据镜像（Phase 4 已删）。
- */
+/** 游玩局唯一控制器；操作是历史，局面仅为可重建缓存。 */
 export class GameController {
     constructor(ui = {}) {
         this.ui = ui;
-        this.gameMode = 'exploration';
-        this.initialHealth = 5;
-        this.initialStamina = 100;
-        this.mapData = null;
-        this.mapDefinition = null;
-        this.currentGameState = null;
-        this.history = [];
-        this.checkpoints = [];
-        this.currentStep = -1;
-        this.editorMode = 'regular';
-        // 视图状态（非镜像）：当前渲染/交互的图层；processAction/undo/rewind 会重置为玩家所在层
-        this.viewLayer = 0;
+        this.mapData = null; this.mapDefinition = null; this.currentGameState = null;
+        this.history = null; this.checkpoints = []; this.currentStep = 0; this.viewLayer = 0;
+        this.revivalBoundary = 0; this.revivalState = null;
     }
-
-    /**
-     * 开局（对应原 startGame 的纯数据部分）
-     * @param {object} mapData - 地图数据（canonical 结构）
-     */
-    startGame(mapData) {
-        this.mapData = JSON.parse(JSON.stringify(mapData));
-        this.mapDefinition = new MapDefinition({
-            ...mapData,
-            gameMode: this.gameMode,
-            initialHealth: this.initialHealth,
-            initialStamina: this.initialStamina
-        });
+    get gameMode() { return this.mapDefinition?.gameMode || 'exploration'; }
+    get initialHealth() { return this.mapDefinition?.initialHealth || 5; }
+    get actions() { return this.history?.actions.slice(0, this.currentStep) || []; }
+    get canUndo() { return this.currentStep > this.revivalBoundary; }
+    get canRewind() { return this.checkpoints.some(step => step < this.currentStep); }
+    startGame(source) {
+        const result = validateMapData(source);
+        if (!result.valid) return { success: false, error: result.error };
+        this.mapData = result.mapData;
+        this.mapDefinition = new MapDefinition(this.mapData);
         this.currentGameState = GameLogic.createInitialState(this.mapDefinition);
-        this.history = [this.currentGameState];
-        this.checkpoints = [];
-        this.currentStep = 0;
-        this.editorMode = mapData.editorMode || 'regular';
-        // 视图层初始为玩家所在层（出生点统一由 mapDef.playerStart 推导）
-        this.viewLayer = this.currentGameState.player.layer;
-        this.ui.onSync?.();
+        this.history = new ActionHistory(this.mapDefinition, [], { initialState: this.currentGameState });
+        this.checkpoints = []; this.currentStep = 0; this.revivalBoundary = 0; this.revivalState = null;
+        this._sync();
+        return { success: true };
     }
-
-    /**
-     * 执行一个动作（移动/按按钮/用楼梯/复活）。
-     * @returns {object|null} 推进后的状态；动作无变化时返回 null
-     */
     processAction(action) {
-        if (!this.currentGameState || !this.mapDefinition) return null;
-        const prevState = this.currentGameState;
-        const nextState = GameLogic.calculateNextState(prevState, action, this.mapDefinition);
-        if (nextState === prevState) return null;
-        // 回溯后走新分支：裁剪未来历史与无效存档点
-        if (this.currentStep < this.history.length - 1) {
-            this.history = this.history.slice(0, this.currentStep + 1);
-            this.checkpoints = this.checkpoints.filter(cp => cp <= this.currentStep);
-        }
-        this.history.push(nextState);
-        this.currentStep++;
-        this.currentGameState = nextState;
-        this.viewLayer = nextState.player.layer;
-        this.ui.onSync?.();
-        if (nextState.isWon) {
-            this.ui.onWin?.(this._winStats());
-        } else if (nextState.isDead) {
-            this.ui.onDeath?.(this._deathStats(nextState.deathReason));
-        }
-        return nextState;
+        if (!this.currentGameState) return null;
+        if (action.type === 'REVIVE') return this.revive();
+        let name;
+        try { name = actionToName(action); } catch { return null; }
+        const next = GameLogic.calculateNextState(this.currentGameState, action, this.mapDefinition);
+        if (next === this.currentGameState) return null;
+        this.checkpoints = this.checkpoints.filter(step => step <= this.currentStep);
+        this.history.append(name, next, this.currentStep);
+        this.currentStep++; this.currentGameState = next;
+        this._sync();
+        return next;
     }
-
-    /**
-     * 移动一步。返回 processAction 结果：有效果（移动/按按钮/开门等）返回新状态，
-     * 无效果（撞墙等）返回 null——供输入层判断「单步是否生效」。
-     */
     movePlayer(dx, dy) { return this.processAction({ type: 'MOVE', payload: { dx, dy } }); }
-    useStair() { this.processAction({ type: 'USE_STAIR' }); }
-    pressButton(letter) { this.processAction({ type: 'PRESS_BUTTON', payload: { letter } }); }
-
-    /** 复活（死亡循环）；宿主负责恢复 PLAYING 态与动画循环 */
+    useStair() { return this.processAction({ type: 'USE_STAIR' }); }
     revive() {
-        this.processAction({ type: 'REVIVE' });
-    }
-
-    /** 撤销一步。isRevivalPoint 不可跨过。 */
-    undo() {
-        if (this.currentStep <= 0) return { ok: false };
-        if (this.history[this.currentStep] && this.history[this.currentStep].isRevivalPoint && this.currentStep > 0) {
-            return { ok: false, error: '无法撤回到复活点之前' };
+        if (!this.currentGameState?.isDead) return null;
+        const next = GameLogic.handleRevive(this.currentGameState, this.mapDefinition);
+        if (next === this.currentGameState) return null;
+        this.checkpoints = [];
+        if (this.gameMode === 'death-loop') {
+            this.history = new ActionHistory(this.mapDefinition, [], { initialState: next });
+            this.currentStep = 0; this.revivalBoundary = 0; this.revivalState = null;
+        } else {
+            this.revivalBoundary = this.currentStep; this.revivalState = next;
+            this.history.cache.put('revival', next);
         }
-        this.currentStep--;
-        this.currentGameState = this.history[this.currentStep];
-        this.viewLayer = this.currentGameState.player.layer;
-        this.ui.onSync?.();
-        this.ui.onHistoryChange?.();
-        return { ok: true };
+        this.currentGameState = next; this._sync();
+        return next;
     }
-
-    /** 在当前步创建存档点（比最近存档点至少前进 1 步） */
+    restore(step) {
+        this.currentStep = step;
+        this.currentGameState = step === this.revivalBoundary && this.revivalState ? this.revivalState : this.history.stateAt(step);
+        this._sync();
+    }
+    undo() {
+        if (!this.canUndo) return { ok: false, error: '无法撤回到复活点之前' };
+        this.restore(this.currentStep - 1); return { ok: true };
+    }
     save() {
-        const lastCheckpoint = this.checkpoints.length > 0 ? this.checkpoints[this.checkpoints.length - 1] : -1;
-        if (this.currentStep <= lastCheckpoint) return { ok: false, error: '请先移动后再存档' };
+        if (!this.currentGameState || this.currentGameState.isDead || this.currentGameState.isWon) return { ok: false, error: '当前不能存档' };
+        const last = this.checkpoints.at(-1) ?? -1;
+        if (this.currentStep <= last) return { ok: false, error: '请先操作后再存档' };
         this.checkpoints.push(this.currentStep);
-        this.ui.onHistoryChange?.();
-        return { ok: true, step: this.currentStep };
+        if (!this.revivalState || this.currentStep !== this.revivalBoundary) this.history.remember(this.currentStep, this.currentGameState, true);
+        this.ui.onHistoryChange?.(); return { ok: true, step: this.currentStep };
     }
-
-    /** 回溯到最近的更早存档点 */
     rewind() {
-        const availableCheckpoints = this.checkpoints.filter(cp => cp < this.currentStep);
-        if (availableCheckpoints.length === 0) return { ok: false, error: '没有更早的存档点可供回溯' };
-        const targetStep = Math.max(...availableCheckpoints);
-        this.currentStep = targetStep;
-        this.currentGameState = this.history[this.currentStep];
+        const targets = this.checkpoints.filter(step => step < this.currentStep);
+        if (!targets.length) return { ok: false, error: '没有更早的存档点可供回溯' };
+        const step = targets.at(-1);
+        this.restore(step); return { ok: true, step };
+    }
+    /** 回放加载是显式接管；死亡循环用新基础视野重建缓存，撤回不会丢旧探索。 */
+    loadReplayStep(replay, step) {
+        replay.history.stateAt(step);
+        const sameMap = this.mapData && JSON.stringify(this.mapData) === JSON.stringify(replay.mapData);
+        const actions = replay.history.actions.slice(0, step);
+        this.mapData = replay.mapData; this.mapDefinition = replay.mapDefinition;
+        let initial = GameLogic.createInitialState(this.mapDefinition);
+        if (this.gameMode === 'death-loop') {
+            initial.loopCount = (sameMap ? this.currentGameState.loopCount : 0) + 1;
+            if (sameMap) initial.seenCells = mergeSeen(initial.seenCells, this.currentGameState.seenCells);
+        }
+        this.history = new ActionHistory(this.mapDefinition, actions, { initialState: initial });
+        this.currentGameState = this.history.stateAt(step);
+        // 保留所选末步准确的死亡或胜利，不自动复活。
+        this.currentStep = step; this.checkpoints = []; this.revivalState = null; this.revivalBoundary = 0;
+        if (this.gameMode === 'exploration') {
+            this.revivalBoundary = Math.max(0, ...[...this.history.deathSteps].filter(death => death < step));
+            if (this.revivalBoundary > 0) {
+                this.revivalState = GameLogic.handleRevive(this.history.stateAt(this.revivalBoundary), this.mapDefinition);
+                this.history.cache.put('revival', this.revivalState);
+            }
+        }
+        this._sync(); return { ok: true };
+    }
+    buildShareSourceData() { return this.mapData; }
+    loadFromShareCode(code) { return DataSerializer.loadFromShareCode(code); }
+    generateReplayCode() {
+        if (!this.mapData) return { success: false, error: '请先加载地图' };
+        return ReplaySerializer.generateShareCode(this.mapData, this.actions);
+    }
+    _sync() {
         this.viewLayer = this.currentGameState.player.layer;
-        this.ui.onSync?.();
-        this.ui.onHistoryChange?.();
-        return { ok: true, step: targetStep };
+        this.ui.onSync?.(); this.ui.onHistoryChange?.();
+        if (this.currentGameState.isWon) this.ui.onWin?.(this._winStats());
+        else if (this.currentGameState.isDead) this.ui.onDeath?.(this._deathStats());
     }
-
-    /** 游戏态分享码装配（对应原 generateShareCode 游戏分支） */
-    buildShareSourceData() {
-        if (!this.mapData) return null;
-        return {
-            ...this.mapData,
-            gameMode: this.gameMode,
-            initialHealth: this.initialHealth,
-            initialStamina: this.initialStamina
-        };
-    }
-
-    /** 解析分享码（v2）。成功返回 {success:true, mapData, gameMode, initialHealth, initialStamina} */
-    loadFromShareCode(code) {
-        const result = DataSerializer.loadFromShareCode(code);
-        if (result.success) return result;
-        return { success: false, error: result.error };
-    }
-
-    // ---------- 胜负数据（对应原 handleWin/handlePlayerDeath 的文本部分） ----------
-
     _winStats() {
         const p = this.currentGameState.player;
-        if (this.gameMode === 'exploration') {
-            return { text: `你以 ${p.hp} 点剩余生命和 ${p.steps} 步的成绩通关！` };
-        }
-        return { text: `你以 ${this.currentGameState.loopCount} 次循环和 ${p.stamina} 点剩余体力的成绩通关！` };
+        return { text: this.gameMode === 'exploration' ? '你以 ' + p.hp + ' 点剩余生命和 ' + p.steps + ' 步的成绩通关！' : '你以 ' + p.steps + ' 步的成绩通关！' };
     }
-
-    _deathStats(reason = 'ghost') {
+    _deathStats() {
         const p = this.currentGameState.player;
-        if (this.gameMode === 'exploration') {
-            if (p.hp > 0) {
-                return { overlay: 'death', message: `你死了 (剩余血量 ${p.hp})` };
-            }
-            return { overlay: 'game-over', message: '' };
-        }
-        // gameLogic 实际写出的死亡原因：'ghost'（被鬼抓）/ 'no_hp'（探索模式血量耗尽）/ 'no_stamina'（死亡循环体力耗尽）
-        return { overlay: 'death', message: reason === 'no_stamina' ? '体力耗尽，你死了' : '你死了' };
+        return { overlay: this.gameMode === 'exploration' && p.hp <= 0 ? 'game-over' : 'death',
+            message: this.gameMode === 'exploration' ? '你死了（剩余生命 ' + p.hp + '）' : '你死了' };
     }
 }

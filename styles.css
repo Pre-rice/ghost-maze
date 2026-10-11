@@ -2,7 +2,6 @@
     color-scheme: light;
 
     --bg-color: #f0f2f5;
-    --danger-bg-color: #680e0e;
     --container-bg: #ffffff;
     --text-color: #333;
     --border-color: #d9d9d9;
@@ -40,7 +39,6 @@
     :root:not(.light):not(.dark) {
         color-scheme: dark;
         --bg-color: #1e1e1e;
-        --danger-bg-color: #4b0c0c;
         --container-bg: #2c2c2c;
         --text-color: #e6e6e6;
         --border-color: #444;
@@ -83,7 +81,6 @@
 
     --danger-color: #ff6b6d;
     --danger-hover-color: #ff8a8d;
-    --danger-bg-color: #4b0c0c;
 
     --success-color: #52c41a;
 
@@ -115,12 +112,11 @@
 
 /* 新增：右上角操作区容器 */
 .header-controls {
-    position: absolute;
-    top: 8px;
-    right: 8px;
     display: flex;
     gap: 10px; /* 按钮之间的间距 */
     align-items: center;
+    justify-content: flex-end;
+    align-self: flex-end;
     z-index: 10;
 }
 
@@ -133,7 +129,7 @@
 }
 
 /* 新增：帮助按钮样式（复用主题按钮的风格） */
-.help-btn, .home-btn {
+.help-btn, .home-btn, .theme-toggle-btn {
     width: 26px;
     height: 26px;
     border-radius: 50%;
@@ -141,19 +137,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
     text-decoration: none; /* 去除链接下划线 */
     transition: background 0.25s;
     cursor: pointer; /* 新增：确保 div 也有手型光标 */
 }
 
-.help-btn:hover, .home-btn:hover {
+.help-btn:hover, .home-btn:hover, .theme-toggle-btn:hover {
     background-color: #c0c0c0; /* 简单的悬停效果，适配浅色 */
 }
-/* 深色模式下的悬停微调 */
-@media (prefers-color-scheme: dark) {
-     .help-btn:hover, .home-btn:hover { background-color: #555; }
-}
-:root.dark .help-btn:hover, :root.dark .home-btn:hover { background-color: #555; }
+/* 悬停跟随当前选择的主题。 */
+:root.dark .help-btn:hover, :root.dark .home-btn:hover, :root.dark .theme-toggle-btn:hover { background-color: #555; }
 
 .help-btn svg, .home-btn svg {
     width: 18px;
@@ -166,20 +163,9 @@
     position: absolute;
     top: 8px;
     right: 8px;
-    width: 28px;
-    height: 28px;
-    cursor: pointer;
-}
-
-.theme-toggle-btn {
     width: 26px;
     height: 26px;
-    border-radius: 50%;
-    background-color: var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.25s;
+    cursor: pointer;
 }
 
 .theme-toggle-btn svg {
@@ -208,9 +194,7 @@ body {
     transition: background-color 0.25s ease; /* Faster transition */
 }
 
-body.danger-bg {
-    background-color: var(--danger-bg-color);
-}
+
 
 .main-container {
     display: flex;
@@ -220,7 +204,7 @@ body.danger-bg {
 
 #game-canvas {
     border: none; /* 默认无边框，由JS控制 */
-    /* 背景设为透明，以便在虚空区域显示body背景（如红色警示） */
+    /* 透明背景让虚空区域与页面背景一致。 */
     background-color: transparent; 
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     cursor: pointer;
@@ -242,18 +226,10 @@ body.danger-bg {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    border: 1px solid var(--border-color);
-    padding: 10px;
-    border-radius: 6px;
     position: relative;
 }
 
-.control-group h3 {
-    margin: 0;
-    font-size: 16px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
-}
+#game-controls, #editor-controls { display: flex; flex-direction: column; gap: 15px; }
 
 .control-group .status-bar {
     display: flex;
@@ -567,6 +543,8 @@ button:disabled {
     }
 }
 
+#dpad-controls, #dpad-toggle-control { display: none; }
+
 @media (max-width: 768px) {
     #dpad-controls {
         display: grid !important;
@@ -633,10 +611,7 @@ justify-content: space-between;
 width: 100%; /* 默认让开关占满父容器宽度 */
 }
 
-/* 3. 默认隐藏方向键开关 */
-#dpad-toggle-container {
-display: none;
-}
+.toggle-controls-wrapper #dpad-toggle-control { display: none; }
 
 /* 4. 仅在移动端 (屏幕宽度 <= 768px) 应用特殊布局 */
 @media (max-width: 768px) {
@@ -650,10 +625,8 @@ display: none;
     width: 48%;
 }
 
-/* 在移动端，显示方向键开关 */
-#dpad-toggle-container {
-    display: flex;
-}
+.toggle-controls-wrapper #dpad-toggle-control { display: flex; }
+
 }
 
 /* 用于通过JS来强制隐藏方向键的类 */
@@ -770,3 +743,19 @@ display: none !important;
     color: var(--disabled-text-color);
     cursor: not-allowed;
 }
+
+/* 窄屏把图层放在画布下方，十层地图也不遮挡或撑宽页面。 */
+@media (max-width: 768px) {
+    .canvas-wrapper { width: 100%; flex-direction: column; }
+    .layer-panel { position: static; transform: none; flex-direction: row; margin-top: 8px; min-width: 0; max-width: 100%; box-sizing: border-box; }
+    #layer-buttons-container { flex-direction: row; flex-wrap: wrap; }
+    #layer-edit-controls { flex-direction: row; margin-top: 0; border-top: 0; padding-top: 0; }
+}
+[hidden] { display: none !important; }
+.mode-label { margin: 0 0 12px; color: var(--text-color); font-weight: 600; }
+#replay-step-range { width: 100%; margin: 12px 0; accent-color: var(--primary-color); }
+#replay-speed { min-width: 90px; padding: 6px; color: var(--text-color); background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; }
+.overlay-content .buttons { flex-wrap: wrap; }
+.new-map-options, #new-map-health-control { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.new-map-options { min-width: 220px; }
+.new-map-options input, .new-map-options select { padding: 8px; color: var(--text-color); background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; }

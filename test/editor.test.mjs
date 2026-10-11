@@ -7,7 +7,7 @@ import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.
 import {
     createEmptyWalls, isPosInStartRoom, isWallEditable,
     isCellOccupied, isValidStairPlacement,
-    createStartRoomLayout, validateMapForPlay, getWallAtPos,
+    createStartRoomLayout, getWallAtPos,
 } from '../src/editor/editor.js';
 import { WALL_TYPES as WT, EDITOR_TOOLS, START_ROOM_SIZE } from '../src/core/constants.js';
 
@@ -110,35 +110,6 @@ test('createStartRoomLayout: 起始房间内部畅通 + 出口 DOOR（与 genera
     // 出口：右侧 vWalls[roomY+1][3] = DOOR，上方 hWalls[roomY][1] = DOOR
     assertEq(vWalls[roomY + 1][3].type, WT.DOOR, '右侧出口应为 DOOR');
     assertEq(hWalls[roomY][1].type, WT.DOOR, '上方出口应为 DOOR');
-});
-
-test('validateMapForPlay: free 模式起点/活动格校验', () => {
-    const freeData = (over = {}) => ({
-        width: 3, height: 3,
-        activeCells: [[true, true, true], [true, true, true], [true, true, true]],
-        customStartPos: { x: 1, y: 1 },
-        endPos: { x: 2, y: 2 },
-        ...over
-    });
-    assertEq(validateMapForPlay(freeData(), 'free').valid, true, '合法 free 图');
-    const noStart = validateMapForPlay(freeData({ customStartPos: null }), 'free');
-    assertEq(noStart.valid, false, '无起点不合法');
-    assertEq(noStart.error, '自由模式必须设置起点！');
-    const noActive = validateMapForPlay(freeData({ activeCells: [[false, false, false], [false, false, false], [false, false, false]] }), 'free');
-    assertEq(noActive.valid, false, '无活动格不合法');
-    assertEq(noActive.error, '地图必须有至少一个活动单元格！');
-});
-
-test('validateMapForPlay: 终点必需（regular/free 同）', () => {
-    const noEnd = validateMapForPlay({ width: 3, height: 3, endPos: null }, 'regular');
-    assertEq(noEnd.valid, false, 'regular 无终点非法');
-    assertEq(noEnd.error, '请先设置终点！');
-    assertEq(validateMapForPlay({ width: 3, height: 3, endPos: { x: 2, y: 2 } }, 'regular').valid, true, 'regular 有终点有效');
-    // 多层：endPos 为当前层终点，layers 含各层；任意层有终点即可
-    const multiOk = { width: 3, height: 3, multiLayerMode: true, endPos: null, layers: [{ endPos: null }, { endPos: { x: 1, y: 1 } }] };
-    assertEq(validateMapForPlay(multiOk, 'regular').valid, true, '多层某层有终点有效');
-    const multiNone = { width: 3, height: 3, multiLayerMode: true, endPos: null, layers: [{ endPos: null }, { endPos: null }] };
-    assertEq(validateMapForPlay(multiNone, 'regular').valid, false, '多层全无终点非法');
 });
 
 test('getWallAtPos: GRID 工具格命中 / 越界未命中', () => {

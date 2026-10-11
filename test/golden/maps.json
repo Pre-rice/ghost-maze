@@ -1,1086 +1,1091 @@
 {
   "G1-demo": {
-    "code": "Y-biYmZlSGFhZOT4jwT4GRnZGZk5GFatWsAAAaGrRGMDGFatWsHowMUQwNQgwrCAlQ3EYmQEAA",
+    "code": "AVM6LevGKMfoGxrqwAABq0O0di1gDA0NYGoQYVjAyqDB6MDFI8KwgIUJAA",
     "gameMode": "death-loop",
     "initialHealth": 5,
-    "initialStamina": 100,
     "canonical": {
       "width": 10,
       "height": 10,
-      "hWalls": [
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 2,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 3,
-            "keys": 1
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ]
-      ],
-      "vWalls": [
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 2,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ],
-        [
-          {
-            "type": 1,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 0,
-            "keys": 0
-          },
-          {
-            "type": 1,
-            "keys": 0
-          }
-        ]
-      ],
-      "endPos": {
-        "x": 4,
-        "y": 1
-      },
-      "initialGhosts": [
-        {
-          "x": 1,
-          "y": 7
-        }
-      ],
-      "items": [
-        {
-          "x": 3,
-          "y": 8,
-          "type": "key"
-        }
-      ],
-      "buttons": [],
       "editorMode": "free",
-      "customStartPos": {
-        "x": 1,
-        "y": 8
-      },
-      "activeCells": [
-        [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ],
-        [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ],
-        [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ],
-        [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ],
-        [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ],
-        [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ],
-        [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ],
-        [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ],
-        [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ],
-        [
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true,
-          true
-        ]
-      ],
+      "gameMode": "death-loop",
+      "initialHealth": 5,
       "multiLayerMode": false,
       "layerCount": 1,
-      "layers": [],
+      "layers": [
+        {
+          "hWalls": [
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 2,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 3,
+                "keys": 1
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ]
+          ],
+          "vWalls": [
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 2,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ],
+            [
+              {
+                "type": 1,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 0,
+                "keys": 0
+              },
+              {
+                "type": 1,
+                "keys": 0
+              }
+            ]
+          ],
+          "activeCells": [
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ]
+          ],
+          "ghosts": [
+            {
+              "x": 1,
+              "y": 7,
+              "id": 0
+            }
+          ],
+          "items": [
+            {
+              "x": 3,
+              "y": 8,
+              "type": "key"
+            }
+          ],
+          "buttons": [],
+          "endPos": {
+            "x": 4,
+            "y": 1
+          },
+          "customStartPos": {
+            "x": 1,
+            "y": 8
+          }
+        }
+      ],
       "stairs": []
     }
   }

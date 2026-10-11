@@ -145,14 +145,14 @@ test('toMapData: initialGhosts 补 id + layers/stairs 深拷贝', () => {
     const doc = EditorDocument.fromMapData(makeMapData());
     doc.stairs = [{ x: 1, y: 1, layer: 0, direction: 'up' }];
     const out = doc.toMapData();
-    assertEq(out.initialGhosts[0].id, 0, '鬼补 id');
-    assertEq(out.initialGhosts[1].id, 1);
+    assertEq(out.layers[0].ghosts[0].id, 0, '鬼补 id');
+    assertEq(out.layers[0].ghosts[1].id, 1);
     assertEq(out.editorMode, 'regular');
     // 修改导出结果不影响 doc（layers/stairs 深拷贝）
     out.stairs.push({ x: 9, y: 9, layer: 0, direction: 'down' });
     assertEq(doc.stairs.length, 1, 'stairs 深拷贝');
     out.layers.push({});
-    assertEq(doc.layers.length, 0, 'layers 深拷贝');
+    assertEq(doc.layers.length, 1, 'layers 深拷贝');
 });
 
 test('toShareMapData: 多层用 layers[0] 作为 layer0Data（不导出 startPos/playerStartLayer）', () => {
@@ -167,10 +167,10 @@ test('toShareMapData: 多层用 layers[0] 作为 layer0Data（不导出 startPos
     const out = doc.toShareMapData('death-loop', 5, 100);
     assertEq(out.gameMode, 'death-loop');
     assertEq(out.initialHealth, 5);
-    assertEq(out.initialStamina, 100);
+    assertEq(out.initialStamina, undefined);
     assertEq(out.playerStartLayer, undefined, 'v1 残留字段不再导出');
     assertEq(out.startPos, undefined, 'startPos 不再导出（出生点由 customStartPos/顶层 startPos 推导）');
-    assertDeepEq(out.endPos, { x: 0, y: 0 }, 'layer0Data 取 layers[0]');
+    assertDeepEq(out.layers[0].endPos, { x: 0, y: 0 }, 'layer0Data 取 layers[0]');
 });
 
 // ---------- 图层 ----------
@@ -579,16 +579,26 @@ test('validate: 终点必需（regular/free 同）；free 无起点/无活动格
     const regular = EditorDocument.blank(10, 10, 'regular');
     const r0 = regular.validate();
     assertEq(r0.valid, false, 'regular 无终点非法');
-    assertEq(r0.error, '请先设置终点！');
+    assertEq(r0.error, '请先设置终点');
     regular.endPos = { x: 8, y: 8 };
     assertEq(regular.validate().valid, true, 'regular 有终点合法');
     const free = EditorDocument.blank(10, 10, 'free');
     free.endPos = { x: 8, y: 8 };
     const r1 = free.validate();
     assertEq(r1.valid, false, 'free 无起点非法');
-    assertEq(r1.error, '自由模式必须设置起点！');
+    assertEq(r1.error, '必须有且只有一个出生点');
     free.customStartPos = { x: 1, y: 1 };
     assertEq(free.validate().valid, true, 'free 有起点合法');
+});
+
+test('validate: 悬空按钮阻止游玩', () => {
+    const doc = EditorDocument.blank(10, 10, 'regular');
+    doc.endPos = { x: 8, y: 8 };
+    doc.buttons = [{ x: 4, y: 4, direction: { dx: 0, dy: -1 }, letter: 'A' }];
+    doc.hWalls[4][4] = { type: WT.EMPTY, keys: 0 };
+    const result = doc.validate();
+    assertEq(result.valid, false);
+    assertEq(result.error, '按钮必须依附在实心墙或活动区边界上。');
 });
 
 test('查询包装: isPosInStartRoom/isWallEditable/isCellOccupied/isValidStairPlacement', () => {

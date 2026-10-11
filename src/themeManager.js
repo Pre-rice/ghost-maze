@@ -9,16 +9,15 @@ const sunIcon = `
 const moonIcon = `
     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
 `;
-const systemIcon = `
-    <path d="M3 4h18v12H3z M8 20h8M10 16h4" stroke-width="2" stroke="currentColor" fill="none"/>
-`;
 
 /**
  * 应用主题（更新所有主题图标按钮）
- * @param {string} mode - 'light' | 'dark' | 'auto'
+ * @param {string} mode - 'light' | 'dark'；无明确选择时按系统初始化
  */
 export function applyTheme(mode) {
+    if (mode !== 'light' && mode !== 'dark') mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(mode);
     
     // 获取所有主题图标和按钮
     const themeToggles = [
@@ -26,28 +25,12 @@ export function applyTheme(mode) {
         { btn: document.getElementById("editor-theme-toggle-btn"), icon: document.getElementById("editor-theme-icon") }
     ];
     
-    let iconHtml;
-    let isActive;
-    
-    if (mode === "light") {
-        document.documentElement.classList.add("light");
-        iconHtml = sunIcon;
-        isActive = false;
-    } else if (mode === "dark") {
-        document.documentElement.classList.add("dark");
-        iconHtml = moonIcon;
-        isActive = true;
-    } else {
-        const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        iconHtml = systemIcon;
-        isActive = systemDark;
-    }
-    
     // 更新所有主题切换按钮
     themeToggles.forEach(({ btn, icon }) => {
         if (btn && icon) {
-            icon.innerHTML = iconHtml;
-            btn.classList.toggle("active", isActive);
+            icon.innerHTML = mode === 'dark' ? moonIcon : sunIcon;
+            btn.classList.toggle("active", mode === 'dark');
+            btn.title = btn.ariaLabel = mode === 'dark' ? '切换到浅色' : '切换到深色';
         }
     });
 }
@@ -58,7 +41,7 @@ export function applyTheme(mode) {
  * @returns {string} 下一个主题
  */
 export function getNextTheme(current) {
-    return current === "light" ? "dark" : current === "dark" ? "auto" : "light";
+    return current === "light" ? "dark" : "light";
 }
 
 /**
@@ -66,7 +49,7 @@ export function getNextTheme(current) {
  * @param {function} onThemeChange - 主题变更回调
  */
 function handleThemeToggle(onThemeChange) {
-    const current = safeGet("theme", "auto");
+    const current = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     const next = getNextTheme(current);
     applyTheme(next);
     safeSet("theme", next);
@@ -80,16 +63,16 @@ function handleThemeToggle(onThemeChange) {
  * @param {function} onThemeChange - 主题变更回调
  */
 export function initThemeManager(onThemeChange) {
-    const saved = safeGet("theme", "auto");
+    const saved = safeGet("theme");
     applyTheme(saved);
     
     // 绑定游戏模式的主题切换
-    document.getElementById("theme-toggle").addEventListener("click", () => {
+    document.getElementById("theme-toggle")?.addEventListener("click", () => {
         handleThemeToggle(onThemeChange);
     });
     
     // 绑定编辑器模式的主题切换
-    document.getElementById("editor-theme-toggle").addEventListener("click", () => {
+    document.getElementById("editor-theme-toggle")?.addEventListener("click", () => {
         handleThemeToggle(onThemeChange);
     });
 }

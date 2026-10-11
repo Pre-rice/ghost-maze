@@ -81,6 +81,8 @@ export function bindDpadControls(game) {
 }
 
         export function handleKeyPress(game, e) {
+            if (e.target?.isContentEditable || ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target?.tagName)) return;
+            if (['BUTTON', 'A'].includes(e.target?.tagName) && [' ', 'Enter'].includes(e.key)) return;
             // 编辑器模式的快捷键处理
             if (game.state === GAME_STATES.EDITOR && game.editor.active) {
                 handleEditorKeyPress(game, e);
@@ -101,6 +103,7 @@ export function bindDpadControls(game) {
             e.preventDefault(); game.movePlayer(dx, dy);
         }
         export function handleEditorKeyPress(game, e) {
+            if (e.target && ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
             // 获取所有可见的工具按钮
             const getVisibleTools = () => {
                 const toolBtns = document.querySelectorAll('.tool-btn');

@@ -95,13 +95,13 @@ test('computeGameView: 投影字段 === 权威源引用（读多写零）', () =
 test('computeGameView: viewLayer 2 号层投影正确（多层映射到对应层）', () => {
     // 多层地图：layer 1 含鬼
     const layer1 = {
-        hWalls: JSON.parse(JSON.stringify(G1.canonical.hWalls)),
-        vWalls: JSON.parse(JSON.stringify(G1.canonical.vWalls)),
+        hWalls: JSON.parse(JSON.stringify(G1.canonical.layers[0].hWalls)),
+        vWalls: JSON.parse(JSON.stringify(G1.canonical.layers[0].vWalls)),
         activeCells: cells(10, 10),
         ghosts: [{ x: 5, y: 5, id: 0 }],
         items: [], buttons: [], endPos: null, customStartPos: null, stairs: [],
     };
-    const { mapDef, gameState } = makeAuthSources({ multiLayerMode: true, layerCount: 2, layers: [null, layer1] });
+    const { mapDef, gameState } = makeAuthSources({ multiLayerMode: true, layerCount: 2, layers: [G1.canonical.layers[0], layer1] });
     const renderParams = { canvas: {}, staticLayerCanvas: {}, state: 'PLAYING', cellSize: 40, colors: {}, drawOffset: { x: 0, y: 0 }, debugVision: true };
     const view = computeGameView({ mapDef, gameState, viewLayer: 1 }, renderParams);
     assertEq(view.ghosts, gameState.layerStates[1].ghosts, 'ghosts 取第 1 层');
@@ -132,13 +132,13 @@ test('pruneTrails: 权威源上剪陈旧轨迹（player + viewLayer 鬼）', () 
 
 test('pruneTrails: 只剪 viewLayer 层鬼，不碰其它层', () => {
     const layer1 = {
-        hWalls: JSON.parse(JSON.stringify(G1.canonical.hWalls)),
-        vWalls: JSON.parse(JSON.stringify(G1.canonical.vWalls)),
+        hWalls: JSON.parse(JSON.stringify(G1.canonical.layers[0].hWalls)),
+        vWalls: JSON.parse(JSON.stringify(G1.canonical.layers[0].vWalls)),
         activeCells: cells(10, 10),
         ghosts: [{ x: 5, y: 5, id: 0 }],
         items: [], buttons: [], endPos: null, customStartPos: null, stairs: [],
     };
-    const { mapDef, gameState } = makeAuthSources({ multiLayerMode: true, layerCount: 2, layers: [null, layer1] });
+    const { mapDef, gameState } = makeAuthSources({ multiLayerMode: true, layerCount: 2, layers: [G1.canonical.layers[0], layer1] });
     const now = 10000;
     gameState.layerStates[0].ghosts.forEach(g => { g.trail = [{ x: 1, y: 1, timestamp: now - 900 }]; });
     gameState.layerStates[1].ghosts.forEach(g => { g.trail = [{ x: 5, y: 5, timestamp: now - 900 }]; });
@@ -189,7 +189,7 @@ const fullCells = (w, h) => Array.from({ length: h }, () => Array(w).fill(true))
 const seenAll = (w, h) => Array.from({ length: h }, () => Array(w).fill(true));
 
 const baseGameView = () => {
-    const c = G1.canonical;
+    const c = { ...G1.canonical, ...G1.canonical.layers[0], initialGhosts: G1.canonical.layers[0].ghosts };
     return {
         canvas: {}, staticLayerCanvas: {},
         state: 'PLAYING', cellSize: 40,
@@ -294,7 +294,7 @@ test('drawCorners: 门与墙成直角处补方块（门参与直角补块，玻�
 });
 
 test('drawEditor: G1 尺寸全路径跑通（regular 与 free 模式）', () => {
-    const c = G1.canonical;
+    const c = { ...G1.canonical, ...G1.canonical.layers[0], initialGhosts: G1.canonical.layers[0].ghosts };
     const editor = {
         active: true, mode: 'regular', tool: 1, isDragging: false, didDrag: false,
         dragAxis: null, lastDragPos: null, hoveredWall: null, hoveredButtonHotspot: null,

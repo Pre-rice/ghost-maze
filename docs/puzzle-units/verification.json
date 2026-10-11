@@ -1,0 +1,852 @@
+{
+  "rules": "使用当前游戏引擎；有限物理状态穷尽；最短指成功动作数；不包含复活与撤销",
+  "redundantGate": {
+    "shortest": "UDDRRRRUUR",
+    "reachableStates": 37,
+    "exhausted": true
+  },
+  "units": [
+    {
+      "id": "unit-01",
+      "title": "探头再绕行",
+      "activeCells": 13,
+      "shareCode": "Y-bgYGZlSGFjYmRmYKhTsmNgYGBkYWJgWAUGU7VCViGDBaGhoY6hEODAAAA",
+      "shareUrl": "https://ghostmaze.novic.cc/?map=Y-bgYGZlSGFjYmRmYKhTsmNgYGBkYWJgWAUGU7VCViGDBaGhoY6hEODAAAA",
+      "search": {
+        "shortest": "UDDRRRRUUR",
+        "reachableStates": 17,
+        "exhausted": true
+      },
+      "trace": [
+        {
+          "action": null,
+          "player": [
+            1,
+            3
+          ],
+          "ghosts": [
+            [
+              4,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 0,
+          "stamina": 100,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "U",
+          "player": [
+            1,
+            2
+          ],
+          "ghosts": [
+            [
+              3,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 1,
+          "stamina": 99,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "D",
+          "player": [
+            1,
+            3
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 2,
+          "stamina": 98,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "D",
+          "player": [
+            1,
+            4
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 3,
+          "stamina": 97,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "R",
+          "player": [
+            2,
+            4
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 4,
+          "stamina": 96,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "R",
+          "player": [
+            3,
+            4
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 5,
+          "stamina": 95,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "R",
+          "player": [
+            4,
+            4
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 6,
+          "stamina": 94,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "R",
+          "player": [
+            5,
+            4
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 7,
+          "stamina": 93,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "U",
+          "player": [
+            5,
+            3
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 8,
+          "stamina": 92,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "U",
+          "player": [
+            5,
+            2
+          ],
+          "ghosts": [
+            [
+              3,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 9,
+          "stamina": 91,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "R",
+          "player": [
+            6,
+            2
+          ],
+          "ghosts": [
+            [
+              3,
+              2
+            ]
+          ],
+          "gate": null,
+          "steps": 10,
+          "stamina": 90,
+          "won": true,
+          "dead": false
+        }
+      ],
+      "exitWithoutGoal": {
+        "action": "R",
+        "player": [
+          6,
+          2
+        ],
+        "ghosts": [
+          [
+            4,
+            2
+          ]
+        ],
+        "gate": null,
+        "steps": 10,
+        "stamina": 90,
+        "won": false,
+        "dead": false
+      },
+      "checks": {
+        "noGhosts": {
+          "shortest": "URRRRR",
+          "reachableStates": 13,
+          "exhausted": true
+        },
+        "noPeek": {
+          "shortest": null,
+          "reachableStates": 7,
+          "exhausted": true
+        },
+        "noClosing": null,
+        "noGhostLeftOfClosedGate": null,
+        "blindDetour": [
+          {
+            "action": null,
+            "player": [
+              1,
+              3
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": null,
+            "steps": 0,
+            "stamina": 100,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "D",
+            "player": [
+              1,
+              4
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": null,
+            "steps": 1,
+            "stamina": 99,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "R",
+            "player": [
+              2,
+              4
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": null,
+            "steps": 2,
+            "stamina": 98,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "R",
+            "player": [
+              3,
+              4
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": null,
+            "steps": 3,
+            "stamina": 97,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "R",
+            "player": [
+              4,
+              4
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": null,
+            "steps": 4,
+            "stamina": 96,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "R",
+            "player": [
+              5,
+              4
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": null,
+            "steps": 5,
+            "stamina": 95,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "U",
+            "player": [
+              5,
+              3
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": null,
+            "steps": 6,
+            "stamina": 94,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "U",
+            "player": [
+              5,
+              2
+            ],
+            "ghosts": [
+              [
+                5,
+                2
+              ]
+            ],
+            "gate": null,
+            "steps": 7,
+            "stamina": 93,
+            "won": false,
+            "dead": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "unit-02",
+      "title": "把鬼留在门那边",
+      "activeCells": 13,
+      "shareCode": "Y-bgYGZlSGFmZGRm4LBTsmNgYGBkYWJgZGRmcly1atWqlaFaIStDkYH_0dDQUFYoh4HJkREA",
+      "shareUrl": "https://ghostmaze.novic.cc/?map=Y-bgYGZlSGFmZGRm4LBTsmNgYGBkYWJgZGRmcly1atWqlaFaIStDkYH_0dDQUFYoh4HJkREA",
+      "search": {
+        "shortest": "UDLDRRRRUULLU",
+        "reachableStates": 36,
+        "exhausted": true
+      },
+      "trace": [
+        {
+          "action": null,
+          "player": [
+            1,
+            3
+          ],
+          "ghosts": [
+            [
+              4,
+              2
+            ]
+          ],
+          "gate": "open",
+          "steps": 0,
+          "stamina": 100,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "U",
+          "player": [
+            1,
+            2
+          ],
+          "ghosts": [
+            [
+              3,
+              2
+            ]
+          ],
+          "gate": "open",
+          "steps": 1,
+          "stamina": 99,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "D",
+          "player": [
+            1,
+            3
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "open",
+          "steps": 2,
+          "stamina": 98,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "L",
+          "player": [
+            1,
+            3
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 2,
+          "stamina": 98,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "D",
+          "player": [
+            1,
+            4
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 3,
+          "stamina": 97,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "R",
+          "player": [
+            2,
+            4
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 4,
+          "stamina": 96,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "R",
+          "player": [
+            3,
+            4
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 5,
+          "stamina": 95,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "R",
+          "player": [
+            4,
+            4
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 6,
+          "stamina": 94,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "R",
+          "player": [
+            5,
+            4
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 7,
+          "stamina": 93,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "U",
+          "player": [
+            5,
+            3
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 8,
+          "stamina": 92,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "U",
+          "player": [
+            5,
+            2
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 9,
+          "stamina": 91,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "L",
+          "player": [
+            4,
+            2
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 10,
+          "stamina": 90,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "L",
+          "player": [
+            3,
+            2
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 11,
+          "stamina": 89,
+          "won": false,
+          "dead": false
+        },
+        {
+          "action": "U",
+          "player": [
+            3,
+            1
+          ],
+          "ghosts": [
+            [
+              2,
+              2
+            ]
+          ],
+          "gate": "closed",
+          "steps": 12,
+          "stamina": 88,
+          "won": true,
+          "dead": false
+        }
+      ],
+      "exitWithoutGoal": {
+        "action": "U",
+        "player": [
+          3,
+          1
+        ],
+        "ghosts": [
+          [
+            2,
+            2
+          ]
+        ],
+        "gate": "closed",
+        "steps": 12,
+        "stamina": 88,
+        "won": false,
+        "dead": false
+      },
+      "checks": {
+        "noGhosts": {
+          "shortest": "URRU",
+          "reachableStates": 26,
+          "exhausted": true
+        },
+        "noPeek": {
+          "shortest": null,
+          "reachableStates": 14,
+          "exhausted": true
+        },
+        "noClosing": {
+          "shortest": null,
+          "reachableStates": 16,
+          "exhausted": true
+        },
+        "noGhostLeftOfClosedGate": {
+          "shortest": null,
+          "reachableStates": 25,
+          "exhausted": true
+        },
+        "blindDetour": [
+          {
+            "action": null,
+            "player": [
+              1,
+              3
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": "open",
+            "steps": 0,
+            "stamina": 100,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "D",
+            "player": [
+              1,
+              4
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": "open",
+            "steps": 1,
+            "stamina": 99,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "R",
+            "player": [
+              2,
+              4
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": "open",
+            "steps": 2,
+            "stamina": 98,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "R",
+            "player": [
+              3,
+              4
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": "open",
+            "steps": 3,
+            "stamina": 97,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "R",
+            "player": [
+              4,
+              4
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": "open",
+            "steps": 4,
+            "stamina": 96,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "R",
+            "player": [
+              5,
+              4
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": "open",
+            "steps": 5,
+            "stamina": 95,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "U",
+            "player": [
+              5,
+              3
+            ],
+            "ghosts": [
+              [
+                4,
+                2
+              ]
+            ],
+            "gate": "open",
+            "steps": 6,
+            "stamina": 94,
+            "won": false,
+            "dead": false
+          },
+          {
+            "action": "U",
+            "player": [
+              5,
+              2
+            ],
+            "ghosts": [
+              [
+                5,
+                2
+              ]
+            ],
+            "gate": "open",
+            "steps": 7,
+            "stamina": 93,
+            "won": false,
+            "dead": true
+          }
+        ]
+      }
+    }
+  ]
+}

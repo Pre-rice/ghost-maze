@@ -1,5 +1,6 @@
 import { WALL_TYPES, START_ROOM_SIZE } from './constants.js';
 import { GameState } from './gameState.js';
+import { directionIndex } from './mapDataUtils.js';
 
 // ==================================================
 //  GameLogic: 纯函数模块，处理所有游戏逻辑
@@ -64,7 +65,6 @@ export const GameLogic = {
                 y: mapDef.playerStart.y,
                 layer: mapDef.playerStart.layer,
                 hp: mapDef.initialHealth,
-                stamina: mapDef.initialStamina,
                 keys: 0,
                 steps: 0,
                 trail: []
@@ -83,10 +83,10 @@ export const GameLogic = {
      * 根据动作计算下一个状态
      * @returns {GameState} 新状态，如果无变化则返回原状态
      */
-    calculateNextState(currentState, action, mapDef) {
+    calculateNextState(currentState, action, mapDef, { trails = true, visibility = true } = {}) {
         if (currentState.isDead || currentState.isWon) {
             // 特殊情况：复活动作
-            if (action.type === 'REVIVE') {
+            if (currentState.isDead && action.type === 'REVIVE') {
                 return this.handleRevive(currentState, mapDef);
             }
             return currentState;
@@ -104,17 +104,15 @@ export const GameLogic = {
 
         switch (action.type) {
             case 'MOVE':
-                stateChanged = this.handleMove(nextState, action.payload, mapDef);
+                if (directionIndex(action.payload) < 0) return currentState;
+                stateChanged = this.handleMove(nextState, action.payload, mapDef, trails);
                 break;
             case 'USE_STAIR':
                 stateChanged = this.handleUseStair(nextState, mapDef);
                 isStairAction = true;
                 break;
-            case 'PRESS_BUTTON':
-                stateChanged = this.handlePressButton(nextState, action.payload, mapDef);
-                break;
             case 'REVIVE':
-                return this.handleRevive(currentState, mapDef);
+                return currentState;
             default:
                 return currentState;
         }
@@ -123,6 +121,8 @@ export const GameLogic = {
             return currentState;
         }
 
+        nextState.player.steps++;
+
         // 按顺序处理玩家操作后的所有变化
         this.handleItemPickup(nextState, mapDef);
 
@@ -130,19 +130,20 @@ export const GameLogic = {
         if (this._isPlayerOnEndPos(nextState, mapDef)) {
             nextState.isWon = true;
             nextState.isRevivalPoint = false;
+            if (visibility) this.updateVisibility(nextState, mapDef);
             return nextState;
         }
 
         if (isStairAction) {
             // 玩家使用楼梯：让原层的鬼向玩家原位置移动
-            this.moveGhostsAfterStair(nextState, originalPlayerPos, mapDef);
+            this.moveGhostsAfterStair(nextState, originalPlayerPos, mapDef, trails);
         } else {
             // 普通移动：处理鬼的移动（包括跨楼梯追踪）
-            this.moveGhostsWithStairChase(nextState, originalPlayerPos, mapDef);
+            this.moveGhostsWithStairChase(nextState, originalPlayerPos, mapDef, trails);
         }
         
         this.checkCollisions(nextState, mapDef);
-        this.updateVisibility(nextState, mapDef);
+        if (visibility) this.updateVisibility(nextState, mapDef);
         this.checkWinLossConditions(nextState, mapDef);
 
         nextState.isRevivalPoint = false;
@@ -152,7 +153,7 @@ export const GameLogic = {
     /**
      * 处理移动动作
      */
-    handleMove(state, direction, mapDef) {
+    handleMove(state, direction, mapDef, trails = true) {
         const p = state.player;
         const playerLayer = p.layer;
         const layerDef = mapDef.layers[playerLayer];
@@ -184,8 +185,8 @@ export const GameLogic = {
         }
 
         // 获取墙体
-        const wallDef = this._getWallBetween(p, { x: newX, y: newY }, layerDef.initialWalls, direction);
-        const wallState = this._getWallStateBetween(p, { x: newX, y: newY }, layerState.wallStates, direction);
+        const wallState = this._getWallBetween(p, { x: newX, y: newY }, layerState.wallStates, direction);
+        const wallDef = wallState;
 
         if (wallDef && wallDef.type !== WALL_TYPES.EMPTY) {
             // 实心墙或玻璃墙不可通过
@@ -205,7 +206,10 @@ export const GameLogic = {
                 }
                 // 消耗门：将墙体类型设为空
                 if (wallState) {
-                    wallState.type = WALL_TYPES.EMPTY;
+                    const axis = direction.dx ? 'v' : 'h';
+                    const x = p.x + (direction.dx === 1 ? 1 : 0);
+                    const y = p.y + (direction.dy === 1 ? 1 : 0);
+                    state.setWall(playerLayer, axis, x, y, { type: WALL_TYPES.EMPTY, keys: 0 });
                 }
             }
             // 字母门检查开关状态
@@ -217,18 +221,14 @@ export const GameLogic = {
         }
 
         // 添加轨迹
-        p.trail.unshift({ x: p.x, y: p.y, timestamp: Date.now() });
-        if (p.trail.length > 10) p.trail.pop();
+        if (trails) {
+            p.trail.unshift({ x: p.x, y: p.y, timestamp: Date.now() });
+            if (p.trail.length > 10) p.trail.pop();
+        }
 
         // 更新玩家位置
         p.x = newX;
         p.y = newY;
-        p.steps++;
-
-        // 死亡循环模式消耗体力
-        if (mapDef.gameMode === 'death-loop') {
-            p.stamina--;
-        }
 
         return true;
     },
@@ -267,11 +267,6 @@ export const GameLogic = {
 
         // 执行上下楼
         p.layer = targetLayer;
-        p.steps++;
-
-        if (mapDef.gameMode === 'death-loop') {
-            p.stamina--;
-        }
 
         return true;
     },
@@ -281,22 +276,12 @@ export const GameLogic = {
      */
     handlePressButton(state, payload, mapDef) {
         const letter = payload.letter;
-        let toggled = false;
-
-        // 遍历所有图层的墙体状态，切换对应字母门
-        state.layerStates.forEach(layerState => {
-            const toggleWall = (wall) => {
-                if (wall.type === WALL_TYPES.LETTER_DOOR && wall.letter === letter) {
-                    wall.currentState = wall.currentState === 'closed' ? 'open' : 'closed';
-                    toggled = true;
-                }
-            };
-
-            layerState.wallStates.h.forEach(row => row.forEach(toggleWall));
-            layerState.wallStates.v.forEach(row => row.forEach(toggleWall));
-        });
-
-        return toggled;
+        const walls = mapDef.letterWalls.get(letter) || [];
+        for (const { layer, axis, x, y } of walls) {
+            const wall = state.layerStates[layer].wallStates[axis][y][x];
+            state.setWall(layer, axis, x, y, { currentState: wall.currentState === 'closed' ? 'open' : 'closed' });
+        }
+        return walls.length > 0;
     },
 
     /**
@@ -319,7 +304,7 @@ export const GameLogic = {
     /**
      * 玩家使用楼梯后的鬼移动：让原层正在追击的鬼向玩家原位置移动一步
      */
-    moveGhostsAfterStair(state, originalPlayerPos, mapDef) {
+    moveGhostsAfterStair(state, originalPlayerPos, mapDef, trails = true) {
         const originalLayer = originalPlayerPos.layer;
         const ghosts = state.layerStates[originalLayer].ghosts;
         const layerDef = mapDef.layers[originalLayer];
@@ -340,7 +325,7 @@ export const GameLogic = {
             }
         }
 
-        this._resolveGhostMoveConflicts(ghosts, moveIntents);
+        this._resolveGhostMoveConflicts(ghosts, moveIntents, trails);
     },
 
     /**
@@ -348,7 +333,7 @@ export const GameLogic = {
      * 当玩家和鬼分别处于一对楼梯的两端时，鬼可以看见玩家
      * 玩家移动后（非上下楼梯），鬼会通过楼梯来到玩家移动前的位置
      */
-    moveGhostsWithStairChase(state, originalPlayerPos, mapDef) {
+    moveGhostsWithStairChase(state, originalPlayerPos, mapDef, trails = true) {
         const playerLayer = state.player.layer;
         
         // 首先处理可能通过楼梯追踪的鬼，获取已经通过楼梯移动的鬼列表
@@ -387,7 +372,7 @@ export const GameLogic = {
             }
         }
 
-        this._resolveGhostMoveConflicts(ghosts, moveIntents);
+        this._resolveGhostMoveConflicts(ghosts, moveIntents, trails);
     },
 
     /**
@@ -455,7 +440,7 @@ export const GameLogic = {
      * @param {Array} ghosts - 当前层鬼数组
      * @param {Array} moveIntents - 移动意图 [{ghost, nextStep}]
      */
-    _resolveGhostMoveConflicts(ghosts, moveIntents) {
+    _resolveGhostMoveConflicts(ghosts, moveIntents, trails = true) {
         if (moveIntents.length === 0) return;
 
         let maxIterations = ghosts.length + 1;
@@ -492,8 +477,10 @@ export const GameLogic = {
 
             if (finalMovesThisPass.length > 0) {
                 for (const { ghost, nextStep } of finalMovesThisPass) {
-                    ghost.trail.unshift({ x: ghost.x, y: ghost.y, timestamp: Date.now() });
-                    if (ghost.trail.length > 5) ghost.trail.pop();
+                    if (trails) {
+                        ghost.trail.unshift({ x: ghost.x, y: ghost.y, timestamp: Date.now() });
+                        if (ghost.trail.length > 5) ghost.trail.pop();
+                    }
                     ghost.x = nextStep.x;
                     ghost.y = nextStep.y;
                 }
@@ -527,7 +514,17 @@ export const GameLogic = {
     updateVisibility(state, mapDef) {
         const p = state.player;
         const layer = p.layer;
-        const seen = state.seenCells[layer];
+        const writtenRows = new Set();
+        const mark = (li, x, y) => {
+            if (state.seenCells[li][y][x]) return;
+            const key = `${li},${y}`;
+            if (!writtenRows.has(key)) {
+                state.seenCells[li] = state.seenCells[li].slice();
+                state.seenCells[li][y] = state.seenCells[li][y].slice();
+                writtenRows.add(key);
+            }
+            state.seenCells[li][y][x] = true;
+        };
         const layerDef = mapDef.layers[layer];
         const layerState = state.layerStates[layer];
 
@@ -537,20 +534,20 @@ export const GameLogic = {
             for (let y = roomY; y < roomY + START_ROOM_SIZE; y++) {
                 for (let x = 0; x < START_ROOM_SIZE; x++) {
                     if (y >= 0 && y < mapDef.height && x >= 0 && x < mapDef.width) {
-                        seen[y][x] = true;
+                        mark(layer, x, y);
                     }
                 }
             }
         } else {
             // 自由模式：揭示起点
             const start = layerDef.initialEntities.customStartPos;
-            if (start && seen[start.y] && start.x >= 0 && start.x < mapDef.width) {
-                seen[start.y][start.x] = true;
+            if (start && state.seenCells[layer][start.y] && start.x >= 0 && start.x < mapDef.width) {
+                mark(layer, start.x, start.y);
             }
         }
 
         // 玩家当前位置可见
-        seen[p.y][p.x] = true;
+        mark(layer, p.x, p.y);
 
         // 四方向射线投射
         const castRay = (dx, dy) => {
@@ -575,7 +572,7 @@ export const GameLogic = {
                     }
                 }
 
-                seen[y][x] = true;
+                mark(layer, x, y);
                 x += dx;
                 y += dy;
             }
@@ -594,7 +591,7 @@ export const GameLogic = {
             if (playerStair) {
                 const targetLayer = playerStair.direction === 'up' ? p.layer + 1 : p.layer - 1;
                 if (targetLayer >= 0 && targetLayer < mapDef.layerCount && state.seenCells[targetLayer]) {
-                    state.seenCells[targetLayer][p.y][p.x] = true;
+                    mark(targetLayer, p.x, p.y);
                 }
             }
         }
@@ -619,10 +616,6 @@ export const GameLogic = {
         if (mapDef.gameMode === 'exploration' && p.hp <= 0) {
             state.isDead = true;
             state.deathReason = 'no_hp';
-        }
-        if (mapDef.gameMode === 'death-loop' && p.stamina <= 0) {
-            state.isDead = true;
-            state.deathReason = 'no_stamina';
         }
     },
 
@@ -659,9 +652,9 @@ export const GameLogic = {
             // 死亡循环模式：重置但保留视野
             const nextState = this.createInitialState(mapDef);
             nextState.loopCount = currentState.loopCount + 1;
-            nextState.seenCells = JSON.parse(JSON.stringify(currentState.seenCells));
+            nextState.seenCells = currentState.seenCells.slice();
             nextState.isRevivalPoint = true;
-            return nextState;
+            return this.updateVisibility(nextState, mapDef);
         }
         
         return currentState;
@@ -674,14 +667,6 @@ export const GameLogic = {
         if (direction.dx === -1) return walls.v[pos1.y] ? walls.v[pos1.y][pos1.x] : null;
         if (direction.dy === 1) return walls.h[pos1.y + 1] ? walls.h[pos1.y + 1][pos1.x] : null;
         if (direction.dy === -1) return walls.h[pos1.y] ? walls.h[pos1.y][pos1.x] : null;
-        return null;
-    },
-
-    _getWallStateBetween(pos1, pos2, wallStates, direction) {
-        if (direction.dx === 1) return wallStates.v[pos1.y] ? wallStates.v[pos1.y][pos1.x + 1] : null;
-        if (direction.dx === -1) return wallStates.v[pos1.y] ? wallStates.v[pos1.y][pos1.x] : null;
-        if (direction.dy === 1) return wallStates.h[pos1.y + 1] ? wallStates.h[pos1.y + 1][pos1.x] : null;
-        if (direction.dy === -1) return wallStates.h[pos1.y] ? wallStates.h[pos1.y][pos1.x] : null;
         return null;
     },
 
@@ -717,43 +702,30 @@ export const GameLogic = {
     },
 
     _findShortestPath(start, end, layerDef, layerState) {
-        const queue = [[{ x: start.x, y: start.y }]];
-        const visited = new Set([`${start.x},${start.y}`]);
-        const width = layerDef.activeCells[0].length;
-        const height = layerDef.activeCells.length;
-
-        while (queue.length > 0) {
-            const path = queue.shift();
-            const { x, y } = path[path.length - 1];
-
-            if (x === end.x && y === end.y) return path;
-
-            const neighbors = [{ dx: 0, dy: -1 }, { dx: 1, dy: 0 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }];
-            for (const { dx, dy } of neighbors) {
-                const nx = x + dx;
-                const ny = y + dy;
-                const key = `${nx},${ny}`;
-
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height && !visited.has(key)) {
-                    if (!layerDef.activeCells[ny][nx]) continue;
-
-                    let wall = null;
-                    if (dx === 1) wall = layerState.wallStates.v[y][x + 1];
-                    else if (dx === -1) wall = layerState.wallStates.v[y][x];
-                    else if (dy === 1) wall = layerState.wallStates.h[y + 1][x];
-                    else if (dy === -1) wall = layerState.wallStates.h[y][x];
-
-                    if (wall && wall.type !== WALL_TYPES.EMPTY) {
-                        if (wall.type === WALL_TYPES.LETTER_DOOR && wall.currentState === 'open') {
-                            // 可以通过
-                        } else {
-                            continue;
-                        }
-                    }
-
-                    visited.add(key);
-                    queue.push([...path, { x: nx, y: ny }]);
+        const width = layerDef.activeCells[0].length, height = layerDef.activeCells.length;
+        const first = start.y * width + start.x, target = end.y * width + end.x;
+        const parents = new Int32Array(width * height).fill(-1);
+        const queue = new Int32Array(width * height);
+        let head = 0, tail = 1;
+        queue[0] = first; parents[first] = first;
+        const neighbors = [{ dx: 0, dy: -1 }, { dx: 1, dy: 0 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }];
+        while (head < tail) {
+            const cell = queue[head++], x = cell % width, y = Math.floor(cell / width);
+            if (cell === target) {
+                const path = [];
+                for (let at = target;; at = parents[at]) {
+                    path.push({ x: at % width, y: Math.floor(at / width) });
+                    if (at === first) return path.reverse();
                 }
+            }
+            for (const direction of neighbors) {
+                const nx = x + direction.dx, ny = y + direction.dy;
+                if (nx < 0 || ny < 0 || nx >= width || ny >= height || !layerDef.activeCells[ny][nx]) continue;
+                const next = ny * width + nx;
+                if (parents[next] !== -1) continue;
+                const wall = this._getWallBetween({ x, y }, { x: nx, y: ny }, layerState.wallStates, direction);
+                if (wall && wall.type !== WALL_TYPES.EMPTY && !(wall.type === WALL_TYPES.LETTER_DOOR && wall.currentState === 'open')) continue;
+                parents[next] = cell; queue[tail++] = next;
             }
         }
         return null;

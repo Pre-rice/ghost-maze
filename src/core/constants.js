@@ -30,6 +30,7 @@ export const GAME_STATES = {
     PLAYING: 'playing',
     DEAD: 'dead',
     WON: 'won',
+    REPLAY: 'replay',
     EDITOR: 'editor'
 };
 
