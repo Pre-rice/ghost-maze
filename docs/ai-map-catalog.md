@@ -2,7 +2,7 @@
 
 更新：2026-10-11。游玩、AI 和回放已使用同一规则；下列码全部为当前格式。旧码弃用，原地图、原证据和真人录制保持原样。
 
-扫描 393 份明确保存的地图资料，按完整地图内容去重得到 343 张；其中 326 张可生成并重新打开，298 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
+扫描 400 份明确保存的地图资料，按完整地图内容去重得到 349 张；其中 332 张可生成并重新打开，303 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
 
 本文件是地图、解法和用户评述的统一目录。默认试玩入口为正式站 `https://ghostmaze.novic.cc/`；当前目录使用 `https://ghostmaze.novic.cc/`。正式站已同步当前规则和分享格式。只有地图码是普通游玩，追加操作码才进入回放。
 
@@ -127,6 +127,25 @@
 操作码：`CEha2FOrWwlTfA`
 
 路线来源：examples/door-units-20261011/unit-01-evidence.json.solution.solution.actions
+
+</details>
+
+### 《先手》
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAADw8_PgAAAEwIDF0AdAQABAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAgA) · 新候选：取钥匙、回程与重开出口相互制约；机械核验通过，等待真实试玩，尚无用户质量评价。
+
+地图码：`AADAADw8_PgAAAEwIDF0AdAQABAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAgA`
+
+来源：[examples/prepared-release-20261011/map.json](../../ghost-maze-ai/examples/prepared-release-20261011/map.json)、[runs/door-challenge-20261011/minimized-pocket-01.json.map](../../ghost-maze-ai/runs/door-challenge-20261011/minimized-pocket-01.json)
+
+<details>
+<summary>参考回放（31 步，含答案）</summary>
+
+[打开同页回放](https://ghostmaze.novic.cc/?map=AADAADw8_PgAAAEwIDF0AdAQABAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAgA&replay=CGA9wTHSFSn88IpXwA)
+
+操作码：`CGA9wTHSFSn88IpXwA`
+
+路线来源：examples/prepared-release-20261011/evidence.json.reference.solution.actions
 
 </details>
 
@@ -595,6 +614,12 @@
   [同页回放](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAALkAoC1mBcQLnIEQIgAAIAYEFAIQYY&replay=COFCEhkIJ9WgsPqXoz4I)；操作码 `COFCEhkIJ9WgsPqXoz4I`；路线来源：examples/permanent-return-20261009/evidence.json.solution.solution.actions。
 
   </details>
+- **prepared-release-20261011/source**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPz8_PgAAAFQoDWUAlARACAABVUDForXODARVQAAAAAEcIiqIiLjKAAAAAIIIIAC)；未作玩家质量验收。 地图码 `AADAAPz8_PgAAAFQoDWUAlARACAABVUDForXODARVQAAAAAEcIiqIiLjKAAAAAIIIIAC`；[examples/prepared-release-20261011/source.json.map](../../ghost-maze-ai/examples/prepared-release-20261011/source.json)。
+  <details><summary>参考 31 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAPz8_PgAAAFQoDWUAlARACAABVUDForXODARVQAAAAAEcIiqIiLjKAAAAAIIIIAC&replay=CPbzLFTSFSn88IpXwA)；操作码 `CPbzLFTSFSn88IpXwA`；路线来源：examples/prepared-release-20261011/evidence.json.reference.solution.actions。
+
+  </details>
 - **return-to-source-20261010/counterexample-v-2-2-1**：[试玩](https://ghostmaze.novic.cc/?map=AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXLkCkCIFxAAAAGCAGECAGEC)；未作玩家质量验收。 地图码 `AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXLkCkCIFxAAAAGCAGECAGEC`；[examples/return-to-source-20261010/counterexample-v-2-2-1.json.map](../../ghost-maze-ai/examples/return-to-source-20261010/counterexample-v-2-2-1.json)、[runs/return-to-source-20261010/counterexample-v-2-2-1.json.map](../../ghost-maze-ai/runs/return-to-source-20261010/counterexample-v-2-2-1.json)。
   <details><summary>参考 41 步（答案）</summary>
 
@@ -993,6 +1018,26 @@
   尚无完整可验证的通关路线。
 - **runs/coupled-search/short-v33-2**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPD4cPDwAAFBoAdAWABgQBVBxchJCAK4FUAAAACEExtBYQSoJxAAAAMAIAA)；未作玩家质量验收。 地图码 `AADAAPD4cPDwAAFBoAdAWABgQBVBxchJCAK4FUAAAACEExtBYQSoJxAAAAMAIAA`；[runs/coupled-search/short-v33-2.json](../../ghost-maze-ai/runs/coupled-search/short-v33-2.json)。
   尚无完整可验证的通关路线。
+- **runs/door-challenge-20261011/manual-pocket-01**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPj4-PgAAAFIIDJ8AfACYABVQGIRzgwAqoAAAAACCEVCJC4ygAAAAAggAIA)；未作玩家质量验收。 地图码 `AADAAPj4-PgAAAFIIDJ8AfACYABVQGIRzgwAqoAAAAACCEVCJC4ygAAAAAggAIA`；[runs/door-challenge-20261011/manual-pocket-01.json.map](../../ghost-maze-ai/runs/door-challenge-20261011/manual-pocket-01.json)。
+  <details><summary>参考 33 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAPj4-PgAAAFIIDJ8AfACYABVQGIRzgwAqoAAAAACCEVCJC4ygAAAAAggAIA&replay=GHAHmdX_6VJjw_klfAA)；操作码 `GHAHmdX_6VJjw_klfAA`；路线来源：runs/door-challenge-20261011/manual-pocket-01.json.result.solution.actions。
+
+  </details>
+- **runs/door-challenge-20261011/manual-pocket-02**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPz8_PgAAAFQIDWUAlACAABVUDFojnBgIqoAAAAACOERVERFxlAAAAAAQQQAEA)；未作玩家质量验收。 地图码 `AADAAPz8_PgAAAFQIDWUAlACAABVUDFojnBgIqoAAAAACOERVERFxlAAAAAAQQQAEA`；[runs/door-challenge-20261011/manual-pocket-02.json.map](../../ghost-maze-ai/runs/door-challenge-20261011/manual-pocket-02.json)。
+  尚无完整可验证的通关路线。
+- **runs/door-challenge-20261011/manual-pocket-03**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPz8_PgAAAFQIDWUAlARACAABVUDFojnBgIqoAAAAACOERVERFxlAAAAAAQQQAE)；未作玩家质量验收。 地图码 `AADAAPz8_PgAAAFQIDWUAlARACAABVUDFojnBgIqoAAAAACOERVERFxlAAAAAAQQQAE`；[runs/door-challenge-20261011/manual-pocket-03.json.map](../../ghost-maze-ai/runs/door-challenge-20261011/manual-pocket-03.json)。
+  <details><summary>参考 27 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAPz8_PgAAAFQIDWUAlARACAABVUDFojnBgIqoAAAAACOERVERFxlAAAAAAQQQAE&replay=CHhAwaDxUmPA0lfA)；操作码 `CHhAwaDxUmPA0lfA`；路线来源：runs/door-challenge-20261011/manual-pocket-03.json.result.solution.actions。
+
+  </details>
+- **runs/door-challenge-20261011/manual-pocket-04**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPz8_PgAAAFQIDWUAlARACAABVUDForXODARVQAAAAAEcIiqIiLjKAAAAAIIIIAC)；未作玩家质量验收。 地图码 `AADAAPz8_PgAAAFQIDWUAlARACAABVUDForXODARVQAAAAAEcIiqIiLjKAAAAAIIIIAC`；[runs/door-challenge-20261011/manual-pocket-04.json.map](../../ghost-maze-ai/runs/door-challenge-20261011/manual-pocket-04.json)。
+  <details><summary>参考 33 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAPz8_PgAAAFQIDWUAlARACAABVUDForXODARVQAAAAAEcIiqIiLjKAAAAAIIIIAC&replay=GLA3UqX9IVKfzwilfAA)；操作码 `GLA3UqX9IVKfzwilfAA`；路线来源：runs/door-challenge-20261011/manual-pocket-04.json.result.solution.actions。
+
+  </details>
 - **runs/door-units-20261011/lock-minimized-33258**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPBw8PAAAAHqgL9AAACqCYBAEgqgAAAAAEkCIIQWSAAAAAAQ)；未作玩家质量验收。 地图码 `AADAAPBw8PAAAAHqgL9AAACqCYBAEgqgAAAAAEkCIIQWSAAAAAAQ`；[runs/door-units-20261011/lock-minimized-33258.json.map](../../ghost-maze-ai/runs/door-units-20261011/lock-minimized-33258.json)。
   <details><summary>参考 21 步（答案）</summary>
 
