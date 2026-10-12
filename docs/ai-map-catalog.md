@@ -26,7 +26,7 @@
 
 ## 2026-10-13 新候选：《借道》
 
-22格、两鬼、两钥匙，无按钮和玻璃，中性开局。暂无用户评述与真人路线，未加入九图网页地图集；完整资料见[作品说明](../../ghost-maze-ai/examples/borrowed-route-20261013/README.md)。本条当前规则证据有效，以下历史统计未重新批量扫描，不包含本题。
+22格、两鬼、两钥匙，无按钮和玻璃，中性开局。已制备44个求解器规划状态，未训练，不是独立作品或真人好评。暂无用户评述与真人路线，未加入九图网页地图集；完整资料见[作品说明](../../ghost-maze-ai/examples/borrowed-route-20261013/README.md)。本条当前规则证据有效，以下历史统计未重新批量扫描，不包含本题。
 
 [试玩](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADIAHwo-Ln4AAEkICAsBA8AFVCSKQacJAqqAAAABHdBVCCFRECAAAAAAAg)
 
