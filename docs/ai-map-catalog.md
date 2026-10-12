@@ -2,7 +2,7 @@
 
 更新：2026-10-12。游玩、AI 和回放已使用同一规则；下列码全部为当前格式。旧码弃用，原地图、原证据和真人录制保持原样。
 
-扫描 402 份明确保存的地图资料，按完整地图内容去重得到 351 张；其中 334 张可生成并重新打开，305 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
+扫描 437 份明确保存的地图资料，按完整地图内容去重得到 379 张；其中 362 张可生成并重新打开，333 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
 
 本文件是地图、解法和用户评述的统一目录。默认试玩入口为正式站 `https://ghostmaze.novic.cc/`；当前目录使用 `https://ghostmaze.novic.cc/`。正式站已同步当前规则和分享格式。只有地图码是普通游玩，追加操作码才进入回放。
 
@@ -24,6 +24,25 @@
 另附[用户优化图](https://ghostmaze.novic.cc/?map=AADAAHB4cDAwAAFkgCoCQEQAAKAuQJAAHAKAAAAAEBjaCUAoByAAAAAQAA)：用户亲自修改并认为关键思路更精妙；参考与真人路线均为 40 步。它是单层组合题的亲缘改图，不计为新的 AI 独立作品，详见[当时说明](../../ghost-maze-ai/examples/user-refinements/README.md)。
 
 ## 已交付地图与主要对照
+
+### 《换边》
+
+[试玩](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMILCFs0T4C0sDiMnEAQA) · 11 格、一鬼、一按钮的新候选；保护位置、钥匙房与目标入口相互制约。机械核验通过，等待真实试玩，尚无质量评价。
+
+地图码：`AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMILCFs0T4C0sDiMnEAQA`
+
+来源：[examples/room-transfer-20261012/map.json](../../ghost-maze-ai/examples/room-transfer-20261012/map.json)、[examples/room-transfer-20261012/source.json.map](../../ghost-maze-ai/examples/room-transfer-20261012/source.json)、[runs/door-continuation-20261012/minimized-transfer-01.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/minimized-transfer-01.json)、[runs/door-continuation-20261012/transfer-footer-0-top-2.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/transfer-footer-0-top-2.json)
+
+<details>
+<summary>参考回放（28 步，含答案）</summary>
+
+[打开同页回放](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMILCFs0T4C0sDiMnEAQA&replay=AJOILtmM5m-reKM3)
+
+操作码：`AJOILtmM5m-reKM3`
+
+路线来源：examples/room-transfer-20261012/evidence.json.reference.solution.actions
+
+</details>
 
 ### 《回环》
 
@@ -1038,6 +1057,168 @@
   <details><summary>参考 33 步（答案）</summary>
 
   [同页回放](https://ghostmaze.novic.cc/?map=AADAAPz8_PgAAAFQIDWUAlARACAABVUDForXODARVQAAAAAEcIiqIiLjKAAAAAIIIIAC&replay=GLA3UqX9IVKfzwilfAA)；操作码 `GLA3UqX9IVKfzwilfAA`；路线来源：runs/door-challenge-20261011/manual-pocket-04.json.result.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/free-open-order-101203-proposal-12953**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPDw4ODwAAEYYCUQAKoCAUHPQcQVQAAAAIQVIKQIgS0AAAABAA)；未作玩家质量验收。 地图码 `AADIAPDw4ODwAAEYYCUQAKoCAUHPQcQVQAAAAIQVIKQIgS0AAAABAA`；[runs/door-continuation-20261012/free-open-order-101203-proposal-12953.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/free-open-order-101203-proposal-12953.json)。
+  <details><summary>参考 14 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPDw4ODwAAEYYCUQAKoCAUHPQcQVQAAAAIQVIKQIgS0AAAABAA&replay=ENr5IO-VcgPw)；操作码 `ENr5IO-VcgPw`；路线来源：runs/door-continuation-20261012/free-open-order-101203-proposal-12953.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/free-open-order-101203-proposal-32329**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wXCj4scPBgZGHwWNAIalnEybG-5oLWAAgilNHY6cjxhAgAUA)；未作玩家质量验收。 地图码 `AWM4wXCj4scPBgZGHwWNAIalnEybG-5oLWAAgilNHY6cjxhAgAUA`；[runs/door-continuation-20261012/free-open-order-101203-proposal-32329.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/free-open-order-101203-proposal-32329.json)。
+  <details><summary>参考 13 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wXCj4scPBgZGHwWNAIalnEybG-5oLWAAgilNHY6cjxhAgAUA&replay=GP1kIsnAnWiA)；操作码 `GP1kIsnAnWiA`；路线来源：runs/door-continuation-20261012/free-open-order-101203-proposal-32329.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/free-open-order-101203-proposal-37038**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wfADCBgYGKUXaFowrGpg-8TQGsIABIKKTiKK5RoMDAwcDAwA)；未作玩家质量验收。 地图码 `AWM4wfADCBgYGKUXaFowrGpg-8TQGsIABIKKTiKK5RoMDAwcDAwA`；[runs/door-continuation-20261012/free-open-order-101203-proposal-37038.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/free-open-order-101203-proposal-37038.json)。
+  <details><summary>参考 15 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wfADCBgYGKUXaFowrGpg-8TQGsIABIKKTiKK5RoMDAwcDAwA&replay=CNfLRTqagPnw)；操作码 `CNfLRTqagPnw`；路线来源：runs/door-continuation-20261012/free-open-order-101203-proposal-37038.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/free-open-order-101203-proposal-45332**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPDg8PAAAAGkgIcACqByAQTwKoAAAAABCC7QKqCEAAAAAAIA)；未作玩家质量验收。 地图码 `AADIAPDg8PAAAAGkgIcACqByAQTwKoAAAAABCC7QKqCEAAAAAAIA`；[runs/door-continuation-20261012/free-open-order-101203-proposal-45332.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/free-open-order-101203-proposal-45332.json)。
+  <details><summary>参考 18 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPDg8PAAAAGkgIcACqByAQTwKoAAAAABCC7QKqCEAAAAAAIA&replay=ECggW3nNlAnXwA)；操作码 `ECggW3nNlAnXwA`；路线来源：runs/door-continuation-20261012/free-open-order-101203-proposal-45332.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/free-open-order-101203-proposal-77227**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPDw0PDwAAFA4CxwAKoEAxAIEAqgAAAAVIKZglQWiCYzAAAAAgA)；未作玩家质量验收。 地图码 `AADAAPDw0PDwAAFA4CxwAKoEAxAIEAqgAAAAVIKZglQWiCYzAAAAAgA`；[runs/door-continuation-20261012/free-open-order-101203-proposal-77227.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/free-open-order-101203-proposal-77227.json)。
+  <details><summary>参考 13 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAPDw0PDwAAFA4CxwAKoEAxAIEAqgAAAAVIKZglQWiCYzAAAAAgA&replay=GJn6R_JJ1aCA)；操作码 `GJn6R_JJ1aCA`；路线来源：runs/door-continuation-20261012/free-open-order-101203-proposal-77227.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/free-open-order-101203-proposal-80820**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wfADCBgYGCUUNAIYVjUwMjKGMgABi4f7Cr-M4BIGBgYOBgYA)；未作玩家质量验收。 地图码 `AWM4wfADCBgYGCUUNAIYVjUwMjKGMgABi4f7Cr-M4BIGBgYOBgYA`；[runs/door-continuation-20261012/free-open-order-101203-proposal-80820.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/free-open-order-101203-proposal-80820.json)。
+  <details><summary>参考 15 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wfADCBgYGCUUNAIYVjUwMjKGMgABi4f7Cr-M4BIGBgYOBgYA&replay=CAUrPrv0l3wI)；操作码 `CAUrPrv0l3wI`；路线来源：runs/door-continuation-20261012/free-open-order-101203-proposal-80820.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/free-open-order-101203-proposal-94160**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPj4qPgAAAGBoCkQAKqEAS0EgqoAAAAACs5QghVUIsQAAAAEAAA)；未作玩家质量验收。 地图码 `AADAAPj4qPgAAAGBoCkQAKqEAS0EgqoAAAAACs5QghVUIsQAAAAEAAA`；[runs/door-continuation-20261012/free-open-order-101203-proposal-94160.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/free-open-order-101203-proposal-94160.json)。
+  <details><summary>参考 18 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAPj4qPgAAAGBoCkQAKqEAS0EgqoAAAAACs5QghVUIsQAAAAEAAA&replay=EIPqMLSX6DP1YA)；操作码 `EIPqMLSX6DP1YA`；路线来源：runs/door-continuation-20261012/free-open-order-101203-proposal-94160.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/free-open-order-101203-proposal-98467**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPDw8ODwAAESYCowAKoEAkBQToKoAAAAF4ghBcQUgTIAAAAEAA)；未作玩家质量验收。 地图码 `AADIAPDw8ODwAAESYCowAKoEAkBQToKoAAAAF4ghBcQUgTIAAAAEAA`；[runs/door-continuation-20261012/free-open-order-101203-proposal-98467.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/free-open-order-101203-proposal-98467.json)。
+  <details><summary>参考 13 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPDw8ODwAAESYCowAKoEAkBQToKoAAAAF4ghBcQUgTIAAAAEAA&replay=GI3RZaV2CHwA)；操作码 `GI3RZaV2CHwA`；路线来源：runs/door-continuation-20261012/free-open-order-101203-proposal-98467.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/manual-transfer-01**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wPDgw4MEBgbG9AYfpgR-BsYAFu4JDiIMDAwMLEc40zhPcDKA2QIA)；未作玩家质量验收。 地图码 `AWM4wPDgw4MEBgbG9AYfpgR-BsYAFu4JDiIMDAwMLEc40zhPcDKA2QIA`；[runs/door-continuation-20261012/manual-transfer-01.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/manual-transfer-01.json)。
+  <details><summary>参考 20 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wPDgw4MEBgbG9AYfpgR-BsYAFu4JDiIMDAwMLEc40zhPcDKA2QIA&replay=ADk3xWqg2dyg9w)；操作码 `ADk3xWqg2dyg9w`；路线来源：runs/door-continuation-20261012/manual-transfer-01.json.result.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/manual-transfer-02**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wPDgw4MEBgbG9AYfpgR-BsYAFu4JkYwODEDg4zAtYU7DBAYQcHAEAA)；未作玩家质量验收。 地图码 `AWM4wPDgw4MEBgbG9AYfpgR-BsYAFu4JkYwODEDg4zAtYU7DBAYQcHAEAA`；[runs/door-continuation-20261012/manual-transfer-02.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/manual-transfer-02.json)。
+  <details><summary>参考 20 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wPDgw4MEBgbG9AYfpgR-BsYAFu4JkYwODEDg4zAtYU7DBAYQcHAEAA&replay=AI5uthyg2fYg9w)；操作码 `AI5uthyg2fYg9w`；路线来源：runs/door-continuation-20261012/manual-transfer-02.json.result.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/manual-transfer-03**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wJDw4UECAwNjWIMLkwIvA8MCF-4JkYwODECg4zAtYU7DBAYQcHAEAA)；未作玩家质量验收。 地图码 `AWM4wJDw4UECAwNjWIMLkwIvA8MCF-4JkYwODECg4zAtYU7DBAYQcHAEAA`；[runs/door-continuation-20261012/manual-transfer-03.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/manual-transfer-03.json)。
+  <details><summary>参考 28 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wJDw4UECAwNjWIMLkwIvA8MCF-4JkYwODECg4zAtYU7DBAYQcHAEAA&replay=AHKLsBqM5m-reKM3)；操作码 `AHKLsBqM5m-reKM3`；路线来源：runs/door-continuation-20261012/manual-transfer-03.json.result.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/manual-two-shelters-01**：[试玩](https://ghostmaze.novic.cc/?map=AADAAHDw4GBgAAEngEwCYA8AAKgjgLkFgAAUAAAAAsUEswTMBICQAAAAgAIA)；未作玩家质量验收。 地图码 `AADAAHDw4GBgAAEngEwCYA8AAKgjgLkFgAAUAAAAAsUEswTMBICQAAAAgAIA`；[runs/door-continuation-20261012/manual-two-shelters-01.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/manual-two-shelters-01.json)。
+  <details><summary>参考 17 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAHDw4GBgAAEngEwCYA8AAKgjgLkFgAAUAAAAAsUEswTMBICQAAAAgAIA&replay=GJIIe-vXg6M3AA)；操作码 `GJIIe-vXg6M3AA`；路线来源：runs/door-continuation-20261012/manual-two-shelters-01.json.result.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/manual-two-shelters-02**：[试玩](https://ghostmaze.novic.cc/?map=AADIAHDw4GBgAAEngEwCYA8AAKgj8C_QWAAFAAAAALUEugnQEgLoAAAAQAEAAQ)；未作玩家质量验收。 地图码 `AADIAHDw4GBgAAEngEwCYA8AAKgj8C_QWAAFAAAAALUEugnQEgLoAAAAQAEAAQ`；[runs/door-continuation-20261012/manual-two-shelters-02.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/manual-two-shelters-02.json)。
+  <details><summary>参考 23 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAHDw4GBgAAEngEwCYA8AAKgj8C_QWAAFAAAAALUEugnQEgLoAAAAQAEAAQ&replay=CKhE6fKM5n2KM3A)；操作码 `CKhE6fKM5n2KM3A`；路线来源：runs/door-continuation-20261012/manual-two-shelters-02.json.result.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/manual-two-shelters-03**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wVDw4UECAwOjeoMPUwI_A8MK5Q_6FyJYGUBgK8suzgtCIBYHgwIDAA)；未作玩家质量验收。 地图码 `AWM4wVDw4UECAwOjeoMPUwI_A8MK5Q_6FyJYGUBgK8suzgtCIBYHgwIDAA`；[runs/door-continuation-20261012/manual-two-shelters-03.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/manual-two-shelters-03.json)。
+  <details><summary>参考 23 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wVDw4UECAwOjeoMPUwI_A8MK5Q_6FyJYGUBgK8suzgtCIBYHgwIDAA&replay=CA_qjQ2M5n2KM3A)；操作码 `CA_qjQ2M5n2KM3A`；路线来源：runs/door-continuation-20261012/manual-two-shelters-03.json.result.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/one-control-101205-23702**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wPDjx44fDAyMEQkqUxgFWBQYQp3ZGcOZHEMZgIBFYE6aqMCSBgYwaAAA)；未作玩家质量验收。 地图码 `AWM4wPDjx44fDAyMEQkqUxgFWBQYQp3ZGcOZHEMZgIBFYE6aqMCSBgYwaAAA`；[runs/door-continuation-20261012/one-control-101205-23702.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/one-control-101205-23702.json)。
+  <details><summary>参考 28 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wPDjx44fDAyMEQkqUxgFWBQYQp3ZGcOZHEMZgIBFYE6aqMCSBgYwaAAA&replay=AE1MqH3mPdUqf-Na)；操作码 `AE1MqH3mPdUqf-Na`；路线来源：runs/door-continuation-20261012/one-control-101205-23702.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/one-control-101205-4058**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wHDjxo8fDAyMPAmqMgwXOB4wBLUrcPD4ca1gAAJVxVCnFrWYBgYQUGAAAA)；未作玩家质量验收。 地图码 `AWM4wHDjxo8fDAyMPAmqMgwXOB4wBLUrcPD4ca1gAAJVxVCnFrWYBgYQUGAAAA`；[runs/door-continuation-20261012/one-control-101205-4058.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/one-control-101205-4058.json)。
+  <details><summary>参考 19 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wHDjxo8fDAyMPAmqMgwXOB4wBLUrcPD4ca1gAAJVxVCnFrWYBgYQUGAAAA&replay=CDSVpnr-A1aoDA)；操作码 `CDSVpnr-A1aoDA`；路线来源：runs/door-continuation-20261012/one-control-101205-4058.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/open-order-101202-proposal-14615**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wfCj4scPBgbG7AWaPYwKrCGKXE-YRAMYGBgY4o4ItB4SBDMTBAA)；未作玩家质量验收。 地图码 `AWM4wfCj4scPBgbG7AWaPYwKrCGKXE-YRAMYGBgY4o4ItB4SBDMTBAA`；[runs/door-continuation-20261012/open-order-101202-proposal-14615.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/open-order-101202-proposal-14615.json)、[runs/door-continuation-20261012/trace-14615.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/trace-14615.json)。
+  <details><summary>参考 19 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wfCj4scPBgbG7AWaPYwKrCGKXE-YRAMYGBgY4o4ItB4SBDMTBAA&replay=CBLCBcHNo8jefA)；操作码 `CBLCBcHNo8jefA`；路线来源：runs/door-continuation-20261012/open-order-101202-proposal-14615.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/open-order-101202-proposal-152502**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPh4-PgAAAEJoCccAKAFVCp4QgEKqAAAAAAhQRQruQjUAAAABAQE)；未作玩家质量验收。 地图码 `AADIAPh4-PgAAAEJoCccAKAFVCp4QgEKqAAAAAAhQRQruQjUAAAABAQE`；[runs/door-continuation-20261012/open-order-101202-proposal-152502.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/open-order-101202-proposal-152502.json)。
+  <details><summary>参考 14 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPh4-PgAAAEJoCccAKAFVCp4QgEKqAAAAAAhQRQruQjUAAAABAQE&replay=EP9Z-SSfaDyg)；操作码 `EP9Z-SSfaDyg`；路线来源：runs/door-continuation-20261012/open-order-101202-proposal-152502.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/open-order-101202-proposal-164214**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wfDjx4cfDAyMTg90ehgbWEPM_Zm3MIkGMDAwMHi0eDhxgFkOAgA)；未作玩家质量验收。 地图码 `AWM4wfDjx4cfDAyMTg90ehgbWEPM_Zm3MIkGMDAwMHi0eDhxgFkOAgA`；[runs/door-continuation-20261012/open-order-101202-proposal-164214.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/open-order-101202-proposal-164214.json)、[runs/door-continuation-20261012/trace-164214.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/trace-164214.json)。
+  <details><summary>参考 17 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wfDjx4cfDAyMTg90ehgbWEPM_Zm3MIkGMDAwMHi0eDhxgFkOAgA&replay=GNluIjMnyJ1PAA)；操作码 `GNluIjMnyJ1PAA`；路线来源：runs/door-continuation-20261012/open-order-101202-proposal-164214.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/open-order-101202-proposal-18180**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPDQ8PDwAAEyICwsAgAFUBAlgEDvQVQAAAAIQSoIoIoLiAAAACgI)；未作玩家质量验收。 地图码 `AADIAPDQ8PDwAAEyICwsAgAFUBAlgEDvQVQAAAAIQSoIoIoLiAAAACgI`；[runs/door-continuation-20261012/open-order-101202-proposal-18180.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/open-order-101202-proposal-18180.json)、[runs/door-continuation-20261012/trace-18180.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/trace-18180.json)。
+  <details><summary>参考 21 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPDQ8PDwAAEyICwsAgAFUBAlgEDvQVQAAAAIQSoIoIoLiAAAACgI&replay=GC52va3WhzaDD0A)；操作码 `GC52va3WhzaDD0A`；路线来源：runs/door-continuation-20261012/open-order-101202-proposal-18180.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/open-order-101202-proposal-183038**：[试玩](https://ghostmaze.novic.cc/?map=AADAAOj42Pi4AAGpYC9MACAFSAgYgZzUEtCVAAAABFQooSkIIVEAAAAICg)；未作玩家质量验收。 地图码 `AADAAOj42Pi4AAGpYC9MACAFSAgYgZzUEtCVAAAABFQooSkIIVEAAAAICg`；[runs/door-continuation-20261012/open-order-101202-proposal-183038.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/open-order-101202-proposal-183038.json)。
+  <details><summary>参考 14 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAOj42Pi4AAGpYC9MACAFSAgYgZzUEtCVAAAABFQooSkIIVEAAAAICg&replay=EBQa3hAtZN_Q)；操作码 `EBQa3hAtZN_Q`；路线来源：runs/door-continuation-20261012/open-order-101202-proposal-183038.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/open-order-101202-proposal-38556**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPDw8PDwAAGDoC-MAeAFUAyBgGpkJAqgAAAASQSoIoIQQgAAAAoC)；未作玩家质量验收。 地图码 `AADAAPDw8PDwAAGDoC-MAeAFUAyBgGpkJAqgAAAASQSoIoIQQgAAAAoC`；[runs/door-continuation-20261012/open-order-101202-proposal-38556.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/open-order-101202-proposal-38556.json)、[runs/door-continuation-20261012/trace-38556.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/trace-38556.json)。
+  <details><summary>参考 23 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAPDw8PDwAAGDoC-MAeAFUAyBgGpkJAqgAAAASQSoIoIQQgAAAAoC&replay=CJe1otkifcCV0pg)；操作码 `CJe1otkifcCV0pg`；路线来源：runs/door-continuation-20261012/open-order-101202-proposal-38556.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/open-order-101202-proposal-44737**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPDw8HDwAAEioChMAEAFUDzgAKcEAqgAAAAUQRoIQLUFEAAAABAQ)；未作玩家质量验收。 地图码 `AADIAPDw8HDwAAEioChMAEAFUDzgAKcEAqgAAAAUQRoIQLUFEAAAABAQ`；[runs/door-continuation-20261012/open-order-101202-proposal-44737.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/open-order-101202-proposal-44737.json)。
+  <details><summary>参考 13 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPDw8HDwAAEioChMAEAFUDzgAKcEAqgAAAAUQRoIQLUFEAAAABAQ&replay=GDPNi3sNVgKA)；操作码 `GDPNi3sNVgKA`；路线来源：runs/door-continuation-20261012/open-order-101202-proposal-44737.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/open-order-101202-proposal-58313**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wPADCBgYGKsSVEIYGlhDJBoYdLpWMACBklOvE0fIGQYgkGEBAA)；未作玩家质量验收。 地图码 `AWM4wPADCBgYGKsSVEIYGlhDJBoYdLpWMACBklOvE0fIGQYgkGEBAA`；[runs/door-continuation-20261012/open-order-101202-proposal-58313.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/open-order-101202-proposal-58313.json)。
+  <details><summary>参考 14 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wPADCBgYGKsSVEIYGlhDJBoYdLpWMACBklOvE0fIGQYgkGEBAA&replay=EL-_CvtjFaKQ)；操作码 `EL-_CvtjFaKQ`；路线来源：runs/door-continuation-20261012/open-order-101202-proposal-58313.json.baseline.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/transfer-footer-0-top-0**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMIDBB9YL_BSEwk0MBAA)；未作玩家质量验收。 地图码 `AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMIDBB9YL_BSEwk0MBAA`；[runs/door-continuation-20261012/transfer-footer-0-top-0.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/transfer-footer-0-top-0.json)。
+  <details><summary>参考 15 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMIDBB9YL_BSEwk0MBAA&replay=CKwXTSiM5ncM)；操作码 `CKwXTSiM5ncM`；路线来源：runs/door-continuation-20261012/transfer-footer-0-top-0.json.result.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/transfer-footer-2-top-0**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wJDw4UECAwNjWIMLkwIvA8MCF-4JEYwODECgwpnGeYKTAQRYBAA)；未作玩家质量验收。 地图码 `AWM4wJDw4UECAwNjWIMLkwIvA8MCF-4JEYwODECgwpnGeYKTAQRYBAA`；[runs/door-continuation-20261012/transfer-footer-2-top-0.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/transfer-footer-2-top-0.json)。
+  <details><summary>参考 15 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wJDw4UECAwNjWIMLkwIvA8MCF-4JEYwODECgwpnGeYKTAQRYBAA&replay=CDYnrnqM5ncM)；操作码 `CDYnrnqM5ncM`；路线来源：runs/door-continuation-20261012/transfer-footer-2-top-0.json.result.solution.actions。
+
+  </details>
+- **runs/door-continuation-20261012/transfer-footer-2-top-2**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vYowODECgyxTL8pdRgQEEmgA)；未作玩家质量验收。 地图码 `AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vYowODECgyxTL8pdRgQEEmgA`；[runs/door-continuation-20261012/transfer-footer-2-top-2.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/transfer-footer-2-top-2.json)。
+  <details><summary>参考 28 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vYowODECgyxTL8pdRgQEEmgA&replay=AJHd5HGM5m-reKM3)；操作码 `AJHd5HGM5m-reKM3`；路线来源：runs/door-continuation-20261012/transfer-footer-2-top-2.json.result.solution.actions。
 
   </details>
 - **runs/door-units-20261011/lock-minimized-33258**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPBw8PAAAAHqgL9AAACqCYBAEgqgAAAAAEkCIIQWSAAAAAAQ)；未作玩家质量验收。 地图码 `AADAAPBw8PAAAAHqgL9AAACqCYBAEgqgAAAAAEkCIIQWSAAAAAAQ`；[runs/door-units-20261011/lock-minimized-33258.json.map](../../ghost-maze-ai/runs/door-units-20261011/lock-minimized-33258.json)。
