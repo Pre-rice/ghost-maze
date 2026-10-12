@@ -2,7 +2,7 @@
 
 更新：2026-10-12。游玩、AI 和回放已使用同一规则；下列码全部为当前格式。旧码弃用，原地图、原证据和真人录制保持原样。
 
-扫描 556 份明确保存的地图资料，按完整地图内容去重得到 484 张；其中 467 张可生成并重新打开，395 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
+扫描 581 份明确保存的地图资料，按完整地图内容去重得到 507 张；其中 490 张可生成并重新打开，409 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
 
 本文件是地图、解法和用户评述的统一目录。默认试玩入口为正式站 `https://ghostmaze.novic.cc/`；当前目录使用 `https://ghostmaze.novic.cc/`。正式站已同步当前规则和分享格式。只有地图码是普通游玩，追加操作码才进入回放。
 
@@ -298,6 +298,25 @@
 操作码：`CGA9wTHSFSn88IpXwA`
 
 路线来源：examples/prepared-release-20261011/evidence.json.reference.solution.actions
+
+</details>
+
+### 《易位》
+
+[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAE4gVoE0EUE1AiAAAAQA) · 新候选，尚无用户试玩评价；22 格、两鬼、两钥匙，无按钮或字母门，中性入口。普通门与一次性门保留鬼位换序关系；机械核验不代表精妙，未加入网页地图集。
+
+地图码：`AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAE4gVoE0EUE1AiAAAAQA`
+
+来源：[examples/queued-ghost-exchange-20261012/map.json](../../ghost-maze-ai/examples/queued-ghost-exchange-20261012/map.json)、[runs/queued-ghost-exchange-20261012/research/queued-return-minimized-02.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/research/queued-return-minimized-02.json)
+
+<details>
+<summary>参考回放（57 步，含答案）</summary>
+
+[打开同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAE4gVoE0EUE1AiAAAAQA&replay=GKZxl3AxcAKX1bAClzVaIfcAKoA)
+
+操作码：`GKZxl3AxcAKX1bAClzVaIfcAKoA`
+
+路线来源：examples/queued-ghost-exchange-20261012/evidence.json.reference.solution.actions
 
 </details>
 
@@ -692,6 +711,12 @@
   <details><summary>参考 31 步（答案）</summary>
 
   [同页回放](https://ghostmaze.novic.cc/?map=AADAAPz8_PgAAAFQoDWUAlARACAABVUDForXODARVQAAAAAEcIiqIiLjKAAAAAIIIIAC&replay=CPbzLFTSFSn88IpXwA)；操作码 `CPbzLFTSFSn88IpXwA`；路线来源：examples/prepared-release-20261011/evidence.json.reference.solution.actions。
+
+  </details>
+- **queued-ghost-exchange-20261012/source**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4fHx8eAEGIC00BM2A4QFgACqhTAhDfn7wfuBsQqgAAC_cQLaCm0L9-9Qtr0JkAAEBAAAQIADg)；未作玩家质量验收。 地图码 `AADIAPg4fHx8eAEGIC00BM2A4QFgACqhTAhDfn7wfuBsQqgAAC_cQLaCm0L9-9Qtr0JkAAEBAAAQIADg`；[examples/queued-ghost-exchange-20261012/source.json.map](../../ghost-maze-ai/examples/queued-ghost-exchange-20261012/source.json)、[runs/queued-ghost-exchange-20261012/research/queued-return-audit-01.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/research/queued-return-audit-01.json)。
+  <details><summary>参考 59 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4fHx8eAEGIC00BM2A4QFgACqhTAhDfn7wfuBsQqgAAC_cQLaCm0L9-9Qtr0JkAAEBAAAQIADg&replay=CDZ5KPVMXACl9WwApcL1VohzCig)；操作码 `CDZ5KPVMXACl9WwApcL1VohzCig`；路线来源：迁移时有限求解；未继承旧最短证明。
 
   </details>
 - **return-to-source-20261010/counterexample-v-2-2-1**：[试玩](https://ghostmaze.novic.cc/?map=AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXLkCkCIFxAAAAGCAGECAGEC)；未作玩家质量验收。 地图码 `AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXLkCkCIFxAAAAGCAGECAGEC`；[examples/return-to-source-20261010/counterexample-v-2-2-1.json.map](../../ghost-maze-ai/examples/return-to-source-20261010/counterexample-v-2-2-1.json)、[runs/return-to-source-20261010/counterexample-v-2-2-1.json.map](../../ghost-maze-ai/runs/return-to-source-20261010/counterexample-v-2-2-1.json)。
@@ -2500,6 +2525,96 @@
   [同页回放](https://ghostmaze.novic.cc/?map=AADAADw8_PgAAAEwIDF0AdAAAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAg&replay=CKaRbZXSFSn88KhXwA)；操作码 `CKaRbZXSFSn88KhXwA`；路线来源：runs/prepared-release-review-20261012/remove-right-A.json.reference.solution.actions。
 
   </details>
+- **runs/queued-ghost-exchange-20261012/diagnostics/remove-initialGhosts-0**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4AaAmWAFVCkCAUAcCAKgAACcQK0CaCKCagRAAAAI)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4AaAmWAFVCkCAUAcCAKgAACcQK0CaCKCagRAAAAI`；[runs/queued-ghost-exchange-20261012/diagnostics/remove-initialGhosts-0.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/remove-initialGhosts-0.json)。
+  <details><summary>参考 17 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4AaAmWAFVCkCAUAcCAKgAACcQK0CaCKCagRAAAAI&replay=GANQfVcL5wMqgA)；操作码 `GANQfVcL5wMqgA`；路线来源：runs/queued-ghost-exchange-20261012/diagnostics/remove-initialGhosts-0.json.result.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/diagnostics/remove-initialGhosts-1**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4AuAmWAFVCkCAUAcCAKgAACcQK0CaCKCagRAAAAI)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4AuAmWAFVCkCAUAcCAKgAACcQK0CaCKCagRAAAAI`；[runs/queued-ghost-exchange-20261012/diagnostics/remove-initialGhosts-1.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/remove-initialGhosts-1.json)。
+  <details><summary>参考 19 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4AuAmWAFVCkCAUAcCAKgAACcQK0CaCKCagRAAAAI&replay=CPbFDH4xYjwyqA)；操作码 `CPbFDH4xYjwyqA`；路线来源：runs/queued-ghost-exchange-20261012/diagnostics/remove-initialGhosts-1.json.result.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/diagnostics/remove-items-0**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0AWAFVCkCAUAcCAKgAACcQK0CaCKCagRAAAAI)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0AWAFVCkCAUAcCAKgAACcQK0CaCKCagRAAAAI`；[runs/queued-ghost-exchange-20261012/diagnostics/remove-items-0.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/remove-items-0.json)。
+  尚无完整可验证的通关路线。
+- **runs/queued-ghost-exchange-20261012/diagnostics/remove-items-1**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0AMAFVCkCAUAcCAKgAACcQK0CaCKCagRAAAAI)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0AMAFVCkCAUAcCAKgAACcQK0CaCKCagRAAAAI`；[runs/queued-ghost-exchange-20261012/diagnostics/remove-items-1.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/remove-items-1.json)。
+  尚无完整可验证的通关路线。
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-00**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoAAgCoAAAnECtAmgigmoEQAAI)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoAAgCoAAAnECtAmgigmoEQAAI`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-00.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-00.json)。
+  <details><summary>参考 25 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoAAgCoAAAnECtAmgigmoEQAAI&replay=GP0ztTvHAJViPIKA)；操作码 `GP0ztTvHAJViPIKA`；路线来源：runs/queued-ghost-exchange-20261012/diagnostics/wall-00.json.result.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-01**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAgQBUAAATJArECYgigmKBEAAC)；未作玩家质量验收。 地图码 `AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAgQBUAAATJArECYgigmKBEAAC`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-01.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-01.json)。
+  尚无完整可验证的通关路线。
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-02**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoAwIAqAAAJxArQJoIoJqBEAACA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoAwIAqAAAJxArQJoIoJqBEAACA`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-02.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-02.json)。
+  尚无完整可验证的通关路线。
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-03**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAEECtAmgigmoEQAAA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAEECtAmgigmoEQAAA`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-03.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-03.json)。
+  <details><summary>参考 11 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAEECtAmgigmoEQAAA&replay=CBPfxXTwAqg)；操作码 `CBPfxXTwAqg`；路线来源：runs/queued-ghost-exchange-20261012/diagnostics/wall-03.json.result.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-04**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACRArECYgigmKBEAAA)；未作玩家质量验收。 地图码 `AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACRArECYgigmKBEAAA`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-04.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-04.json)。
+  尚无完整可验证的通关路线。
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-05**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAExArQJoIoJqBEAAAA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAExArQJoIoJqBEAAAA`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-05.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-05.json)。
+  <details><summary>参考 11 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAExArQJoIoJqBEAAAA&replay=CAITDVXwAqg)；操作码 `CAITDVXwAqg`；路线来源：runs/queued-ghost-exchange-20261012/diagnostics/wall-05.json.result.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-06**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFIExBFBMUCIAAABA)；未作玩家质量验收。 地图码 `AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFIExBFBMUCIAAABA`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-06.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-06.json)。
+  <details><summary>参考 57 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFIExBFBMUCIAAABA&replay=GNgtt8IxcAKX1bAClzVaI9cAKoA)；操作码 `GNgtt8IxcAKX1bAClzVaI9cAKoA`；路线来源：runs/queued-ghost-exchange-20261012/diagnostics/wall-06.json.result.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-07**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFUCYgigmKBEAAAAg)；未作玩家质量验收。 地图码 `AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFUCYgigmKBEAAAAg`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-07.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-07.json)。
+  尚无完整可验证的通关路线。
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-08**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFYgRBFBMUCIAAABA)；未作玩家质量验收。 地图码 `AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFYgRBFBMUCIAAABA`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-08.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-08.json)。
+  尚无完整可验证的通关路线。
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-09**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFYgSgigmKBEAAAAg)；未作玩家质量验收。 地图码 `AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFYgSgigmKBEAAAAg`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-09.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-09.json)。
+  尚无完整可验证的通关路线。
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-10**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFYgTEEUEUCIAAABA)；未作玩家质量验收。 地图码 `AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFYgTEEUEUCIAAABA`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-10.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-10.json)。
+  <details><summary>参考 57 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFYgTEEUEUCIAAABA&replay=GAoSpjIxcAKX1bAClzVYo9cAKoA)；操作码 `GAoSpjIxcAKX1bAClzVYo9cAKoA`；路线来源：runs/queued-ghost-exchange-20261012/diagnostics/wall-10.json.result.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/diagnostics/wall-11**：[试玩](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFYgTEEUEqBEAAAAg)；未作玩家质量验收。 地图码 `AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFYgTEEUEqBEAAAAg`；[runs/queued-ghost-exchange-20261012/diagnostics/wall-11.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/diagnostics/wall-11.json)。
+  <details><summary>参考 57 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAAPg4OHh4OAEE4Cs0BMsAKqFIEAoAyCAKgAACZIFYgTEEUEqBEAAAAg&replay=GBRKgzHBcAKX1bAClzVaId8AKoA)；操作码 `GBRKgzHBcAKX1bAClzVaId8AKoA`；路线来源：runs/queued-ghost-exchange-20261012/diagnostics/wall-11.json.result.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/entry-map**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OCEFoCs0BMsAKqFIEAoA4EAeoEAATiBWgTQRQTUCIFAAAEA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OCEFoCs0BMsAKqFIEAoA4EAeoEAATiBWgTQRQTUCIFAAAEA`；[runs/queued-ghost-exchange-20261012/entry-map.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/entry-map.json)。
+  <details><summary>参考 58 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OCEFoCs0BMsAKqFIEAoA4EAeoEAATiBWgTQRQTUCIFAAAEA&replay=EIInP2AMXACl9WwApc1WiH3ACqA)；操作码 `EIInP2AMXACl9WwApc1WiH3ACqA`；路线来源：runs/queued-ghost-exchange-20261012/entry-map.json.result.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/research/control-cycle-audit-01**：[试玩](https://ghostmaze.novic.cc/?map=AADIAGA4eHh4eAEEoCNMBGmAyQCgABQF-oIBvz8D9wNgKoAAAXQC2gpoL9-9BbUEyAACCAAAAQAG)；未作玩家质量验收。 地图码 `AADIAGA4eHh4eAEEoCNMBGmAyQCgABQF-oIBvz8D9wNgKoAAAXQC2gpoL9-9BbUEyAACCAAAAQAG`；[runs/queued-ghost-exchange-20261012/research/control-cycle-audit-01.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/research/control-cycle-audit-01.json)。
+  <details><summary>参考 34 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAGA4eHh4eAEEoCNMBGmAyQCgABQF-oIBvz8D9wNgKoAAAXQC2gpoL9-9BbUEyAACCAAAAQAG&replay=EA3hAIZMwtVpIdfAKiA)；操作码 `EA3hAIZMwtVpIdfAKiA`；路线来源：runs/queued-ghost-exchange-20261012/research/control-cycle-audit-01.json.baseline.reference.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/research/corner-contention-01**：[试玩](https://ghostmaze.novic.cc/?map=AADIAGA4eHh4OAEEYCNMBGmARgABQE0FfgDgMCAKgAABdANkE_IL9ILagWQAAQACBBA)；未作玩家质量验收。 地图码 `AADIAGA4eHh4OAEEYCNMBGmARgABQE0FfgDgMCAKgAABdANkE_IL9ILagWQAAQACBBA`；[runs/queued-ghost-exchange-20261012/research/corner-contention-01.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/research/corner-contention-01.json)。
+  尚无完整可验证的通关路线。
+- **runs/queued-ghost-exchange-20261012/research/corner-contention-02**：[试玩](https://ghostmaze.novic.cc/?map=AADIAGA4eHh4OAEEYCNMBGmARgABQF-0E_AHAYEAVAAAC6AbaCfkF-ILagWQAAAQACBB)；未作玩家质量验收。 地图码 `AADIAGA4eHh4OAEEYCNMBGmARgABQF-0E_AHAYEAVAAAC6AbaCfkF-ILagWQAAAQACBB`；[runs/queued-ghost-exchange-20261012/research/corner-contention-02.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/research/corner-contention-02.json)。
+  <details><summary>参考 19 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAGA4eHh4OAEEYCNMBGmARgABQF-0E_AHAYEAVAAAC6AbaCfkF-ILagWQAAAQACBB&replay=CDq1MLIzWogziA)；操作码 `CDq1MLIzWogziA`；路线来源：runs/queued-ghost-exchange-20261012/research/corner-contention-02.json.result.solution.actions。
+
+  </details>
+- **runs/queued-ghost-exchange-20261012/research/queued-return-minimized-01**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMuATQACqhSBAKfgOBAFQAABOIFaBNBFBNQIgAAAAEA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMuATQACqhSBAKfgOBAFQAABOIFaBNBFBNQIgAAAAEA`；[runs/queued-ghost-exchange-20261012/research/queued-return-minimized-01.json.map](../../ghost-maze-ai/runs/queued-ghost-exchange-20261012/research/queued-return-minimized-01.json)。
+  <details><summary>参考 58 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMuATQACqhSBAKfgOBAFQAABOIFaBNBFBNQIgAAAAEA&replay=EOWj4UJMXACl9WwApc1WiH3ACqA)；操作码 `EOWj4UJMXACl9WwApc1WiH3ACqA`；路线来源：runs/queued-ghost-exchange-20261012/research/queued-return-minimized-01.json.evaluation.baseline.solution.actions。
+
+  </details>
 - **runs/regular-rooms-20261010/diagnostic-2278**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wPABCBgYGHkbVi6IaDjwj4E1gKF4OgPTCgYgEO5QF_BTmMQABAKNPAYMAA)；未作玩家质量验收。 地图码 `AWM4wPABCBgYGHkbVi6IaDjwj4E1gKF4OgPTCgYgEO5QF_BTmMQABAKNPAYMAA`；[runs/regular-rooms-20261010/diagnostic-2278.json.map](../../ghost-maze-ai/runs/regular-rooms-20261010/diagnostic-2278.json)。
   <details><summary>参考 18 步（答案）</summary>
 
@@ -2991,7 +3106,7 @@
 
 ## 汇总范围与后续更新
 
-作品目录 `examples/`、已保存候选 `runs/` 和既有 `data/maps/`、`data/generated/` 均已扫描。大型日志中的批量编辑留在原实验档案，未复制为作品；略过的大型文件共 5 份，清单保存在验收记录。未解析的浏览器输出不会冒充地图。
+作品目录 `examples/`、已保存候选 `runs/` 和既有 `data/maps/`、`data/generated/` 均已扫描。大型日志中的批量编辑留在原实验档案，未复制为作品；略过的大型文件共 7 份，清单保存在验收记录。未解析的浏览器输出不会冒充地图。
 
 在 AI 仓执行 `npm run catalog -- 本体首页地址` 可重新汇总，重新校验地图、新码往返及已有通关路线；默认使用正式站。工具只读取原始资料，另写此目录及 `runs/map-catalog/verification.json`。
 
