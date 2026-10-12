@@ -19,6 +19,7 @@ for (const map of aiMaps) {
     const article = element('article', 'map-card');
     const body = element('div', 'map-card-body');
     body.append(element('h3', '', map.title));
+    body.append(element('p', 'map-meta', map.cells + ' 格 · ' + map.ghosts + ' 只鬼 · ' + map.keys + ' 把钥匙'));
     const actions = element('div', 'map-card-actions');
     actions.append(link('button map-play', '游玩地图', mapURL(map.mapCode)));
     actions.append(link('map-solution', '参考解法 ↗', mapURL(map.mapCode, { replay: map.replayCode })));

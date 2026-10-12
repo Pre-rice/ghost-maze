@@ -14,12 +14,12 @@
 
 | 评价日期 | 地图 | 参考步数 | 用户简评与限制 | 评述依据 |
 | --- | --- | --- | --- | --- |
-| 2026-09-30 | [单层组合题](https://ghostmaze.novic.cc/?map=AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA) | 37 | “太妙了！好设计！”；想了好一阵子，指出左上 B 门没有作用。 | [记录](../../ghost-maze-ai/docs/status.md) |
-| 2026-10-09 | [双鬼交接](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA) | 31 | “妙！”“想了好久才想出来”“媲美第一张图”；明确设计正反馈。 | [记录](../../ghost-maze-ai/docs/twin-handoff-review-20261009.md) |
-| 2026-10-09 | [永久回路](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA) | 39 | “不错的图”；想出解法不难，元素用途明显，可以线性推导，希望难度来自巧妙解法。 | [记录](../../ghost-maze-ai/docs/permanent-return-review-20261009.md) |
+| 2026-09-30 | [《错位》](https://ghostmaze.novic.cc/?map=AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA) | 37 | 原称“单层组合题”，2026-10-12 补正式名称；“太妙了！好设计！”；想了好一阵子，指出左上 B 门没有作用。 | [记录](../../ghost-maze-ai/docs/status.md) |
+| 2026-10-09 | [《归途》](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA) | 39 | 原称“永久回路”，2026-10-12 补正式名称；“不错的图”；想出解法不难，元素用途明显，可以线性推导，希望难度来自巧妙解法。 | [记录](../../ghost-maze-ai/docs/permanent-return-review-20261009.md) |
+| 2026-10-09 | [《接力》](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA) | 31 | 原称“双鬼交接”，2026-10-12 补正式名称；“妙！”“想了好久才想出来”“媲美第一张图”；明确设计正反馈。 | [记录](../../ghost-maze-ai/docs/twin-handoff-review-20261009.md) |
 | 2026-10-10 | [《回环》](https://ghostmaze.novic.cc/?map=AADBweHh4eDAwAE1YEKQICGUCQAgBXCqA4gTIKAkEQACgAEQJygnEFziCc5AkBIAABAgAxAgwA) | 70 | “你的设计是很不错的”；比较困难、勉强可称精妙，但担忧复杂性堆砌。看五步提示后通关。 | [记录](../../ghost-maze-ai/docs/shelter-exchange-review-20261010.md) |
 | 2026-10-10 | [《回位》](https://ghostmaze.novic.cc/?map=AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXOcgUgRAuIAAAAwQAwgQAwggQ) | 35 | “不错的谜题”；同时评价近期《借位》《回位》平平无奇、缺乏新意，已掌握套路后没有“妙”的感觉。已通关。 | [记录](../../ghost-maze-ai/docs/architecture-diagnosis-handoff-20261010.md) |
-| 2026-10-10 | [借用庇护·修正版](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA) | 59 | 看参考回放后评价“妙，好设计”；不记为无提示独立通关。 | [记录](../../ghost-maze-ai/docs/borrowed-shelter-review-20261010.md) |
+| 2026-10-10 | [《借影》](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA) | 59 | 原称“借用庇护·修正版”，2026-10-12 补正式名称；看参考回放后评价“妙，好设计”；不记为无提示独立通关。 | [记录](../../ghost-maze-ai/docs/borrowed-shelter-review-20261010.md) |
 | 2026-10-12 | [《后路》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA) | 59 | “不错，比上一张有进步”；需要考虑先捡哪个钥匙、规划路线，但推理仍线性，很快想到。期待更精妙、有新意与再次眼前一亮；本轮暂停设计，转向本体修改。 | [记录](../../ghost-maze-ai/docs/deferred-key-cold-entry-review-20261012.md) |
 | 2026-10-12 | [《换边》](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMILCFs0T4C0sDiMnEAQA) | 28 | “不错”，比前面几题更巧、简洁；解法仍简单、容易想到，地图复杂性有限。有甜点单元／靠前简单关的价值，尚未达到主线挑战目标。 | [记录](../../ghost-maze-ai/docs/room-transfer-review-20261012.md) |
 | 2026-10-12 | [《换岗》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMAEC4C10BaeArgOw0oSAiBcgpwAAAKABZrEDmOQCBGYCoCQEgAAAwIMIBA) | 68 | “不错的谜题”；复杂性还可以、需要动脑、布局简洁，但每一步容易想到，没有眼前一亮或顿悟感。后续尽量避免开局被追，并核验从整图进入单元当步的状态一致。 | [记录](../../ghost-maze-ai/docs/shelter-role-exchange-review-20261012.md) |
@@ -27,6 +27,48 @@
 另附[用户优化图](https://ghostmaze.novic.cc/?map=AADAAHB4cDAwAAFkgCoCQEQAAKAuQJAAHAKAAAAAEBjaCUAoByAAAAAQAA)：用户亲自修改并认为关键思路更精妙；参考与真人路线均为 40 步。它是单层组合题的亲缘改图，不计为新的 AI 独立作品，详见[当时说明](../../ghost-maze-ai/examples/user-refinements/README.md)。
 
 ## 已交付地图与主要对照
+
+### 《错位》
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA) · 原称“单层组合题”，2026-10-12 补正式名称；“太妙了！好设计！”；想了好一阵子，指出左上 B 门没有作用。
+
+地图码：`AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA`
+
+来源：[examples/coupled-singlelayer/map.json](../../ghost-maze-ai/examples/coupled-singlelayer/map.json)、[runs/coupled-search/final-18.json](../../ghost-maze-ai/runs/coupled-search/final-18.json)
+
+评述依据：[2026-09-30 的记录](../../ghost-maze-ai/docs/status.md)。
+
+<details>
+<summary>参考回放（37 步，含答案）</summary>
+
+[打开同页回放](https://ghostmaze.novic.cc/?map=AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA&replay=GC3I0ymPKVh_qMDymP3A)
+
+操作码：`GC3I0ymPKVh_qMDymP3A`
+
+路线来源：examples/coupled-singlelayer/evidence.json.analysis.baseline.solution.actions
+
+</details>
+
+### 《归途》
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA) · 原称“永久回路”，2026-10-12 补正式名称；“不错的图”；想出解法不难，元素用途明显，可以线性推导，希望难度来自巧妙解法。
+
+地图码：`AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA`
+
+来源：[examples/permanent-return-20261009/map.json](../../ghost-maze-ai/examples/permanent-return-20261009/map.json)
+
+评述依据：[2026-10-09 的记录](../../ghost-maze-ai/docs/permanent-return-review-20261009.md)。
+
+<details>
+<summary>参考回放（39 步，含答案）</summary>
+
+[打开同页回放](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA&replay=CHbIXDkIJ9WgsPqXoz4I)
+
+操作码：`CHbIXDkIJ9WgsPqXoz4I`
+
+路线来源：examples/permanent-return-20261009/evidence.json.solution.solution.actions
+
+</details>
 
 ### 《后路》
 
@@ -133,6 +175,27 @@
 
 </details>
 
+### 《接力》
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA) · 原称“双鬼交接”，2026-10-12 补正式名称；“妙！”“想了好久才想出来”“媲美第一张图”；明确设计正反馈。
+
+地图码：`AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA`
+
+来源：[examples/twin-handoff-20261009/map.json](../../ghost-maze-ai/examples/twin-handoff-20261009/map.json)、[examples/twin-handoff-20261009/source.json.map](../../ghost-maze-ai/examples/twin-handoff-20261009/source.json)、[runs/irreversible-handoff-20261010/c/candidate-25.json.map](../../ghost-maze-ai/runs/irreversible-handoff-20261010/c/candidate-25.json)
+
+评述依据：[2026-10-09 的记录](../../ghost-maze-ai/docs/twin-handoff-review-20261009.md)。
+
+<details>
+<summary>参考回放（31 步，含答案）</summary>
+
+[打开同页回放](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA&replay=CMnCC_w_AWlXDelACA)
+
+操作码：`CMnCC_w_AWlXDelACA`
+
+路线来源：examples/twin-handoff-20261009/evidence.json.solution.solution.actions
+
+</details>
+
 ### 《借位》
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAPBwcHAAAAEMgIWgOYMQgCqCcAAHOAqAAAAAAXOIEoFIE5AAAAABgABABA) · 简洁；推理线性、难度不足。
@@ -151,6 +214,27 @@
 操作码：`CEERmQ_AtVAVoN3oCA`
 
 路线来源：examples/single-station-relay-20261010/evidence.json.baseline.solution.actions
+
+</details>
+
+### 《借影》
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA) · 原称“借用庇护·修正版”，2026-10-12 补正式名称；看参考回放后评价“妙，好设计”；不记为无提示独立通关。
+
+地图码：`AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA`
+
+来源：[examples/borrowed-shelter-wallfix-20261009/map.json](../../ghost-maze-ai/examples/borrowed-shelter-wallfix-20261009/map.json)
+
+评述依据：[2026-10-10 的记录](../../ghost-maze-ai/docs/borrowed-shelter-review-20261010.md)。
+
+<details>
+<summary>参考回放（59 步，含答案）</summary>
+
+[打开同页回放](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA&replay=CLqy0pkgj90mF8CqMlf2oMzILXA)
+
+操作码：`CLqy0pkgj90mF8CqMlf2oMzILXA`
+
+路线来源：examples/borrowed-shelter-wallfix-20261009/evidence.json.baseline.solution.actions
 
 </details>
 
@@ -236,27 +320,6 @@
 
 </details>
 
-### 单层组合题
-
-[试玩](https://ghostmaze.novic.cc/?map=AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA) · “太妙了！好设计！”；想了好一阵子，指出左上 B 门没有作用。
-
-地图码：`AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA`
-
-来源：[examples/coupled-singlelayer/map.json](../../ghost-maze-ai/examples/coupled-singlelayer/map.json)、[runs/coupled-search/final-18.json](../../ghost-maze-ai/runs/coupled-search/final-18.json)
-
-评述依据：[2026-09-30 的记录](../../ghost-maze-ai/docs/status.md)。
-
-<details>
-<summary>参考回放（37 步，含答案）</summary>
-
-[打开同页回放](https://ghostmaze.novic.cc/?map=AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA&replay=GC3I0ymPKVh_qMDymP3A)
-
-操作码：`GC3I0ymPKVh_qMDymP3A`
-
-路线来源：examples/coupled-singlelayer/evidence.json.analysis.baseline.solution.actions
-
-</details>
-
 ### 互补开关
 
 [试玩](https://ghostmaze.novic.cc/?map=AWM4wMDQ8UOBgYHRlkGAn4GBkUPrxFImBhBgDHUq7hABsVgYHAA) · 初批试玩：太简单。
@@ -294,27 +357,6 @@
 操作码：`EALWgMyow1eA1aHAif1a8DA`
 
 路线来源：examples/interlocked-singlelayer-20261008/evidence.json.solution.solution.actions
-
-</details>
-
-### 借用庇护·修正版
-
-[试玩](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA) · 看参考回放后评价“妙，好设计”；不记为无提示独立通关。
-
-地图码：`AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA`
-
-来源：[examples/borrowed-shelter-wallfix-20261009/map.json](../../ghost-maze-ai/examples/borrowed-shelter-wallfix-20261009/map.json)
-
-评述依据：[2026-10-10 的记录](../../ghost-maze-ai/docs/borrowed-shelter-review-20261010.md)。
-
-<details>
-<summary>参考回放（59 步，含答案）</summary>
-
-[打开同页回放](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA&replay=CLqy0pkgj90mF8CqMlf2oMzILXA)
-
-操作码：`CLqy0pkgj90mF8CqMlf2oMzILXA`
-
-路线来源：examples/borrowed-shelter-wallfix-20261009/evidence.json.baseline.solution.actions
 
 </details>
 
@@ -419,27 +461,6 @@
 
 </details>
 
-### 双鬼交接
-
-[试玩](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA) · “妙！”“想了好久才想出来”“媲美第一张图”；明确设计正反馈。
-
-地图码：`AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA`
-
-来源：[examples/twin-handoff-20261009/map.json](../../ghost-maze-ai/examples/twin-handoff-20261009/map.json)、[examples/twin-handoff-20261009/source.json.map](../../ghost-maze-ai/examples/twin-handoff-20261009/source.json)、[runs/irreversible-handoff-20261010/c/candidate-25.json.map](../../ghost-maze-ai/runs/irreversible-handoff-20261010/c/candidate-25.json)
-
-评述依据：[2026-10-09 的记录](../../ghost-maze-ai/docs/twin-handoff-review-20261009.md)。
-
-<details>
-<summary>参考回放（31 步，含答案）</summary>
-
-[打开同页回放](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA&replay=CMnCC_w_AWlXDelACA)
-
-操作码：`CMnCC_w_AWlXDelACA`
-
-路线来源：examples/twin-handoff-20261009/evidence.json.solution.solution.actions
-
-</details>
-
 ### 探头再绕行
 
 [试玩](https://ghostmaze.novic.cc/?map=AWM4wMDwp-MHAwNjWIMEA8OqhUGirCEMIMAhGOrEAWIAAA) · 初批试玩：太简单。
@@ -539,27 +560,6 @@
 
 </details>
 
-### 永久回路
-
-[试玩](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA) · “不错的图”；想出解法不难，元素用途明显，可以线性推导，希望难度来自巧妙解法。
-
-地图码：`AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA`
-
-来源：[examples/permanent-return-20261009/map.json](../../ghost-maze-ai/examples/permanent-return-20261009/map.json)
-
-评述依据：[2026-10-09 的记录](../../ghost-maze-ai/docs/permanent-return-review-20261009.md)。
-
-<details>
-<summary>参考回放（39 步，含答案）</summary>
-
-[打开同页回放](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA&replay=CHbIXDkIJ9WgsPqXoz4I)
-
-操作码：`CHbIXDkIJ9WgsPqXoz4I`
-
-路线来源：examples/permanent-return-20261009/evidence.json.solution.solution.actions
-
-</details>
-
 ### 用户优化图
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAHB4cDAwAAFkgCoCQEQAAKAuQJAAHAKAAAAAEBjaCUAoByAAAAAQAA) · 用户亲自精简，认为关键思路比旧图的绕行更精妙；40 步真人路线与参考证书一致。不作为另一张 AI 独立作品。
@@ -593,14 +593,14 @@
 - **无玻璃题 1**：20 步，[同页回放](https://ghostmaze.novic.cc/?map=AWM4wPDhwQMGBgZGkwYRxgauBSEMogwgwMihqxDpAGJJcAAA&replay=ABshX8z2gXyYPw)；[原始记录](../../ghost-maze-ai/data/solutions/1841c110-4e3f-4fe1-bbde-95e5b6d77a29.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/1841c110-4e3f-4fe1-bbde-95e5b6d77a29.json)；原保留分支 20 项，保留动作歧义 0 项。
 - **无玻璃题 2**：12 步，[同页回放](https://ghostmaze.novic.cc/?map=AWM4wKDw4EECAwOjawMTIwcDCxcjowUrAwgEKLEqqIBZAA&replay=AG6p78J1Yyk)；[原始记录](../../ghost-maze-ai/data/solutions/21098869-d1fc-4fee-8c6f-2294ebaebd94.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/21098869-d1fc-4fee-8c6f-2294ebaebd94.json)；原保留分支 33 项，保留动作歧义 0 项。
 - **《回位》**：37 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXOcgUgRAuIAAAAwQAwgQAwggQ&replay=GNEbJuMv5XKdPAiM0iGA)；[原始记录](../../ghost-maze-ai/data/solutions/3869744e-562c-4406-86fa-c99b3313b7ea.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/3869744e-562c-4406-86fa-c99b3313b7ea.json)；原保留分支 37 项，保留动作歧义 0 项。
-- **双鬼交接**：33 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA&replay=GMnCC_w_AV-lcN6UAIA)；[原始记录](../../ghost-maze-ai/data/solutions/516979c9-663d-4c43-be20-0890b8b5c22c.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/516979c9-663d-4c43-be20-0890b8b5c22c.json)；原保留分支 543 项，保留动作歧义 0 项。
+- **《接力》**：33 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA&replay=GMnCC_w_AV-lcN6UAIA)；[原始记录](../../ghost-maze-ai/data/solutions/516979c9-663d-4c43-be20-0890b8b5c22c.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/516979c9-663d-4c43-be20-0890b8b5c22c.json)；原保留分支 543 项，保留动作歧义 0 项。
 - **《回位》**：39 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXOcgUgRAuIAAAAwQAwgQAwggQ&replay=CNEbJuMv5XKdP8CIzSIY)；[原始记录](../../ghost-maze-ai/data/solutions/77ba44f0-ae5f-488c-90c8-142c0660311c.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/77ba44f0-ae5f-488c-90c8-142c0660311c.json)；原保留分支 39 项，保留动作歧义 0 项。
 - **用户优化图**：40 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAHB4cDAwAAFkgCoCQEQAAKAuQJAAHAKAAAAAEBjaCUAoByAAAAAQAA&replay=AA9JdrqPIl14IMyMpdcD)；[原始记录](../../ghost-maze-ai/data/solutions/921c60cd-51e3-4638-98ba-569829fb0864.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/921c60cd-51e3-4638-98ba-569829fb0864.json)；原保留分支 40 项，保留动作歧义 0 项。
 - **精简题 1**：24 步，[同页回放](https://ghostmaze.novic.cc/?map=AWM4wfDhQwIDAwOjagMPkwPXggAlVgYQYJR3LGRyADMVAA&replay=AE7LcTL5MavxmI8)；[原始记录](../../ghost-maze-ai/data/solutions/a628a2c3-b163-4b80-831c-e1801f0e44ab.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/a628a2c3-b163-4b80-831c-e1801f0e44ab.json)；原保留分支 31 项，保留动作歧义 0 项。
 - **精简题 2**：14 步，[同页回放](https://ghostmaze.novic.cc/?map=AADIAADAwODgAAGRgLQAAAoAAID4CoAAAAAAWgJARAiAAAA&replay=EGr4F_WUyVPQ)；[原始记录](../../ghost-maze-ai/data/solutions/b7be255e-2123-411f-8edb-8981d7d9236a.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/b7be255e-2123-411f-8edb-8981d7d9236a.json)；原保留分支 28 项，保留动作歧义 0 项。
 - **七格交接**：19 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAAAYEDAwAAE6ACAWBbBkMwgAAFAcgWQHAKAAAAAABICgLkBcgAAAEAggBA&replay=CNPsSFzY8edzDA)；[原始记录](../../ghost-maze-ai/data/solutions/bc62283a-f4a3-4e30-a8d9-df3b67b6185c.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/bc62283a-f4a3-4e30-a8d9-df3b67b6185c.json)；原保留分支 26 项，保留动作歧义 0 项。
 - **《借位》**：31 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAPBwcHAAAAEMgIWgOYMQgCqCcAAHOAqAAAAAAXOIEoFIE5AAAAABgABABA&replay=CEERmQ_AtVAVoN3oCA)；[原始记录](../../ghost-maze-ai/data/solutions/cbbe676f-2d3f-4526-a4fa-f33aee865e84.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/cbbe676f-2d3f-4526-a4fa-f33aee865e84.json)；原保留分支 31 项，保留动作歧义 0 项。
-- **永久回路**：67 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA&replay=CHbIXDkIJ9I6nic__51aCw_6l6M-CA)；[原始记录](../../ghost-maze-ai/data/solutions/cde0ed27-e36d-4a1b-992d-72284501777d.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/cde0ed27-e36d-4a1b-992d-72284501777d.json)；原保留分支 112 项，保留动作歧义 0 项。
+- **《归途》**：67 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA&replay=CHbIXDkIJ9I6nic__51aCw_6l6M-CA)；[原始记录](../../ghost-maze-ai/data/solutions/cde0ed27-e36d-4a1b-992d-72284501777d.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/cde0ed27-e36d-4a1b-992d-72284501777d.json)；原保留分支 112 项，保留动作歧义 0 项。
 - **《回环》**：79 步，[同页回放](https://ghostmaze.novic.cc/?map=AADBweHh4eDAwAE1YEKQICGUCQAgBXCqA4gTIKAkEQACgAEQJygnEFziCc5AkBIAABAgAxAgwA&replay=COhbsb4LzGYgyXCJ14wqdzmCBdyIAfKfcA)；[原始记录](../../ghost-maze-ai/data/solutions/d1bb30da-c6c7-4523-a812-560436cc968d.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/d1bb30da-c6c7-4523-a812-560436cc968d.json)；原保留分支 79 项，保留动作歧义 0 项。
 
 </details>
