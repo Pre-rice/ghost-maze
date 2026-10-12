@@ -49,3 +49,19 @@
 私人预览：https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site。用户自行访问，不打开侧边 Page。仅进行了受影响地图的维护对照，没有新谜题交付或模型训练。
 
 批量证据：[规则审查清单](../../ghost-maze-ai/data/manifests/rule-boundaries-20261012.json)，复用范围：[当前地图库](../../ghost-maze-ai/data/manifests/puzzle-library-policy.json)。历史资料保留，不重写旧证书。
+
+## 重合回放（2026-10-12）
+
+用户要求查看产生鬼重合的回放。本次把已报告的六张图各一条真实夹击见证与《借影》57 步新最短解列在一起，全部按当前共同规则逐步重放，并检查地图码／操作码往返及页面历史回放。未修改原地图或原参考解法，不将错误走法当作质量标签。
+
+点击回放默认从第 0 步暂停；可跳到表中步骤的前一步，再向前一步观察重合。六条死亡路线在首次重合处结束；《借影》57 步路线继续到通关。
+
+| 地图／情形 | 首次重合步骤 | 总步数 | 回放 |
+| --- | --- | --- | --- |
+| 《后路》· 夹击死亡 | 28 | 28 | [查看](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA&replay=ACe-0I-PJm9eD6r_) |
+| 《换岗》· 夹击死亡 | 30 | 30 | [查看](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADBsPDg8DAwMAEC4C10BaeArgOw0oSAiBcgpwAAAKABZrEDmOQCBGYCoCQEgAAAwIMIBA&replay=EK03CdqPJm9djDqv8A) |
+| 《回环》· 夹击死亡 | 15 | 15 | [查看](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADBweHh4eDAwAE1YEKQICGUCQAgBXCqA4gTIKAkEQACgAEQJygnEFziCc5AkBIAABAgAxAgwA&replay=COhbsb4My2aI) |
+| 《回位》· 夹击死亡 | 33 | 33 | [查看](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXOcgUgRAuIAAAAwQAwgQAwggQ&replay=GNEbJuMv2XKdACDNVkA) |
+| 《借影》· 夹击死亡 | 13 | 13 | [查看](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA&replay=GLqy0pkgP3TA) |
+| 《归途》· 夹击死亡 | 41 | 41 | [查看](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA&replay=GHbIXDkIJ9WgM-pbo9QpgA) |
+| 《借影》· 利用重合的57步通关解 | 32 | 57 | [查看](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA&replay=GLqy0pkgP3SYiMld8nAqnMyC1wA) |
