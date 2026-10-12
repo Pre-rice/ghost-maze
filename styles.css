@@ -214,7 +214,7 @@ body {
 .controls-panel {
     width: 310px;
     padding: 18px;
-    margin-top: 10px;
+    margin-top: 14px;
     background-color: var(--container-bg);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -765,7 +765,7 @@ display: none !important;
 .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
 .panel-title { margin: 0; font-size: 16px; line-height: 1.5; font-weight: 650; min-width: 0; }
 .panel-header .header-controls { align-self: auto; flex-shrink: 0; }
-.header-controls .gallery-link svg { fill: none; stroke-width: 1.7; stroke-linejoin: round; }
+.header-controls .gallery-link svg { width: 17px; height: 17px; fill: var(--text-color); stroke: none; }
 .header-controls a:focus-visible, .header-controls button:focus-visible, summary:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 3px; }
 .control-group .status-bar { gap: 8px; flex-wrap: wrap; }
 .toggle-controls-wrapper { margin: 4px 0; }
@@ -783,17 +783,12 @@ display: none !important;
 .gallery-count { color: var(--text-color); opacity: .6; font-size: 13px; }
 .map-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .map-card { min-width: 0; background: var(--container-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,.06); display: flex; flex-direction: column; }
-.map-preview { display: block; width: 100%; height: auto; background: var(--bg-color); }
 .map-card-body { padding: 20px; display: flex; flex-direction: column; flex: 1; gap: 12px; }
 .map-card h3 { margin: 0; font-size: 18px; }
-.map-meta { margin: 0; font-size: 13px; opacity: .65; }
-.map-review { margin: 0; font-size: 14px; line-height: 1.7; }
-.map-card .map-play { margin-top: auto; display: block; text-decoration: none; }
-.map-solution { font-size: 14px; border-top: 1px solid var(--border-color); padding-top: 12px; }
-.map-solution summary { cursor: pointer; }
-.map-solution p { font-size: 13px; line-height: 1.6; opacity: .7; }
-.map-solution a { color: var(--primary-color); text-decoration: none; }
-.map-solution a:hover { text-decoration: underline; }
+.map-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 4px; }
+.map-card .map-play { display: inline-block; text-decoration: none; padding: 9px 16px; }
+.map-solution { font-size: 14px; color: var(--primary-color); text-decoration: none; white-space: nowrap; }
+.map-solution:hover { text-decoration: underline; }
 @media (max-width: 1020px) {
     .main-container { flex-direction: column; width: 100%; gap: 16px; }
     .canvas-wrapper { align-self: center; max-width: 600px; width: 100%; }
