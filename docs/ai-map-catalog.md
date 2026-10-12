@@ -24,6 +24,20 @@
 详细结果见 [边界审查](rule-boundaries-20261012.md)。
 <!-- current-rule-audit:end -->
 
+## 2026-10-13 新候选：《借道》
+
+22格、两鬼、两钥匙，无按钮和玻璃，中性开局。暂无用户评述与真人路线，未加入九图网页地图集；完整资料见[作品说明](../../ghost-maze-ai/examples/borrowed-route-20261013/README.md)。本条当前规则证据有效，以下历史统计未重新批量扫描，不包含本题。
+
+[试玩](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADIAHwo-Ln4AAEkICAsBA8AFVCSKQacJAqqAAAABHdBVCCFRECAAAAAAAg)
+
+<details>
+<summary>参考解法（含答案）</summary>
+
+[回放](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADIAHwo-Ln4AAEkICAsBA8AFVCSKQacJAqqAAAABHdBVCCFRECAAAAAAAg&replay=AMmRO4T_xgqXzwLVaoPC_w)。独立求解最短44；所有并列最优解无非死亡鬼重合，实际入场与区域内逐步状态一致。主要设计关系是提前打开眼下可绕开的门，为后来的鬼安排停位；自动证据不代表人类顿悟目标已达成。
+
+</details>
+
+
 本次审查的七段 [鬼重合回放](rule-boundaries-20261012.md) 已整理，包含六张图的夹击死亡见证与《借影》57 步新最短解。
 
 ## 历史资料（规则调整前）
