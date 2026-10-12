@@ -1,8 +1,8 @@
 # AI 地图总目录
 
-更新：2026-10-11。游玩、AI 和回放已使用同一规则；下列码全部为当前格式。旧码弃用，原地图、原证据和真人录制保持原样。
+更新：2026-10-12。游玩、AI 和回放已使用同一规则；下列码全部为当前格式。旧码弃用，原地图、原证据和真人录制保持原样。
 
-扫描 400 份明确保存的地图资料，按完整地图内容去重得到 349 张；其中 332 张可生成并重新打开，303 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
+扫描 402 份明确保存的地图资料，按完整地图内容去重得到 351 张；其中 334 张可生成并重新打开，305 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
 
 本文件是地图、解法和用户评述的统一目录。默认试玩入口为正式站 `https://ghostmaze.novic.cc/`；当前目录使用 `https://ghostmaze.novic.cc/`。正式站已同步当前规则和分享格式。只有地图码是普通游玩，追加操作码才进入回放。
 
@@ -132,11 +132,13 @@
 
 ### 《先手》
 
-[试玩](https://ghostmaze.novic.cc/?map=AADAADw8_PgAAAEwIDF0AdAQABAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAgA) · 新候选：取钥匙、回程与重开出口相互制约；机械核验通过，等待真实试玩，尚无用户质量评价。
+[试玩](https://ghostmaze.novic.cc/?map=AADAADw8_PgAAAEwIDF0AdAQABAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAgA) · “很容易就解出来了”“没有什么新意”；未达到目标质量。用户指出两个 A 留一个即可，已核验删右 A 仍最短 31，删左 A 仍可解。
 
 地图码：`AADAADw8_PgAAAEwIDF0AdAQABAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAgA`
 
 来源：[examples/prepared-release-20261011/map.json](../../ghost-maze-ai/examples/prepared-release-20261011/map.json)、[runs/door-challenge-20261011/minimized-pocket-01.json.map](../../ghost-maze-ai/runs/door-challenge-20261011/minimized-pocket-01.json)
+
+评述依据：[2026-10-12 的记录](../../ghost-maze-ai/docs/prepared-release-review-20261012.md)。
 
 <details>
 <summary>参考回放（31 步，含答案）</summary>
@@ -1810,6 +1812,18 @@
   <details><summary>参考 79 步（答案）</summary>
 
   [同页回放](https://ghostmaze.novic.cc/?map=AADBwWHh4eHAwAEtYEKIICGMCOAeBVCqAkCZAgJAIIAoABECqgnEFyQTnIIgJAAAEGIGAA&replay=CPloLR4LzGYiMZwXgg2nPqBdyIAVXIA9cA)；操作码 `CPloLR4LzGYiMZwXgg2nPqBdyIAVXIA9cA`；路线来源：runs/position-relations-20261010/l-minimized.json.evaluation.baseline.solution.actions。
+
+  </details>
+- **runs/prepared-release-review-20261012/remove-left-A**：[试玩](https://ghostmaze.novic.cc/?map=AADAADw8_PgAAAEwIDF0AdABAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAg)；未作玩家质量验收。 地图码 `AADAADw8_PgAAAEwIDF0AdABAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAg`；[runs/prepared-release-review-20261012/remove-left-A.json.map](../../ghost-maze-ai/runs/prepared-release-review-20261012/remove-left-A.json)。
+  <details><summary>参考 33 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAADw8_PgAAAEwIDF0AdABAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAg&replay=GJrxjp3TKVKfzwilfAA)；操作码 `GJrxjp3TKVKfzwilfAA`；路线来源：runs/prepared-release-review-20261012/remove-left-A.json.reference.solution.actions。
+
+  </details>
+- **runs/prepared-release-review-20261012/remove-right-A**：[试玩](https://ghostmaze.novic.cc/?map=AADAADw8_PgAAAEwIDF0AdAAAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAg)；未作玩家质量验收。 地图码 `AADAADw8_PgAAAEwIDF0AdAAAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAg`；[runs/prepared-release-review-20261012/remove-right-A.json.map](../../ghost-maze-ai/runs/prepared-release-review-20261012/remove-right-A.json)。
+  <details><summary>参考 31 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADAADw8_PgAAAEwIDF0AdAAAAAVQMWinOAEVUAAAAAAQgqoiIuMoAAAAACCAAg&replay=CKaRbZXSFSn88KhXwA)；操作码 `CKaRbZXSFSn88KhXwA`；路线来源：runs/prepared-release-review-20261012/remove-right-A.json.reference.solution.actions。
 
   </details>
 - **runs/regular-rooms-20261010/diagnostic-2278**：[试玩](https://ghostmaze.novic.cc/?map=AWM4wPABCBgYGHkbVi6IaDjwj4E1gKF4OgPTCgYgEO5QF_BTmMQABAKNPAYMAA)；未作玩家质量验收。 地图码 `AWM4wPABCBgYGHkbVi6IaDjwj4E1gKF4OgPTCgYgEO5QF_BTmMQABAKNPAYMAA`；[runs/regular-rooms-20261010/diagnostic-2278.json.map](../../ghost-maze-ai/runs/regular-rooms-20261010/diagnostic-2278.json)。
