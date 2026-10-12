@@ -3,21 +3,21 @@
 
 更新：2026-10-12。以下为新规则的有效审查；后面的旧资料保留真实评述，不能作为已通过当前规则的复用名单。
 
-鬼争位以是否仍能看到玩家新位置决定优先；地位相同者共同入格。所有鬼重合（含错误死亡分支）、功能性玻璃均为后续设计禁区。
+鬼争位以是否仍能看到玩家新位置决定优先；地位相同者共同入格。用户最新明确：夹击死亡与非最优重合允许；全部并列最优解不得经过鬼重合。玻璃换成实墙仍须保持全部物理策略结果一致。
 
-| 已上架地图 | 原参考路线 | 当前最短 | 原路线逐步相同 | 设计边界 |
+| 已上架地图 | 原参考路线 | 当前最短 | 原动作与鬼位相同 | 设计边界 |
 | --- | --- | --- | --- | --- |
-| 《后路》 | 59 | 59 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
-| 《换岗》 | 68 | 68 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
-| 《换边》 | 28 | 28 | 是 | 全部可达分支通过 |
-| 《回环》 | 70 | 70 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
-| 《回位》 | 35 | 35 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
-| 《借影》 | 59 | 57 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
-| 《归途》 | 39 | 39 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
-| 《接力》 | 31 | 31 | 是 | 全部可达分支通过 |
-| 《错位》 | 37 | 37 | 是 | 全部可达分支通过 |
+| [《后路》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA) | 59 | 59 | 是 | 全部最优解通过 |
+| [《换岗》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMAEC4C10BaeArgOw0oSAiBcgpwAAAKABZrEDmOQCBGYCoCQEgAAAwIMIBA) | 68 | 68 | 是 | 全部最优解通过 |
+| [《换边》](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMILCFs0T4C0sDiMnEAQA) | 28 | 28 | 是 | 全部最优解通过 |
+| [《回环》](https://ghostmaze.novic.cc/?map=AADBweHh4eDAwAE1YEKQICGUCQAgBXCqA4gTIKAkEQACgAEQJygnEFziCc5AkBIAABAgAxAgwA) | 70 | 70 | 是 | 全部最优解通过 |
+| [《回位》](https://ghostmaze.novic.cc/?map=AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXOcgUgRAuIAAAAwQAwgQAwggQ) | 35 | 35 | 是 | 全部最优解通过 |
+| [《借影》](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgcuAccAAqgAEgFQTiC5xBOcghBCAAAQIIYAQYgQYY) | 59 | 59 | 是 | 全部最优解通过 |
+| [《归途》](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA) | 39 | 39 | 是 | 全部最优解通过 |
+| [《接力》](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA) | 31 | 31 | 是 | 全部最优解通过 |
+| [《错位》](https://ghostmaze.novic.cc/?map=AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA) | 37 | 37 | 是 | 全部最优解通过 |
 
-《借影》原 59 步仍无伤，但新 57 步解利用重合；已上架原图和原解法尚未替换。其余八张原动作序列仍为最优。
+《借影》维护版仅补一扇 A 门，最短恢复 59 步；原动作序列与控距安置环节保留。其余八张原图与原参考码完全保持。维护版见 [说明](../../ghost-maze-ai/examples/borrowed-shelter-overlapfix-20261012/README.md)。
 
 《易位》及两张功能性玻璃精简题已退役；后续复用只允许 [已审查清单](../../ghost-maze-ai/data/manifests/puzzle-library-policy.json) 中通过的地图。其余历史提案不参与呈现或复用，不批量消耗时间审查。
 

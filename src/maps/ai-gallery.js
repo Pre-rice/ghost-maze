@@ -42,8 +42,8 @@ export const aiMaps = [
     },
     {
         "title": "借影",
-        "mapCode": "AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA",
-        "replayCode": "CLqy0pkgj90mF8CqMlf2oMzILXA",
+        "mapCode": "AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgcuAccAAqgAEgFQTiC5xBOcghBCAAAQIIYAQYgQYY",
+        "replayCode": "CH7k9Zggj90mF8CqMlf2oMzILXA",
         "cells": 24,
         "ghosts": 2,
         "keys": 2
