@@ -14,11 +14,15 @@
 </div><div class="controls-panel"><div id="editor-controls" >
                     <div class="control-group">
                         <!-- 编辑器模式下的右上角操作按钮 -->
-                        <div class="header-controls">
+                        <div class="panel-header">
+                            <h1 class="panel-title">地图编辑器</h1>
+                            <nav class="header-controls" aria-label="页面导航">
+            <a href="maps.html" class="home-btn gallery-link" title="地图集" aria-label="地图集" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none"><path d="M3 5h7v6H3zM14 5h7v6h-7zM3 15h7v6H3zM14 15h7v6h-7z"/></svg></a>
+
                             <!-- Home 按钮 -->
-                            <a href="./" class="home-btn" title="回到首页" aria-label="回到首页"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
+                            <a href="./" id="editor-home-btn" class="home-btn" title="回到首页" aria-label="回到首页"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
                             <!-- 帮助按钮 -->
-                            <a href="help.html" class="help-btn" title="查看帮助" target="_blank">
+                            <a href="help.html" class="help-btn" title="查看帮助" aria-label="查看帮助" target="_blank" rel="noopener">
                                 <svg viewBox="0 0 24 24">
                                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
                                 </svg>
@@ -29,6 +33,7 @@
                                     <svg id="editor-theme-icon" viewBox="0 0 24 24"></svg>
                                 </button>
                             </div>
+                        </nav>
                         </div>
                         <div class="editor-toolbar">
                             <button id="tool-wall" class="tool-btn icon-btn active" title="墙壁">
@@ -160,7 +165,6 @@
                             <input type="number" id="editor-initial-health"
                                 value="5" min="1" max="4294967295">
                         </div>
-                        <button id="editor-random-map-btn" class="secondary">随机生成新地图</button>
                     </div>
                 </div>
 </div></div>        <!-- Custom Confirm Overlay -->

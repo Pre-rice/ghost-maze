@@ -212,8 +212,9 @@ body {
 }
 
 .controls-panel {
-    width: 280px;
-    padding:15px;
+    width: 310px;
+    padding: 18px;
+    margin-top: 10px;
     background-color: var(--container-bg);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -225,7 +226,7 @@ body {
 .control-group {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 10px;
     position: relative;
 }
 
@@ -759,3 +760,52 @@ display: none !important;
 .new-map-options, #new-map-health-control { display: flex; flex-direction: column; gap: 8px; text-align: left; }
 .new-map-options { min-width: 220px; }
 .new-map-options input, .new-map-options select { padding: 8px; color: var(--text-color); background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 4px; }
+
+/* 页面标题与导航在同一行，游玩与编辑共用。 */
+.panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.panel-title { margin: 0; font-size: 16px; line-height: 1.5; font-weight: 650; min-width: 0; }
+.panel-header .header-controls { align-self: auto; flex-shrink: 0; }
+.header-controls .gallery-link svg { fill: none; stroke-width: 1.7; stroke-linejoin: round; }
+.header-controls a:focus-visible, .header-controls button:focus-visible, summary:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 3px; }
+.control-group .status-bar { gap: 8px; flex-wrap: wrap; }
+.toggle-controls-wrapper { margin: 4px 0; }
+.overlay-content .buttons { flex-wrap: wrap; }
+.overlay-content .buttons button { white-space: nowrap; }
+
+/* 地图集保留游戏的色彩与圆形导航。 */
+.map-gallery { width: 100%; max-width: 1040px; }
+.gallery-header { padding: 20px 24px; margin-bottom: 28px; background: var(--container-bg); border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,.06); }
+.gallery-header .panel-header { margin: 0; }
+.gallery-header .panel-title { font-size: 22px; }
+.gallery-intro { color: var(--text-color); opacity: .7; margin: 12px 0 0; font-size: 14px; line-height: 1.7; }
+.gallery-section-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.gallery-section-heading h2 { margin: 0; font-size: 18px; font-weight: 650; }
+.gallery-count { color: var(--text-color); opacity: .6; font-size: 13px; }
+.map-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.map-card { min-width: 0; background: var(--container-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,.06); display: flex; flex-direction: column; }
+.map-preview { display: block; width: 100%; height: auto; background: var(--bg-color); }
+.map-card-body { padding: 20px; display: flex; flex-direction: column; flex: 1; gap: 12px; }
+.map-card h3 { margin: 0; font-size: 18px; }
+.map-meta { margin: 0; font-size: 13px; opacity: .65; }
+.map-review { margin: 0; font-size: 14px; line-height: 1.7; }
+.map-card .map-play { margin-top: auto; display: block; text-decoration: none; }
+.map-solution { font-size: 14px; border-top: 1px solid var(--border-color); padding-top: 12px; }
+.map-solution summary { cursor: pointer; }
+.map-solution p { font-size: 13px; line-height: 1.6; opacity: .7; }
+.map-solution a { color: var(--primary-color); text-decoration: none; }
+.map-solution a:hover { text-decoration: underline; }
+@media (max-width: 1020px) {
+    .main-container { flex-direction: column; width: 100%; gap: 16px; }
+    .canvas-wrapper { align-self: center; max-width: 600px; width: 100%; }
+    #game-canvas { width: 100%; height: auto; }
+    .controls-panel { box-sizing: border-box; width: 100%; max-width: 600px; align-self: center; margin-top: 0; }
+    .map-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+    .map-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .gallery-header { padding: 18px; margin-bottom: 22px; }
+    .map-card-body { padding: 18px; }
+}
+
+.map-actions { display: flex; gap: 10px; }
+.map-actions button { flex: 1; }

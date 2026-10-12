@@ -20,6 +20,7 @@
 | 2026-10-10 | [《回环》](https://ghostmaze.novic.cc/?map=AADBweHh4eDAwAE1YEKQICGUCQAgBXCqA4gTIKAkEQACgAEQJygnEFziCc5AkBIAABAgAxAgwA) | 70 | “你的设计是很不错的”；比较困难、勉强可称精妙，但担忧复杂性堆砌。看五步提示后通关。 | [记录](../../ghost-maze-ai/docs/shelter-exchange-review-20261010.md) |
 | 2026-10-10 | [《回位》](https://ghostmaze.novic.cc/?map=AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXOcgUgRAuIAAAAwQAwgQAwggQ) | 35 | “不错的谜题”；同时评价近期《借位》《回位》平平无奇、缺乏新意，已掌握套路后没有“妙”的感觉。已通关。 | [记录](../../ghost-maze-ai/docs/architecture-diagnosis-handoff-20261010.md) |
 | 2026-10-10 | [借用庇护·修正版](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA) | 59 | 看参考回放后评价“妙，好设计”；不记为无提示独立通关。 | [记录](../../ghost-maze-ai/docs/borrowed-shelter-review-20261010.md) |
+| 2026-10-12 | [《后路》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA) | 59 | “不错，比上一张有进步”；需要考虑先捡哪个钥匙、规划路线，但推理仍线性，很快想到。期待更精妙、有新意与再次眼前一亮；本轮暂停设计，转向本体修改。 | [记录](../../ghost-maze-ai/docs/deferred-key-cold-entry-review-20261012.md) |
 | 2026-10-12 | [《换边》](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMILCFs0T4C0sDiMnEAQA) | 28 | “不错”，比前面几题更巧、简洁；解法仍简单、容易想到，地图复杂性有限。有甜点单元／靠前简单关的价值，尚未达到主线挑战目标。 | [记录](../../ghost-maze-ai/docs/room-transfer-review-20261012.md) |
 | 2026-10-12 | [《换岗》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMAEC4C10BaeArgOw0oSAiBcgpwAAAKABZrEDmOQCBGYCoCQEgAAAwIMIBA) | 68 | “不错的谜题”；复杂性还可以、需要动脑、布局简洁，但每一步容易想到，没有眼前一亮或顿悟感。后续尽量避免开局被追，并核验从整图进入单元当步的状态一致。 | [记录](../../ghost-maze-ai/docs/shelter-role-exchange-review-20261012.md) |
 
@@ -29,11 +30,13 @@
 
 ### 《后路》
 
-[试玩](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA) · 新候选，尚无用户评价；23 格、两鬼、三钥匙，A/B 各一按钮。开局无追逐，指定外部入场与初态一致；59 动作无伤核验通过，延后取物与一次性门准备关系已核验。交付本题后按用户要求暂停地图设计，转向本体修改。
+[试玩](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA) · “不错，比上一张有进步”；需要考虑先捡哪个钥匙、规划路线，但推理仍线性，很快想到。期待更精妙、有新意与再次眼前一亮；本轮暂停设计，转向本体修改。
 
 地图码：`AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA`
 
 来源：[examples/deferred-key-cold-entry-20261012/map.json](../../ghost-maze-ai/examples/deferred-key-cold-entry-20261012/map.json)、[runs/door-continuation-20261012/minimized-cold-room-01.json.map](../../ghost-maze-ai/runs/door-continuation-20261012/minimized-cold-room-01.json)
+
+评述依据：[2026-10-12 的记录](../../ghost-maze-ai/docs/deferred-key-cold-entry-review-20261012.md)。
 
 <details>
 <summary>参考回放（59 步，含答案）</summary>

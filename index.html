@@ -13,12 +13,16 @@
     </div>
 </div><div class="controls-panel"><div id="game-controls">
     <div class="control-group">
+        <div class="panel-header">
+        <h1 id="mode-display" class="panel-title">尚未开始</h1>
         <nav class="header-controls" aria-label="页面导航">
+            <a href="maps.html" class="home-btn gallery-link" title="地图集" aria-label="地图集" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none"><path d="M3 5h7v6H3zM14 5h7v6h-7zM3 15h7v6H3zM14 15h7v6h-7z"/></svg></a>
+
             <a href="editor.html" id="edit-map-btn" class="home-btn" title="进入编辑器" aria-label="进入编辑器" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="m3 17 4 4L21 7l-4-4L3 17zm0 0v4h4"/></svg></a>
             <a href="help.html" class="help-btn" title="查看帮助" aria-label="查看帮助" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 17h-2v-2h2zm2-7-1 1c-1 1-1 1-1 2h-2v-1c0-1 1-2 2-3l1-1a2 2 0 1 0-4-1H8a4 4 0 1 1 7 3z"/></svg></a>
             <div class="theme-toggle" id="theme-toggle"><button class="theme-toggle-btn" id="theme-toggle-btn" title="切换主题" aria-label="切换主题"><svg id="theme-icon" viewBox="0 0 24 24"></svg></button></div>
         </nav>
-        <p id="mode-display" class="mode-label">尚未开始</p>
+        </div>
         <div id="status-bar" class="status-bar">
             <div id="player-health-display" class="label">生命: —</div>
             <div id="player-steps-display" class="label">步数: 0</div>
@@ -34,9 +38,8 @@
             <div class="toggle-switch"><span class="label">全图视野</span><input type="checkbox" id="full-vision-toggle"><label for="full-vision-toggle">全图视野</label></div>
             <div id="dpad-toggle-control" class="toggle-switch"><span class="label">方向按键</span><input type="checkbox" id="dpad-toggle" checked><label for="dpad-toggle">方向按键</label></div>
         </div>
-        <button id="reset-map-btn" class="secondary">重置地图</button>
+        <div class="map-actions"><button id="watch-replay-btn" class="secondary">回放</button><button id="reset-map-btn" class="secondary">重置地图</button></div>
         <button id="generate-map-btn">随机生成新地图</button>
-        <button id="watch-replay-btn" class="secondary">回放</button>
     </div>
     <div id="replay-controls" class="control-group" hidden>
         <div class="share-buttons-container"><button id="replay-prev-btn" class="secondary">上一步</button><button id="replay-play-btn">播放</button><button id="replay-next-btn" class="secondary">下一步</button></div>
@@ -51,10 +54,10 @@
         <button id="replay-load-btn">加载该步</button><button id="replay-close-btn" class="secondary">返回游玩</button>
     </div>
 </div></div></div><div id="death-overlay" class="overlay"><div class="overlay-content">
-    <h2 id="death-message">你死了</h2><div class="buttons"><button id="revive-btn">复活</button><button id="death-rewind-btn">回到上一个存档点</button><button id="death-reset-btn" class="secondary">重置地图</button></div>
+    <h2 id="death-message">你死了</h2><div class="buttons"><button id="death-undo-btn">撤回该步</button><button id="revive-btn" class="secondary">复活</button><button id="death-rewind-btn" class="secondary">回到上一个存档点</button><button id="death-reset-btn" class="secondary">重置地图</button></div>
 </div></div>
 <div id="game-over-overlay" class="overlay"><div class="overlay-content">
-    <h2>生命耗尽</h2><div class="buttons"><button id="game-over-rewind-btn">回到上一个存档点</button><button id="game-over-replay-btn" class="secondary">重置地图</button></div>
+    <h2>生命耗尽</h2><div class="buttons"><button id="game-over-undo-btn">撤回该步</button><button id="game-over-rewind-btn" class="secondary">回到上一个存档点</button><button id="game-over-replay-btn" class="secondary">重置地图</button></div>
 </div></div>
 <div id="win-overlay" class="overlay"><div class="overlay-content">
     <h2>你赢了！</h2><p id="win-stats"></p><div class="buttons"><button id="win-watch-replay-btn">回放</button><button id="win-replay-btn" class="secondary">重置地图</button></div>

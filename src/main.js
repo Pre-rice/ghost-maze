@@ -54,7 +54,7 @@ class GhostMazeGame extends CanvasApp {
         on('reset-map-btn', () => this.resetCurrentMap());
         on('full-vision-toggle', event => { this.debugVision = event.target.checked; this.draw(); }, 'change');
         on('dpad-toggle', () => this.updateDpadVisibility(), 'change');
-        on('undo-btn', () => this.handleUndo()); on('save-btn', () => this.handleSave()); on('rewind-btn', () => this.handleRewind());
+        for (const id of ['undo-btn', 'death-undo-btn', 'game-over-undo-btn']) on(id, () => this.handleUndo()); on('save-btn', () => this.handleSave()); on('rewind-btn', () => this.handleRewind());
         for (const id of ['death-rewind-btn', 'game-over-rewind-btn']) on(id, () => this.handleRewind());
         for (const id of ['death-reset-btn', 'game-over-replay-btn', 'win-replay-btn']) on(id, () => this.resetCurrentMap());
         on('revive-btn', () => this.revivePlayer());
@@ -180,7 +180,7 @@ class GhostMazeGame extends CanvasApp {
     }
     updateHistoryButtons() {
         const disabled = !!this.replay || !this.controller.currentGameState;
-        document.getElementById('undo-btn').disabled = disabled || !this.controller.canUndo;
+        for (const id of ['undo-btn', 'death-undo-btn', 'game-over-undo-btn']) document.getElementById(id).disabled = disabled || !this.controller.canUndo;
         document.getElementById('save-btn').disabled = disabled || this.state !== GAME_STATES.PLAYING || this.controller.currentStep <= (this.controller.checkpoints.at(-1) ?? -1);
         for (const id of ['rewind-btn', 'death-rewind-btn', 'game-over-rewind-btn']) document.getElementById(id).disabled = disabled || !this.controller.canRewind;
         const replayButton = document.getElementById('watch-replay-btn');

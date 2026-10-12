@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>鬼迷宫 - 游戏帮助</title>
         <link rel="icon" type="image/svg+xml" href="favicon.svg">
+        <link rel="stylesheet" href="styles.css">
         <style>
         :root {
             color-scheme: light;
@@ -26,7 +27,7 @@
         code { overflow-wrap: anywhere; }
 
         @media (prefers-color-scheme: dark) {
-            :root {
+            :root:not(.light):not(.dark) {
                 color-scheme: dark;
                 --bg-color: #1e1e1e;
                 --container-bg: #2c2c2c;
@@ -152,12 +153,19 @@
             .help-container { padding: 20px; }
             h1 { font-size: 1.5rem; }
         }
+        .help-container .panel-header { margin-bottom: 28px; }
+        .help-container .panel-title { text-align: left; margin: 0; padding: 0; border: 0; color: var(--text-color); font-size: 20px; }
     </style>
     </head>
     <body>
 
         <div class="help-container">
-            <h1>👻 鬼迷宫 (Ghost Maze) - 游戏指南</h1>
+            <header class="panel-header"><h1 class="panel-title">游戏帮助</h1><nav class="header-controls" aria-label="页面导航">
+                <a href="maps.html" class="home-btn gallery-link" title="地图集" aria-label="地图集"><svg viewBox="0 0 24 24"><path d="M3 5h7v6H3zM14 5h7v6h-7zM3 15h7v6H3zM14 15h7v6h-7z"/></svg></a>
+                <a href="./" class="home-btn" title="回到首页" aria-label="回到首页"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
+                <a href="help.html" class="help-btn" title="查看帮助" aria-label="查看帮助" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 17h-2v-2h2zm2-7-1 1c-1 1-1 1-1 2h-2v-1c0-1 1-2 2-3l1-1a2 2 0 1 0-4-1H8a4 4 0 1 1 7 3z"/></svg></a>
+                <div class="theme-toggle" id="theme-toggle"><button class="theme-toggle-btn" id="theme-toggle-btn" title="切换主题" aria-label="切换主题"><svg id="theme-icon" viewBox="0 0 24 24"></svg></button></div>
+            </nav></header>
 
             <section>
                 <h2>1. 游戏简介</h2>
@@ -242,7 +250,7 @@
                 <h2>5. 工具栏功能</h2>
                 <ul>
                     <li><strong>撤回：</strong>退回一步，包括导致死亡的操作；主动复活后不能撤回到复活之前。</li>
-                    <li><strong>存档／回溯：</strong>创建本局存档点，可以反复回溯。两种模式死亡时都可选择“回到上一个存档点”；没有存档时该选项不可用。</li>
+                    <li><strong>存档／回溯：</strong>创建本局存档点，可以反复回溯。两种模式死亡时都可选择“撤回该步”或“回到上一个存档点”；撤回会恢复死亡前一步，生命耗尽时也可使用。没有存档时回存档选项不可用。</li>
                     <li><strong>保存范围：</strong>游玩状态和存档只在当前页面内保留，刷新不恢复进度。撤回后走出新操作会清除原来的未来路线与未来存档。</li>
                     <li><strong>重置地图：</strong>恢复同一地图的初态，清除路线、存档与探索。</li>
                     <li><strong>新地图：</strong>“随机生成新地图”先打开设置界面，选择大小、游戏模式和探索初始生命；确认生成后才替换当前地图。</li>
@@ -280,5 +288,6 @@
             <a href="editor.html" class="back-btn" target="_blank" rel="noopener">打开地图编辑器</a>
         </div>
 
+    <script type="module">import { initThemeManager } from "./src/themeManager.js"; initThemeManager();</script>
     </body>
 </html>

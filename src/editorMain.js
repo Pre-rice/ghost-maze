@@ -1,11 +1,10 @@
 import { CanvasApp } from './canvasApp.js';
-import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, MAP_SIZE_MIN, MAP_SIZE_MAX, DEFAULT_GHOST_COUNT } from './core/constants.js';
+import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, MAP_SIZE_MIN, MAP_SIZE_MAX } from './core/constants.js';
 import { DataSerializer } from './core/dataSerializer.js';
 import { computeEditorView } from './view/viewSlice.js';
 import { EditorDocument } from './editor/editorSession.js';
 import * as InputHandler from './inputHandler.js';
 import * as LayerManager from './layerManager.js';
-import { generateFullMaze } from './core/mazeGenerator.js';
 import { mapURL } from './shareLinks.js';
 
 class EditorApp extends CanvasApp {
@@ -47,15 +46,6 @@ class EditorApp extends CanvasApp {
         on('editor-map-size-input', () => this.resizeAndClearEditor(), 'change');
         on('play-edited-map-btn', () => this.playEditedMap());
         on('clear-map-btn', () => this.clearEditorMap());
-        on('editor-random-map-btn', () => {
-            const size = Number(this.editorMapSizeInput.value);
-            if (!Number.isInteger(size) || size < MAP_SIZE_MIN || size > MAP_SIZE_MAX) {
-                this.showToast('地图大小必须是 8 到 20 的整数。', 3000, 'error'); return;
-            }
-            this.editorDoc = EditorDocument.fromMapData({ ...generateFullMaze(Number(this.editorMapSizeInput.value), Number(this.editorMapSizeInput.value), DEFAULT_GHOST_COUNT),
-                gameMode: this.editorDoc.gameMode, initialHealth: this.editorDoc.initialHealth });
-            this.syncDocument();
-        });
         on('edit-type-regular-btn', () => this.attemptSetEditorMode('regular'));
         on('edit-type-free-btn', () => this.attemptSetEditorMode('free'));
         on('layer-mode-single-btn', () => this.setLayerMode(false));
@@ -96,7 +86,7 @@ class EditorApp extends CanvasApp {
         const result = this.generateShareCode();
         const url = result.success ? mapURL(result.code, { editor: true }) : new URL('editor.html', location.href).toString();
         if (url !== location.href) history.replaceState({}, '', url);
-        document.querySelector('.home-btn').href = result.success ? mapURL(result.code) : './';
+        document.getElementById('editor-home-btn').href = result.success ? mapURL(result.code) : './';
     }
     playEditedMap() {
         const result = this.generateShareCode();
