@@ -75,7 +75,10 @@ export const GameLogic = {
             isRevivalPoint: true
         });
 
-        // 更新初始视野
+        // 出生也算抵达：同格钥匙、碰撞和终点与普通入场一致，不推进鬼或计步。
+        this.handleItemPickup(initialState, mapDef);
+        this.checkCollisions(initialState, mapDef);
+        this.checkWinLossConditions(initialState, mapDef);
         return this.updateVisibility(initialState, mapDef);
     },
 
@@ -83,7 +86,7 @@ export const GameLogic = {
      * 根据动作计算下一个状态
      * @returns {GameState} 新状态，如果无变化则返回原状态
      */
-    calculateNextState(currentState, action, mapDef, { trails = true, visibility = true } = {}) {
+    calculateNextState(currentState, action, mapDef, { trails = true, visibility = true, ghostDiagnostics = null } = {}) {
         if (currentState.isDead || currentState.isWon) {
             // 特殊情况：复活动作
             if (currentState.isDead && action.type === 'REVIVE') {
@@ -126,6 +129,14 @@ export const GameLogic = {
         // 按顺序处理玩家操作后的所有变化
         this.handleItemPickup(nextState, mapDef);
 
+        // 已有鬼占着落脚格时先判接触，终点不能豁免已经发生的碰撞。
+        this.checkCollisions(nextState, mapDef);
+        if (nextState.isDead) {
+            if (visibility) this.updateVisibility(nextState, mapDef);
+            nextState.isRevivalPoint = false;
+            return nextState;
+        }
+
         // 玩家已踩到终点：立即判胜，先于鬼的移动/碰撞（避免同回合被鬼咬死导致 isWon/isDead 并存）
         if (this._isPlayerOnEndPos(nextState, mapDef)) {
             nextState.isWon = true;
@@ -136,10 +147,11 @@ export const GameLogic = {
 
         if (isStairAction) {
             // 玩家使用楼梯：让原层的鬼向玩家原位置移动
-            this.moveGhostsAfterStair(nextState, originalPlayerPos, mapDef, trails);
+            this.moveGhostsAfterStair(nextState, originalPlayerPos, mapDef, trails, ghostDiagnostics);
         } else {
             // 普通移动：处理鬼的移动（包括跨楼梯追踪）
-            this.moveGhostsWithStairChase(nextState, originalPlayerPos, mapDef, trails);
+            const threatened = this.moveGhostsWithStairChase(nextState, originalPlayerPos, mapDef, trails, ghostDiagnostics);
+            this.checkCollisions(nextState, mapDef, threatened);
         }
         
         this.checkCollisions(nextState, mapDef);
@@ -301,204 +313,110 @@ export const GameLogic = {
         }
     },
 
-    /**
-     * 玩家使用楼梯后的鬼移动：让原层正在追击的鬼向玩家原位置移动一步
-     */
-    moveGhostsAfterStair(state, originalPlayerPos, mapDef, trails = true) {
-        const originalLayer = originalPlayerPos.layer;
-        const ghosts = state.layerStates[originalLayer].ghosts;
-        const layerDef = mapDef.layers[originalLayer];
-        const layerState = state.layerStates[originalLayer];
-
-        let moveIntents = [];
-
-        // 收集移动意图：只有之前能看到玩家的鬼才会移动
+    /** 从可见位置和当前墙态提出意图；仍看得到操作后玩家的鬼优先。 */
+    _getGhostMoveIntents(ghosts, playerBefore, playerAfter, layerDef, layerState) {
+        const intents = [];
         for (const ghost of ghosts) {
-            const sawBefore = this._canGhostSeePlayer(ghost, originalPlayerPos, layerDef, layerState);
-
-            if (sawBefore) {
-                // 向玩家原位置移动
-                const path = this._findShortestPath(ghost, originalPlayerPos, layerDef, layerState);
-                if (path && path.length > 1) {
-                    moveIntents.push({ ghost, nextStep: path[1] });
-                }
-            }
+            const seesAfter = !!playerAfter && this._canGhostSeePlayer(ghost, playerAfter, layerDef, layerState);
+            const sawBefore = this._canGhostSeePlayer(ghost, playerBefore, layerDef, layerState);
+            const target = seesAfter ? playerAfter : sawBefore ? playerBefore : null;
+            if (!target) continue;
+            const path = this._findShortestPath(ghost, target, layerDef, layerState);
+            if (path && path.length > 1) intents.push({ ghost, nextStep: path[1], seesAfter });
         }
+        return intents;
+    },
 
-        this._resolveGhostMoveConflicts(ghosts, moveIntents, trails);
+    /** 使用楼梯后原层鬼只追向玩家离开的格子；同级争位共同入格。 */
+    moveGhostsAfterStair(state, originalPlayerPos, mapDef, trails = true, diagnostics = null) {
+        const layer = originalPlayerPos.layer, ghosts = state.layerStates[layer].ghosts;
+        const intents = this._getGhostMoveIntents(ghosts, originalPlayerPos, null, mapDef.layers[layer], state.layerStates[layer]);
+        const result = this._resolveGhostMoveConflicts(ghosts, intents, trails);
+        if (diagnostics) diagnostics.push(...result.conflicts.map(c => ({ ...c, layer })));
+    },
+
+    /** 普通追击与楼梯入场一起争位，楼梯不绕过占位或冲突规则。 */
+    moveGhostsWithStairChase(state, originalPlayerPos, mapDef, trails = true, diagnostics = null) {
+        const layer = state.player.layer, ghosts = state.layerStates[layer].ghosts;
+        const intents = this._getGhostMoveIntents(ghosts, originalPlayerPos, state.player, mapDef.layers[layer], state.layerStates[layer]);
+        if (mapDef.multiLayerMode) intents.push(...this._getGhostStairChaseIntents(state, originalPlayerPos, mapDef));
+        const result = this._resolveGhostMoveConflicts(ghosts, intents, trails, state.player, intent => {
+            if (intent.fromLayer === undefined) return;
+            const source = state.layerStates[intent.fromLayer].ghosts;
+            source.splice(source.indexOf(intent.ghost), 1);
+            ghosts.push(intent.ghost);
+            intent.ghost.trail = [];
+        });
+        if (diagnostics) diagnostics.push(...result.conflicts.map(c => ({ ...c, layer })));
+        return result.captured;
+    },
+
+    /** 楼梯另一端的鬼只知道玩家离开的位置，没有操作后目标的视线。 */
+    _getGhostStairChaseIntents(state, originalPlayerPos, mapDef) {
+        const stair = mapDef.stairs.find(s => s.x === originalPlayerPos.x && s.y === originalPlayerPos.y && s.layer === originalPlayerPos.layer);
+        if (!stair) return [];
+        const fromLayer = stair.direction === 'up' ? originalPlayerPos.layer + 1 : originalPlayerPos.layer - 1;
+        const paired = mapDef.stairs.find(s => s.x === stair.x && s.y === stair.y && s.layer === fromLayer && s.direction !== stair.direction);
+        if (!paired) return [];
+        return state.layerStates[fromLayer].ghosts.filter(g => g.x === paired.x && g.y === paired.y).map(ghost => ({
+            ghost, nextStep: { x: originalPlayerPos.x, y: originalPlayerPos.y }, seesAfter: false, fromLayer
+        }));
     },
 
     /**
-     * 普通移动时的鬼移动：包括跨楼梯追踪
-     * 当玩家和鬼分别处于一对楼梯的两端时，鬼可以看见玩家
-     * 玩家移动后（非上下楼梯），鬼会通过楼梯来到玩家移动前的位置
+     * 先按目标格一次性裁定：夹击玩家时共同入格；空格有新目标视线者优先，同级并列共同入格。
+     * 再按空位推进整条追逐队列；鬼不会交换占位，也不使用编号或列表顺序。
      */
-    moveGhostsWithStairChase(state, originalPlayerPos, mapDef, trails = true) {
-        const playerLayer = state.player.layer;
-        
-        // 首先处理可能通过楼梯追踪的鬼，获取已经通过楼梯移动的鬼列表
-        let ghostsMovedViaStair = new Set();
-        if (mapDef.multiLayerMode) {
-            ghostsMovedViaStair = this._handleGhostStairChase(state, originalPlayerPos, mapDef);
+    _resolveGhostMoveConflicts(ghosts, moveIntents, trails = true, player = null, onMove = null) {
+        const groups = new Map(), conflicts = [], winners = [];
+        const captured = !!player && moveIntents.some(i => i.nextStep.x === player.x && i.nextStep.y === player.y);
+        for (const intent of moveIntents) {
+            const key = `${intent.nextStep.x},${intent.nextStep.y}`;
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(intent);
         }
-        
-        // 然后处理当前层的正常鬼移动（排除已经通过楼梯移动的鬼）
-        const ghosts = state.layerStates[playerLayer].ghosts;
-        const layerDef = mapDef.layers[playerLayer];
-        const layerState = state.layerStates[playerLayer];
-
-        let moveIntents = [];
-
-        // 收集移动意图（排除已通过楼梯移动的鬼）
-        for (const ghost of ghosts) {
-            // 跳过已经通过楼梯移动的鬼
-            if (ghostsMovedViaStair.has(ghost)) {
-                continue;
-            }
-            
-            const sawBefore = this._canGhostSeePlayer(ghost, originalPlayerPos, layerDef, layerState);
-            const seesAfter = this._canGhostSeePlayer(ghost, state.player, layerDef, layerState);
-
-            let target = null;
-            if (!sawBefore && seesAfter) target = state.player;
-            else if (sawBefore && !seesAfter) target = originalPlayerPos;
-            else if (sawBefore && seesAfter) target = state.player;
-
-            if (target) {
-                const path = this._findShortestPath(ghost, target, layerDef, layerState);
-                if (path && path.length > 1) {
-                    moveIntents.push({ ghost, nextStep: path[1] });
-                }
-            }
+        for (const contenders of groups.values()) {
+            const priority = contenders.some(i => i.seesAfter);
+            const preferred = contenders.filter(i => !!i.seesAfter === priority);
+            const capturesPlayer = !!player && contenders[0].nextStep.x === player.x && contenders[0].nextStep.y === player.y;
+            if (capturesPlayer) winners.push(...contenders);
+            else winners.push(...preferred);
+            if (contenders.length > 1) conflicts.push({
+                target: { ...contenders[0].nextStep },
+                contenders: contenders.map(i => ({ from: { x: i.ghost.x, y: i.ghost.y }, seesAfter: !!i.seesAfter, fromLayer: i.fromLayer })),
+                decision: capturesPlayer ? 'player_capture_overlap' : preferred.length === 1 ? 'visible_target_priority' : 'equal_priority_overlap',
+                capturesPlayer
+            });
         }
-
-        this._resolveGhostMoveConflicts(ghosts, moveIntents, trails);
-    },
-
-    /**
-     * 处理鬼通过楼梯追踪玩家
-     * 当玩家和鬼处于配对楼梯的两端时，鬼会穿过楼梯追击
-     * @returns {Set} 已经通过楼梯移动的鬼的集合
-     */
-    _handleGhostStairChase(state, originalPlayerPos, mapDef) {
-        const movedGhosts = new Set();
-        const playerLayer = state.player.layer;
-        const stairs = mapDef.stairs;
-        
-        // 查找玩家原位置是否在楼梯上
-        const playerStair = stairs.find(s => 
-            s.x === originalPlayerPos.x && 
-            s.y === originalPlayerPos.y && 
-            s.layer === originalPlayerPos.layer
-        );
-        
-        if (!playerStair) return movedGhosts;
-        
-        // 找到配对的楼梯（另一层）
-        const pairedLayer = playerStair.direction === 'up' ? originalPlayerPos.layer + 1 : originalPlayerPos.layer - 1;
-        if (pairedLayer < 0 || pairedLayer >= mapDef.layerCount) return movedGhosts;
-        
-        const pairedStair = stairs.find(s =>
-            s.x === originalPlayerPos.x &&
-            s.y === originalPlayerPos.y &&
-            s.layer === pairedLayer &&
-            s.direction === (playerStair.direction === 'up' ? 'down' : 'up')
-        );
-        
-        if (!pairedStair) return movedGhosts;
-        
-        // 检查配对层是否有鬼在楼梯位置上
-        const pairedLayerGhosts = state.layerStates[pairedLayer].ghosts;
-        const ghostsOnPairedStair = pairedLayerGhosts.filter(g => 
-            g.x === pairedStair.x && g.y === pairedStair.y
-        );
-        
-        // 这些鬼可以"看见"玩家，会穿过楼梯追击
-        for (const ghost of ghostsOnPairedStair) {
-            // 从配对层移除鬼
-            const ghostIndex = pairedLayerGhosts.indexOf(ghost);
-            if (ghostIndex > -1) {
-                pairedLayerGhosts.splice(ghostIndex, 1);
+        let pending = winners;
+        while (pending.length) {
+            const occupied = new Set(ghosts.map(g => `${g.x},${g.y}`));
+            const ready = pending.filter(i => !occupied.has(`${i.nextStep.x},${i.nextStep.y}`));
+            if (!ready.length) break;
+            const moved = new Set(ready);
+            for (const intent of ready) {
+                const { ghost, nextStep } = intent;
+                if (trails) {
+                    ghost.trail.unshift({ x: ghost.x, y: ghost.y, timestamp: Date.now() });
+                    if (ghost.trail.length > 5) ghost.trail.pop();
+                }
+                ghost.x = nextStep.x; ghost.y = nextStep.y;
+                if (onMove) onMove(intent);
             }
-            
-            // 将鬼添加到玩家原来的层，位置为玩家原位置
-            ghost.x = originalPlayerPos.x;
-            ghost.y = originalPlayerPos.y;
-            ghost.trail = [];
-            state.layerStates[originalPlayerPos.layer].ghosts.push(ghost);
-            
-            // 标记这个鬼已经移动过了
-            movedGhosts.add(ghost);
+            pending = pending.filter(i => !moved.has(i));
         }
-        
-        return movedGhosts;
-    },
-
-    /**
-     * 解决鬼移动冲突：同一目标格只允许一个鬼进入，被占用的意图留到下一轮
-     * （moveGhostsAfterStair 与 moveGhostsWithStairChase 共用）
-     * @param {Array} ghosts - 当前层鬼数组
-     * @param {Array} moveIntents - 移动意图 [{ghost, nextStep}]
-     */
-    _resolveGhostMoveConflicts(ghosts, moveIntents, trails = true) {
-        if (moveIntents.length === 0) return;
-
-        let maxIterations = ghosts.length + 1;
-        let madeProgress = true;
-
-        while (madeProgress && moveIntents.length > 0 && maxIterations > 0) {
-            madeProgress = false;
-            maxIterations--;
-
-            const occupiedCells = new Set(ghosts.map(g => `${g.x},${g.y}`));
-            let possibleMoves = [];
-            let remainingIntents = [];
-
-            for (const intent of moveIntents) {
-                const targetKey = `${intent.nextStep.x},${intent.nextStep.y}`;
-                if (!occupiedCells.has(targetKey)) {
-                    possibleMoves.push(intent);
-                } else {
-                    remainingIntents.push(intent);
-                }
-            }
-
-            const finalMovesThisPass = [];
-            const claimedTargets = new Set();
-            for (const intent of possibleMoves) {
-                const targetKey = `${intent.nextStep.x},${intent.nextStep.y}`;
-                if (!claimedTargets.has(targetKey)) {
-                    finalMovesThisPass.push(intent);
-                    claimedTargets.add(targetKey);
-                } else {
-                    remainingIntents.push(intent);
-                }
-            }
-
-            if (finalMovesThisPass.length > 0) {
-                for (const { ghost, nextStep } of finalMovesThisPass) {
-                    if (trails) {
-                        ghost.trail.unshift({ x: ghost.x, y: ghost.y, timestamp: Date.now() });
-                        if (ghost.trail.length > 5) ghost.trail.pop();
-                    }
-                    ghost.x = nextStep.x;
-                    ghost.y = nextStep.y;
-                }
-                madeProgress = true;
-            }
-
-            moveIntents = remainingIntents;
-        }
+        return { captured, conflicts };
     },
 
     /**
      * 检查碰撞
      */
-    checkCollisions(state, mapDef) {
+    checkCollisions(state, mapDef, threatened = false) {
+        if (state.isDead) return;
         const p = state.player;
         const ghosts = state.layerStates[p.layer].ghosts;
         
-        if (ghosts.some(g => g.x === p.x && g.y === p.y)) {
+        if (threatened || ghosts.some(g => g.x === p.x && g.y === p.y)) {
             state.isDead = true;
             state.deathReason = 'ghost';
             
@@ -608,7 +526,7 @@ export const GameLogic = {
         const endPos = layerDef.initialEntities.endPos;
 
         // 检查胜利
-        if (endPos && p.x === endPos.x && p.y === endPos.y) {
+        if (!state.isDead && endPos && p.x === endPos.x && p.y === endPos.y) {
             state.isWon = true;
         }
 
@@ -632,9 +550,15 @@ export const GameLogic = {
     /**
      * 处理复活
      */
+    isSpawnOccupied(state, mapDef) {
+        const start = mapDef.playerStart;
+        return state.layerStates[start.layer].ghosts.some(g => g.x === start.x && g.y === start.y);
+    },
+
     handleRevive(currentState, mapDef) {
+        if (!currentState.isDead) return currentState;
         if (mapDef.gameMode === 'exploration') {
-            if (currentState.player.hp > 0) {
+            if (currentState.player.hp > 0 && !this.isSpawnOccupied(currentState, mapDef)) {
                 const nextState = currentState.clone();
                 nextState.isDead = false;
                 nextState.deathReason = '';

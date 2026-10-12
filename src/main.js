@@ -160,6 +160,7 @@ class GhostMazeGame extends CanvasApp {
     }
     hideAllOverlays() { UI.hideAllOverlays(); }
     showOutcome(kind, message) {
+        document.getElementById('revive-btn').disabled = !this.controller.canRevive;
         if (kind === 'win') { document.getElementById('win-stats').textContent = message; document.getElementById('win-overlay').style.display = 'flex'; }
         else {
             document.getElementById('death-message').textContent = message;

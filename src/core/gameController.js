@@ -17,6 +17,8 @@ export class GameController {
     get gameMode() { return this.mapDefinition?.gameMode || 'exploration'; }
     get initialHealth() { return this.mapDefinition?.initialHealth || 5; }
     get actions() { return this.history?.actions.slice(0, this.currentStep) || []; }
+    get canRevive() { return !!this.currentGameState?.isDead && (this.gameMode === 'death-loop' ||
+        this.currentGameState.player.hp > 0 && !GameLogic.isSpawnOccupied(this.currentGameState, this.mapDefinition)); }
     get canUndo() { return this.currentStep > this.revivalBoundary; }
     get canRewind() { return this.checkpoints.some(step => step < this.currentStep); }
     startGame(source) {
@@ -126,6 +128,7 @@ export class GameController {
     _deathStats() {
         const p = this.currentGameState.player;
         return { overlay: this.gameMode === 'exploration' && p.hp <= 0 ? 'game-over' : 'death',
-            message: this.gameMode === 'exploration' ? '你死了（剩余生命 ' + p.hp + '）' : '你死了' };
+            message: this.gameMode === 'exploration' ? '你死了（剩余生命 ' + p.hp + '）' +
+                (p.hp > 0 && !this.canRevive ? '。出生点被鬼占据，无法复活；可以撤回、回存档或重置地图。' : '') : '你死了' };
     }
 }

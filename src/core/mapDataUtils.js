@@ -213,7 +213,10 @@ export function validateMapData(source, { requireEnd = true } = {}) {
             }
             for (const name of ['customStartPos', 'endPos']) if (layer[name]) {
                 require(validPoint(layer[name], li), '起点或终点必须位于活动格');
-                if (name === 'customStartPos') starts++; else ends++;
+                if (name === 'customStartPos') {
+                    require(!layer.ghosts.some(g => g.x === layer[name].x && g.y === layer[name].y), '出生点不能与鬼重叠');
+                    starts++;
+                } else ends++;
             }
         });
         require(starts === 1, '必须有且只有一个出生点');

@@ -565,6 +565,22 @@ export function drawGame(ctx, view) {
     view.items.forEach(item => { if (view.seenCells[item.y][item.x] || view.debugVision) { drawItem(ctx, item, cs, view.colors); } });
     view.buttons.forEach(button => { if (view.seenCells[button.y][button.x] || view.debugVision) { drawButton(ctx, button, cs, view.colors); } });
     drawWallOverlays(ctx, { ...view, inGame: true });
+    // 重合数量也必须可见，不能让一只鬼和多只鬼呈现为相同局面。
+    const counts = new Map();
+    view.ghosts.forEach(g => {
+        if (view.seenCells[g.y][g.x] || view.debugVision) {
+            const key = `${g.x},${g.y}`;
+            counts.set(key, { x: g.x, y: g.y, count: (counts.get(key)?.count || 0) + 1 });
+        }
+    });
+    for (const { x, y, count } of counts.values()) if (count > 1) {
+        const cx = (x + 0.77) * cs, cy = (y + 0.23) * cs;
+        ctx.save(); ctx.globalAlpha = 1; ctx.fillStyle = view.colors.ghost;
+        ctx.beginPath(); ctx.arc(cx, cy, cs * 0.16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.max(10, cs * 0.23)}px sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(count), cx, cy);
+        ctx.restore();
+    }
     ctx.restore();
 }
 

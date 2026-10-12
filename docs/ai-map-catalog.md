@@ -1,10 +1,36 @@
+<!-- current-rule-audit:start -->
 # AI 地图总目录
 
-更新：2026-10-12。游玩、AI 和回放已使用同一规则；下列码全部为当前格式。旧码弃用，原地图、原证据和真人录制保持原样。
+更新：2026-10-12。以下为新规则的有效审查；后面的旧资料保留真实评述，不能作为已通过当前规则的复用名单。
+
+鬼争位以是否仍能看到玩家新位置决定优先；地位相同者共同入格。所有鬼重合（含错误死亡分支）、功能性玻璃均为后续设计禁区。
+
+| 已上架地图 | 原参考路线 | 当前最短 | 原路线逐步相同 | 设计边界 |
+| --- | --- | --- | --- | --- |
+| 《后路》 | 59 | 59 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
+| 《换岗》 | 68 | 68 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
+| 《换边》 | 28 | 28 | 是 | 全部可达分支通过 |
+| 《回环》 | 70 | 70 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
+| 《回位》 | 35 | 35 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
+| 《借影》 | 59 | 57 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
+| 《归途》 | 39 | 39 | 是 | 能出现鬼重合，原版待用户决定维护或下架 |
+| 《接力》 | 31 | 31 | 是 | 全部可达分支通过 |
+| 《错位》 | 37 | 37 | 是 | 全部可达分支通过 |
+
+《借影》原 59 步仍无伤，但新 57 步解利用重合；已上架原图和原解法尚未替换。其余八张原动作序列仍为最优。
+
+《易位》及两张功能性玻璃精简题已退役；后续复用只允许 [已审查清单](../../ghost-maze-ai/data/manifests/puzzle-library-policy.json) 中通过的地图。其余历史提案不参与呈现或复用，不批量消耗时间审查。
+
+详细结果见 [边界审查](rule-boundaries-20261012.md)。
+<!-- current-rule-audit:end -->
+
+## 历史资料（规则调整前）
+
+更新：2026-10-12。游玩、AI 和回放已使用同一规则；下列码为当时格式；历史路线不自动获得现行规则证书。旧码弃用，原地图、原证据和真人录制保持原样。
 
 扫描 587 份明确保存的地图资料，按完整地图内容去重得到 513 张；其中 496 张可生成并重新打开，414 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
 
-本文件是地图、解法和用户评述的统一目录。默认试玩入口为正式站 `https://ghostmaze.novic.cc/`；当前目录使用 `https://ghostmaze.novic.cc/`。正式站已同步当前规则和分享格式。只有地图码是普通游玩，追加操作码才进入回放。
+本文件是地图、解法和用户评述的统一目录。默认试玩入口为正式站 `https://ghostmaze.novic.cc/`；当前目录使用 `https://ghostmaze.novic.cc/`。这是规则调整前的历史状态，不能作为现行验收。只有地图码是普通游玩，追加操作码才进入回放。
 
 参考步数表示新规则下路线成功执行的有效操作数；本次没有重新证明这些路线最短，也没有重新评价谜题质量。按钮、移动和楼梯均计步。参考回放和路线放在折叠区。
 
@@ -303,7 +329,7 @@
 
 ### 《易位》
 
-[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAE4gVoE0EUE1AiAAAAQA) · 新候选，尚无用户试玩评价；22 格、两鬼、两钥匙，无按钮或字母门，中性入口。普通门与一次性门保留鬼位换序关系；机械核验不代表精妙，未加入网页地图集。
+试玩（已退役，不再提供试玩） · 新候选，尚无用户试玩评价；22 格、两鬼、两钥匙，无按钮或字母门，中性入口。普通门与一次性门保留鬼位换序关系；机械核验不代表精妙，未加入网页地图集。
 
 地图码：`AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAE4gVoE0EUE1AiAAAAQA`
 
@@ -312,7 +338,7 @@
 <details>
 <summary>参考回放（57 步，含答案）</summary>
 
-[打开同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAoA4EAVAAAE4gVoE0EUE1AiAAAAQA&replay=GKZxl3AxcAKX1bAClzVaIfcAKoA)
+打开同页回放（已退役，不再提供试玩）
 
 操作码：`GKZxl3AxcAKX1bAClzVaIfcAKoA`
 
@@ -381,7 +407,7 @@
 
 ### 精简题 1
 
-[试玩](https://ghostmaze.novic.cc/?map=AWM4wfDhQwIDAwOjagMPkwPXggAlVgYQYJR3LGRyADMVAA) · “都还可以”；不推断成对偏好。
+试玩（已退役，不再提供试玩） · “都还可以”；不推断成对偏好。
 
 地图码：`AWM4wfDhQwIDAwOjagMPkwPXggAlVgYQYJR3LGRyADMVAA`
 
@@ -392,7 +418,7 @@
 <details>
 <summary>参考回放（18 步，含答案）</summary>
 
-[打开同页回放](https://ghostmaze.novic.cc/?map=AWM4wfDhQwIDAwOjagMPkwPXggAlVgYQYJR3LGRyADMVAA&replay=EE7LcTLSvxmI8A)
+打开同页回放（已退役，不再提供试玩）
 
 操作码：`EE7LcTLSvxmI8A`
 
@@ -402,7 +428,7 @@
 
 ### 精简题 2
 
-[试玩](https://ghostmaze.novic.cc/?map=AADIAADAwODgAAGRgLQAAAoAAID4CoAAAAAAWgJARAiAAAA) · “都还可以”；不推断成对偏好。
+试玩（已退役，不再提供试玩） · “都还可以”；不推断成对偏好。
 
 地图码：`AADIAADAwODgAAGRgLQAAAoAAID4CoAAAAAAWgJARAiAAAA`
 
@@ -413,7 +439,7 @@
 <details>
 <summary>参考回放（14 步，含答案）</summary>
 
-[打开同页回放](https://ghostmaze.novic.cc/?map=AADIAADAwODgAAGRgLQAAAoAAID4CoAAAAAAWgJARAiAAAA&replay=EGr4F_VkyVPQ)
+打开同页回放（已退役，不再提供试玩）
 
 操作码：`EGr4F_VkyVPQ`
 
@@ -615,8 +641,8 @@
 - **《接力》**：33 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA&replay=GMnCC_w_AV-lcN6UAIA)；[原始记录](../../ghost-maze-ai/data/solutions/516979c9-663d-4c43-be20-0890b8b5c22c.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/516979c9-663d-4c43-be20-0890b8b5c22c.json)；原保留分支 543 项，保留动作歧义 0 项。
 - **《回位》**：39 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXOcgUgRAuIAAAAwQAwgQAwggQ&replay=CNEbJuMv5XKdP8CIzSIY)；[原始记录](../../ghost-maze-ai/data/solutions/77ba44f0-ae5f-488c-90c8-142c0660311c.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/77ba44f0-ae5f-488c-90c8-142c0660311c.json)；原保留分支 39 项，保留动作歧义 0 项。
 - **用户优化图**：40 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAHB4cDAwAAFkgCoCQEQAAKAuQJAAHAKAAAAAEBjaCUAoByAAAAAQAA&replay=AA9JdrqPIl14IMyMpdcD)；[原始记录](../../ghost-maze-ai/data/solutions/921c60cd-51e3-4638-98ba-569829fb0864.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/921c60cd-51e3-4638-98ba-569829fb0864.json)；原保留分支 40 项，保留动作歧义 0 项。
-- **精简题 1**：24 步，[同页回放](https://ghostmaze.novic.cc/?map=AWM4wfDhQwIDAwOjagMPkwPXggAlVgYQYJR3LGRyADMVAA&replay=AE7LcTL5MavxmI8)；[原始记录](../../ghost-maze-ai/data/solutions/a628a2c3-b163-4b80-831c-e1801f0e44ab.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/a628a2c3-b163-4b80-831c-e1801f0e44ab.json)；原保留分支 31 项，保留动作歧义 0 项。
-- **精简题 2**：14 步，[同页回放](https://ghostmaze.novic.cc/?map=AADIAADAwODgAAGRgLQAAAoAAID4CoAAAAAAWgJARAiAAAA&replay=EGr4F_WUyVPQ)；[原始记录](../../ghost-maze-ai/data/solutions/b7be255e-2123-411f-8edb-8981d7d9236a.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/b7be255e-2123-411f-8edb-8981d7d9236a.json)；原保留分支 28 项，保留动作歧义 0 项。
+- **精简题 1**：24 步，同页回放（已退役，不再提供试玩）；[原始记录](../../ghost-maze-ai/data/solutions/a628a2c3-b163-4b80-831c-e1801f0e44ab.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/a628a2c3-b163-4b80-831c-e1801f0e44ab.json)；原保留分支 31 项，保留动作歧义 0 项。
+- **精简题 2**：14 步，同页回放（已退役，不再提供试玩）；[原始记录](../../ghost-maze-ai/data/solutions/b7be255e-2123-411f-8edb-8981d7d9236a.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/b7be255e-2123-411f-8edb-8981d7d9236a.json)；原保留分支 28 项，保留动作歧义 0 项。
 - **七格交接**：19 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAAAYEDAwAAE6ACAWBbBkMwgAAFAcgWQHAKAAAAAABICgLkBcgAAAEAggBA&replay=CNPsSFzY8edzDA)；[原始记录](../../ghost-maze-ai/data/solutions/bc62283a-f4a3-4e30-a8d9-df3b67b6185c.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/bc62283a-f4a3-4e30-a8d9-df3b67b6185c.json)；原保留分支 26 项，保留动作歧义 0 项。
 - **《借位》**：31 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAAPBwcHAAAAEMgIWgOYMQgCqCcAAHOAqAAAAAAXOIEoFIE5AAAAABgABABA&replay=CEERmQ_AtVAVoN3oCA)；[原始记录](../../ghost-maze-ai/data/solutions/cbbe676f-2d3f-4526-a4fa-f33aee865e84.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/cbbe676f-2d3f-4526-a4fa-f33aee865e84.json)；原保留分支 31 项，保留动作歧义 0 项。
 - **《归途》**：67 步，[同页回放](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA&replay=CHbIXDkIJ9I6nic__51aCw_6l6M-CA)；[原始记录](../../ghost-maze-ai/data/solutions/cde0ed27-e36d-4a1b-992d-72284501777d.json)；[迁移记录](../../ghost-maze-ai/data/generated/recordings-current/cde0ed27-e36d-4a1b-992d-72284501777d.json)；原保留分支 112 项，保留动作歧义 0 项。
