@@ -2,7 +2,7 @@
 
 更新：2026-10-12。游玩、AI 和回放已使用同一规则；下列码全部为当前格式。旧码弃用，原地图、原证据和真人录制保持原样。
 
-扫描 581 份明确保存的地图资料，按完整地图内容去重得到 507 张；其中 490 张可生成并重新打开，409 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
+扫描 587 份明确保存的地图资料，按完整地图内容去重得到 513 张；其中 496 张可生成并重新打开，414 张已有当前规则的无伤参考路线。数量包括母图、对照和实验候选，不等于正式作品数量。
 
 本文件是地图、解法和用户评述的统一目录。默认试玩入口为正式站 `https://ghostmaze.novic.cc/`；当前目录使用 `https://ghostmaze.novic.cc/`。正式站已同步当前规则和分享格式。只有地图码是普通游玩，追加操作码才进入回放。
 
@@ -2439,6 +2439,38 @@
   </details>
 - **runs/irreversible-handoff-20261010/g/candidate-3**：[试玩](https://ghostmaze.novic.cc/?map=AADBAUHh4eDAwAEUYCB0AdAiAGATwoAQFmBXASCIABQACgFUCcQXOIJzkCQEgAABEDECDAA)；未作玩家质量验收。 地图码 `AADBAUHh4eDAwAEUYCB0AdAiAGATwoAQFmBXASCIABQACgFUCcQXOIJzkCQEgAABEDECDAA`；[runs/irreversible-handoff-20261010/g/candidate-3.json.map](../../ghost-maze-ai/runs/irreversible-handoff-20261010/g/candidate-3.json)。
   尚无完整可验证的通关路线。
+- **runs/local-queue-reordering-20261012/key-return-0-0**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBEEUE1AiAAAAAEA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBEEUE1AiAAAAAEA`；[runs/local-queue-reordering-20261012/key-return-0-0.json.map](../../ghost-maze-ai/runs/local-queue-reordering-20261012/key-return-0-0.json)。
+  <details><summary>参考 19 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBEEUE1AiAAAAAEA&replay=CBIMC0wxocMyqA)；操作码 `CBIMC0wxocMyqA`；路线来源：runs/local-queue-reordering-20261012/key-return-0-0.json.result.solution.actions。
+
+  </details>
+- **runs/local-queue-reordering-20261012/key-return-0-2**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBNBFBNQIgAAAABA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBNBFBNQIgAAAABA`；[runs/local-queue-reordering-20261012/key-return-0-2.json.map](../../ghost-maze-ai/runs/local-queue-reordering-20261012/key-return-0-2.json)。
+  <details><summary>参考 19 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBNBFBNQIgAAAABA&replay=CNWvuF0xocMyqA)；操作码 `CNWvuF0xocMyqA`；路线来源：runs/local-queue-reordering-20261012/key-return-0-2.json.result.solution.actions。
+
+  </details>
+- **runs/local-queue-reordering-20261012/key-return-1-0**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBEEUE1AiAAAgAEA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBEEUE1AiAAAgAEA`；[runs/local-queue-reordering-20261012/key-return-1-0.json.map](../../ghost-maze-ai/runs/local-queue-reordering-20261012/key-return-1-0.json)。
+  <details><summary>参考 19 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBEEUE1AiAAAgAEA&replay=CGKWhowxocMyqA)；操作码 `CGKWhowxocMyqA`；路线来源：runs/local-queue-reordering-20261012/key-return-1-0.json.result.solution.actions。
+
+  </details>
+- **runs/local-queue-reordering-20261012/key-return-1-2**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBNBFBNQIgAAIABA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBNBFBNQIgAAIABA`；[runs/local-queue-reordering-20261012/key-return-1-2.json.map](../../ghost-maze-ai/runs/local-queue-reordering-20261012/key-return-1-2.json)。
+  <details><summary>参考 19 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBNBFBNQIgAAIABA&replay=CNKmEIExocMyqA)；操作码 `CNKmEIExocMyqA`；路线来源：runs/local-queue-reordering-20261012/key-return-1-2.json.result.solution.actions。
+
+  </details>
+- **runs/local-queue-reordering-20261012/key-return-2-0**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBEEUE1AiAABAAEA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBEEUE1AiAABAAEA`；[runs/local-queue-reordering-20261012/key-return-2-0.json.map](../../ghost-maze-ai/runs/local-queue-reordering-20261012/key-return-2-0.json)。
+  尚无完整可验证的通关路线。
+- **runs/local-queue-reordering-20261012/key-return-2-2**：[试玩](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBNBFBNQIgAAQABA)；未作玩家质量验收。 地图码 `AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBNBFBNQIgAAQABA`；[runs/local-queue-reordering-20261012/key-return-2-2.json.map](../../ghost-maze-ai/runs/local-queue-reordering-20261012/key-return-2-2.json)。
+  <details><summary>参考 35 步（答案）</summary>
+
+  [同页回放](https://ghostmaze.novic.cc/?map=AADIAPg4OHh4OAEE4Cs0BMsAKqFIEAuAOBAFQAABOIFaBNBFBNQIgAAQABA&replay=CNu86eUxcAKXNVohwCg)；操作码 `CNu86eUxcAKXNVohwCg`；路线来源：runs/local-queue-reordering-20261012/key-return-2-2.json.result.solution.actions。
+
+  </details>
 - **runs/position-relations-20261010/e/candidate-1062**：[试玩](https://ghostmaze.novic.cc/?map=AADBweHh4eHh4AE2ICKUBAGBoAQAuwLhVASDkyCuAuAcAQFUABECcoJygucQTnIIQQgAAAECGAAGIEGG)；未作玩家质量验收。 地图码 `AADBweHh4eHh4AE2ICKUBAGBoAQAuwLhVASDkyCuAuAcAQFUABECcoJygucQTnIIQQgAAAECGAAGIEGG`；[runs/position-relations-20261010/e/candidate-1062.json.map](../../ghost-maze-ai/runs/position-relations-20261010/e/candidate-1062.json)。
   <details><summary>参考 66 步（答案）</summary>
 
