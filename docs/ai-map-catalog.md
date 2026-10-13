@@ -24,6 +24,19 @@
 详细结果见 [边界审查](rule-boundaries-20261012.md)。
 <!-- current-rule-audit:end -->
 
+## 2026-10-13 新候选：《借舍》
+
+23格、两鬼、一个按钮，零钥匙；开局和实际入场中性，有安全观察窗。手工房间接替构造经过逐门对照，删两扇冗余门和无用支路、缩紧守卫区；尚无用户评述与真人路线，未加入九图。完整资料见[作品说明](../../ghost-maze-ai/examples/borrowed-room-20261013/README.md)。以下历史批量统计不含本题。
+
+[正式站试玩](https://ghostmaze.novic.cc/?map=AADAAPzP7DwYAAFS4DNKARgACqoKbopyqWATECgAAAAgxEqxyhSCECQAAACA)
+
+<details>
+<summary>参考解法（含答案）</summary>
+
+[回放](https://ghostmaze.novic.cc/?map=AADAAPzP7DwYAAFS4DNKARgACqoKbopyqWATECgAAAAgxEqxyhSCECQAAACA&replay=CKgjVm_9IP1enKiD-pd8PA)。独立最短43；全部最优一按、无重合。最优的一次A前，两鬼需在普通门上下外侧均就位；按后仍需改变上方鬼的位置／跟随方向；两个不同最优收尾均核对，具体转弯不是唯一。玻璃换墙全部物理策略不变，仅供观察；实际入场、码往返、编号/排列及网页关键局面通过。未以这些证据代替真人精妙评价。
+
+</details>
+
 ## 2026-10-13 新候选：《暂驻》
 
 26格、两鬼、一个按钮，无钥匙和玻璃，开局／实际入场当步中性。手工停位复用构造经有限门/通路对照、独立验证与精简，删冗余钥匙任务及门属性，保留规则外环。暂无用户评述与真人路线，未上架；[作品说明](../../ghost-maze-ai/examples/temporary-stay-20261013/README.md)。以下历史统计未批量重扫，不包含本题。
