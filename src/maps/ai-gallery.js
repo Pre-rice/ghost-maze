@@ -1,6 +1,14 @@
 // 上架名单仅按用户明确决定维护；简要数量取自当前地图码，评述与证书留在统一目录。
 export const aiMaps = [
     {
+        "title": "暂驻",
+        "mapCode": "AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA",
+        "replayCode": "CL4EDXnUQDZX_AKl28CM",
+        "cells": 26,
+        "ghosts": 2,
+        "keys": 0
+    },
+    {
         "title": "后路",
         "mapCode": "AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA",
         "replayCode": "CCe-0I-PJm9VxgD6r6PMlfnYAog",

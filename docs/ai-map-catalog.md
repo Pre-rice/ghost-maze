@@ -1,12 +1,15 @@
 <!-- current-rule-audit:start -->
 # AI 地图总目录
 
+2026-10-13 当前地图集10张：《暂驻》按用户明确肯定与上架决定新增，原九张地图及参考码保持。新评价见下方索引；下列2026-10-12九图审查段为当时快照。
+
 更新：2026-10-12。以下为新规则的有效审查；后面的旧资料保留真实评述，不能作为已通过当前规则的复用名单。
 
 鬼争位以是否仍能看到玩家新位置决定优先；地位相同者共同入格。用户最新明确：夹击死亡与非最优重合允许；全部并列最优解不得经过鬼重合。玻璃换成实墙仍须保持全部物理策略结果一致。
 
 | 已上架地图 | 原参考路线 | 当前最短 | 原动作与鬼位相同 | 设计边界 |
 | --- | --- | --- | --- | --- |
+| 2026-10-13 | [《暂驻》](https://ghostmaze.novic.cc/?map=AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA) | 39 | “好图”；设计很简洁，只有A字母门和一个0数字门，也有一定挑战性；明确要求加入地图集。未提供本题操作录制或参考使用情况。 | [记录](../../ghost-maze-ai/docs/temporary-stay-review-20261013.md) |
 | [《后路》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA) | 59 | 59 | 是 | 全部最优解通过 |
 | [《换岗》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMAEC4C10BaeArgOw0oSAiBcgpwAAAKABZrEDmOQCBGYCoCQEgAAAwIMIBA) | 68 | 68 | 是 | 全部最优解通过 |
 | [《换边》](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMILCFs0T4C0sDiMnEAQA) | 28 | 28 | 是 | 全部最优解通过 |
@@ -37,16 +40,16 @@
 
 </details>
 
-## 2026-10-13 新候选：《暂驻》
+## 2026-10-13 上架：《暂驻》
 
-26格、两鬼、一个按钮，无钥匙和玻璃，开局／实际入场当步中性。手工停位复用构造经有限门/通路对照、独立验证与精简，删冗余钥匙任务及门属性，保留规则外环。暂无用户评述与真人路线，未上架；[作品说明](../../ghost-maze-ai/examples/temporary-stay-20261013/README.md)。以下历史统计未批量重扫，不包含本题。
+26格、两鬼、一个按钮，无钥匙和玻璃，开局／实际入场当步中性。手工停位复用构造经有限门/通路对照、独立验证与精简，删冗余钥匙任务及门属性，保留规则外环。用户评价“好图”，认为设计简洁、也有一定挑战性，并明确要求上架；已加入地图集，尚无本题真人路线。[完整评述](../../ghost-maze-ai/docs/temporary-stay-review-20261013.md)与[作品说明](../../ghost-maze-ai/examples/temporary-stay-20261013/README.md)。以下历史统计未批量重扫，不包含本题。
 
 [正式站试玩](https://ghostmaze.novic.cc/?map=AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA)
 
 <details>
 <summary>参考解法（含答案）</summary>
 
-[回放](https://ghostmaze.novic.cc/?map=AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA&replay=CL4EDXnUQDZX_AKl28CM)。独立最短39；全部并列最优无重合、实际入场和码往返逐状态一致。先借另一鬼停位，按A隔开追击并打开出口，随后仍须主动引走出口前的暂驻鬼。精确位置监控证明真实停车而非经过；相关关系是全部无伤通关所需，参考具体转弯并非唯一走法。尚无人类质量评价，不升级为精妙标签。
+[回放](https://ghostmaze.novic.cc/?map=AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA&replay=CL4EDXnUQDZX_AKl28CM)。独立最短39；全部并列最优无重合、实际入场和码往返逐状态一致。先借另一鬼停位，按A隔开追击并打开出口，随后仍须主动引走出口前的暂驻鬼。精确位置监控证明真实停车而非经过；相关关系是全部无伤通关所需，参考具体转弯并非唯一走法。用户的真实肯定另记，不扩大为顿悟评价。
 
 </details>
 
