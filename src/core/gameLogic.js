@@ -622,6 +622,8 @@ export const GameLogic = {
             const startY = Math.min(ghost.y, playerPos.y);
             const endY = Math.max(ghost.y, playerPos.y);
             for (let y = startY; y < endY; y++) {
+                // 虚空不是可透视的通道，与玩家射线一样中断视线。
+                if (!layerDef.activeCells[y + 1]?.[ghost.x]) return false;
                 const wall = wallStates.h[y + 1][ghost.x];
                 if (wall && wall.type !== WALL_TYPES.EMPTY && wall.type !== WALL_TYPES.GLASS) {
                     if (!(wall.type === WALL_TYPES.LETTER_DOOR && wall.currentState === 'open')) {
@@ -633,6 +635,7 @@ export const GameLogic = {
             const startX = Math.min(ghost.x, playerPos.x);
             const endX = Math.max(ghost.x, playerPos.x);
             for (let x = startX; x < endX; x++) {
+                if (!layerDef.activeCells[ghost.y]?.[x + 1]) return false;
                 const wall = wallStates.v[ghost.y][x + 1];
                 if (wall && wall.type !== WALL_TYPES.EMPTY && wall.type !== WALL_TYPES.GLASS) {
                     if (!(wall.type === WALL_TYPES.LETTER_DOOR && wall.currentState === 'open')) {
