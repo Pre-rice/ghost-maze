@@ -146,8 +146,9 @@ export const GameLogic = {
         }
 
         if (isStairAction) {
-            // 玩家使用楼梯：让原层的鬼向玩家原位置移动
-            this.moveGhostsAfterStair(nextState, originalPlayerPos, mapDef, trails, ghostDiagnostics);
+            // 玩家使用楼梯：原层追离开的格子，到达层追玩家的新位置
+            const threatened = this.moveGhostsAfterStair(nextState, originalPlayerPos, mapDef, trails, ghostDiagnostics);
+            this.checkCollisions(nextState, mapDef, threatened);
         } else {
             // 普通移动：处理鬼的移动（包括跨楼梯追踪）
             const threatened = this.moveGhostsWithStairChase(nextState, originalPlayerPos, mapDef, trails, ghostDiagnostics);
@@ -327,12 +328,18 @@ export const GameLogic = {
         return intents;
     },
 
-    /** 使用楼梯后原层鬼只追向玩家离开的格子；同级争位共同入格。 */
+    /** 上下楼与移动一样推进一回合：原层追旧位置，到达层追新位置。 */
     moveGhostsAfterStair(state, originalPlayerPos, mapDef, trails = true, diagnostics = null) {
         const layer = originalPlayerPos.layer, ghosts = state.layerStates[layer].ghosts;
         const intents = this._getGhostMoveIntents(ghosts, originalPlayerPos, null, mapDef.layers[layer], state.layerStates[layer]);
         const result = this._resolveGhostMoveConflicts(ghosts, intents, trails);
         if (diagnostics) diagnostics.push(...result.conflicts.map(c => ({ ...c, layer })));
+        // 入场前已检查目标楼梯格的占位；到达层的鬼仍要正常追击一次。
+        const targetLayer = state.player.layer, targetGhosts = state.layerStates[targetLayer].ghosts;
+        const targetIntents = this._getGhostMoveIntents(targetGhosts, null, state.player, mapDef.layers[targetLayer], state.layerStates[targetLayer]);
+        const targetResult = this._resolveGhostMoveConflicts(targetGhosts, targetIntents, trails, state.player);
+        if (diagnostics) diagnostics.push(...targetResult.conflicts.map(c => ({ ...c, layer: targetLayer })));
+        return targetResult.captured;
     },
 
     /** 普通追击与楼梯入场一起争位，楼梯不绕过占位或冲突规则。 */
@@ -351,16 +358,28 @@ export const GameLogic = {
         return result.captured;
     },
 
-    /** 楼梯另一端的鬼只知道玩家离开的位置，没有操作后目标的视线。 */
+    /** 配对楼梯格互为相邻格；站上去即可互见，不能等离开后才追击。 */
     _getGhostStairChaseIntents(state, originalPlayerPos, mapDef) {
-        const stair = mapDef.stairs.find(s => s.x === originalPlayerPos.x && s.y === originalPlayerPos.y && s.layer === originalPlayerPos.layer);
-        if (!stair) return [];
-        const fromLayer = stair.direction === 'up' ? originalPlayerPos.layer + 1 : originalPlayerPos.layer - 1;
-        const paired = mapDef.stairs.find(s => s.x === stair.x && s.y === stair.y && s.layer === fromLayer && s.direction !== stair.direction);
-        if (!paired) return [];
-        return state.layerStates[fromLayer].ghosts.filter(g => g.x === paired.x && g.y === paired.y).map(ghost => ({
-            ghost, nextStep: { x: originalPlayerPos.x, y: originalPlayerPos.y }, seesAfter: false, fromLayer
-        }));
+        const playerAfter = state.player;
+        const findOpposite = pos => {
+            const stair = mapDef.stairs.find(s => s.x === pos.x && s.y === pos.y && s.layer === pos.layer);
+            if (!stair) return null;
+            const fromLayer = stair.direction === 'up' ? pos.layer + 1 : pos.layer - 1;
+            const paired = mapDef.stairs.find(s => s.x === stair.x && s.y === stair.y && s.layer === fromLayer && s.direction !== stair.direction);
+            return paired ? { fromLayer, paired } : null;
+        };
+        const before = findOpposite(originalPlayerPos), after = findOpposite(playerAfter);
+        const intents = new Map();
+        // 新位置优先：跨层鬼能直接看到站在配对端点的玩家。
+        for (const [opposite, target, seesAfter] of [[after, playerAfter, true], [before, originalPlayerPos, false]]) {
+            if (!opposite) continue;
+            const { fromLayer, paired } = opposite;
+            for (const ghost of state.layerStates[fromLayer].ghosts) {
+                if (ghost.x !== paired.x || ghost.y !== paired.y || intents.has(ghost)) continue;
+                intents.set(ghost, { ghost, nextStep: { x: target.x, y: target.y }, seesAfter, fromLayer });
+            }
+        }
+        return [...intents.values()];
     },
 
     /**
