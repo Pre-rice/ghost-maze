@@ -6,6 +6,7 @@ import { EditorDocument } from './editor/editorSession.js';
 import * as InputHandler from './inputHandler.js';
 import * as LayerManager from './layerManager.js';
 import { mapURL } from './shareLinks.js';
+import { SolutionDialog } from './solver/solutionDialog.js';
 
 class EditorApp extends CanvasApp {
     constructor() {
@@ -21,6 +22,7 @@ class EditorApp extends CanvasApp {
         this.resetGridsBtn = document.getElementById('confirm-reset-grids-btn');
         this.clearGridsBtn = document.getElementById('confirm-clear-grids-btn');
         this.clearCancelBtn = document.getElementById('confirm-clear-cancel-btn');
+        this.solverDialog = new SolutionDialog({ onReplay: ({ href }) => location.assign(href + '&solve=1') });
         this.bindUI();
         const code = new URLSearchParams(location.search).get('map');
         if (!code || !this.loadFromShareCode(code)) this.syncDocument();
@@ -45,6 +47,7 @@ class EditorApp extends CanvasApp {
         on('editor-initial-health', event => { this.editorDoc.initialHealth = Number(event.target.value); this.updateURL(); }, 'change');
         on('editor-map-size-input', () => this.resizeAndClearEditor(), 'change');
         on('play-edited-map-btn', () => this.playEditedMap());
+        on('solve-edited-map-btn', () => this.solveEditedMap());
         on('clear-map-btn', () => this.clearEditorMap());
         on('edit-type-regular-btn', () => this.attemptSetEditorMode('regular'));
         on('edit-type-free-btn', () => this.attemptSetEditorMode('free'));
@@ -52,7 +55,7 @@ class EditorApp extends CanvasApp {
         on('layer-mode-multi-btn', () => this.setLayerMode(true));
         on('layer-add-btn', () => this.addLayer()); on('layer-remove-btn', () => this.removeLayer());
         document.querySelectorAll('.tool-btn').forEach(btn => btn.addEventListener('click', () => this.setEditorTool(btn.id.split('-')[1])));
-        window.addEventListener('keydown', event => InputHandler.handleEditorKeyPress(this, event));
+        window.addEventListener('keydown', event => { if (!this.solverDialog.open) InputHandler.handleEditorKeyPress(this, event); });
         const bindings = { mousedown: 'handleCanvasMouseDown', mousemove: 'handleCanvasMouseMove', mouseup: 'handleCanvasMouseUp', mouseleave: 'handleCanvasMouseLeave' };
         for (const [event, method] of Object.entries(bindings)) this.canvas.addEventListener(event, e => { e.preventDefault(); InputHandler[method](this, e); });
         for (const event of ['contextmenu', 'dragstart', 'selectstart']) this.canvas.addEventListener(event, e => e.preventDefault());
@@ -87,6 +90,11 @@ class EditorApp extends CanvasApp {
         const url = result.success ? mapURL(result.code, { editor: true }) : new URL('editor.html', location.href).toString();
         if (url !== location.href) history.replaceState({}, '', url);
         document.getElementById('editor-home-btn').href = result.success ? mapURL(result.code) : './';
+    }
+    solveEditedMap() {
+        const result = this.generateShareCode();
+        if (!result.success) { this.showToast(result.error, 3000, 'error'); return; }
+        this.solverDialog.show(this.editorDoc.toMapData(), result.code);
     }
     playEditedMap() {
         const result = this.generateShareCode();

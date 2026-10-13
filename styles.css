@@ -806,3 +806,13 @@ display: none !important;
 
 .map-actions { display: flex; gap: 10px; }
 .map-actions button { flex: 1; }
+
+/* 最优解：每行一个回放入口 */
+.solver-dialog { width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); box-sizing: border-box; padding: 28px; border: 0; border-radius: 12px; background: var(--container-bg); color: var(--text-color); box-shadow: 0 12px 48px rgba(0,0,0,.25); }
+.solver-dialog::backdrop { background: rgba(0,0,0,.6); }
+.solver-dialog h2 { margin: 0 0 14px; }
+.solver-scope { color: var(--secondary-text-color, var(--text-color)); font-size: .9em; }
+.solver-routes { display: flex; flex-direction: column; gap: 12px; max-height: 45dvh; overflow-y: auto; }
+.solver-routes a { display: block; padding: 8px 4px; color: var(--primary-color); }
+.solver-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.solver-buttons button { flex: 1; white-space: nowrap; }

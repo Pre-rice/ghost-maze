@@ -9,6 +9,7 @@ import { validateMapData } from './core/mapDataUtils.js';
 import { generateFullMaze } from './core/mazeGenerator.js';
 import { computeGameView, pruneTrails } from './view/viewSlice.js';
 import { mapURL } from './shareLinks.js';
+import { SolutionDialog } from './solver/solutionDialog.js';
 import * as InputHandler from './inputHandler.js';
 import * as UI from './ui.js';
 import * as LayerManager from './layerManager.js';
@@ -28,10 +29,25 @@ class GhostMazeGame extends CanvasApp {
         });
         this.dpad = { element: document.getElementById('dpad-controls'), grip: document.getElementById('dpad-center'),
             isDragging: false, isResizing: false, startX: 0, startY: 0, initialLeft: 0, initialTop: 0, initialDist: 0, currentScale: 1 };
+        this.solverDialog = new SolutionDialog({
+            onOpen: () => { this.stopAutoMove(); this.pauseReplay(); this.updateDpadVisibility(); },
+            onClose: () => this.updateDpadVisibility(),
+            onReplay: ({ code, mapCode }) => {
+                const route = ReplaySerializer.loadFromShareCode(this.controller.mapData, code);
+                if (!route.success) { this.showToast(route.error, 4000, 'error'); return; }
+                this.openReplay(this.controller.mapData, route.actions, mapCode, code);
+                this.returnToSolutions = true;
+            }
+        });
         this.bindUI(); this.showInitialMessage(); this.updateHistoryButtons(); this.updateDpadVisibility();
         const params = new URLSearchParams(location.search), code = params.get('map'), replayCode = params.get('replay');
         if (replayCode && !code) this.showToast('加载回放需要链接中包含地图码。', 5000, 'error');
-        else if (code) this.loadFromShareCode(code, replayCode);
+        else if (code) {
+            this.loadFromShareCode(code, replayCode);
+            if (params.get('solve') === '1' && this.replay) {
+                this.solverDialog.restore(this.controller.mapData, code); this.returnToSolutions = true;
+            }
+        }
     }
     get activeController() { return this.replay || this.controller; }
     getGameView() {
@@ -59,6 +75,7 @@ class GhostMazeGame extends CanvasApp {
         for (const id of ['death-reset-btn', 'game-over-replay-btn', 'win-replay-btn']) on(id, () => this.resetCurrentMap());
         on('revive-btn', () => this.revivePlayer());
         on('watch-replay-btn', () => this.watchReplay());
+        on('solve-map-btn', () => this.solveMap());
         on('win-watch-replay-btn', () => this.watchReplay());
         on('replay-play-btn', () => this.replayPlaying ? this.pauseReplay() : this.playReplay());
         on('replay-prev-btn', () => this.seekReplay(this.replay.currentStep - 1));
@@ -76,6 +93,7 @@ class GhostMazeGame extends CanvasApp {
         });
         on('replay-close-btn', () => this.closeReplay());
         window.addEventListener('keydown', event => {
+            if (this.solverDialog.open) return;
             if (document.getElementById('new-map-overlay').style.display === 'flex') {
                 if (event.key === 'Escape') this.closeNewMapOptions();
                 return;
@@ -128,6 +146,7 @@ class GhostMazeGame extends CanvasApp {
         const checked = validateMapData(mapData);
         if (!checked.valid) { this.showToast(checked.error, 4000, 'error'); return false; }
         this.closeReplay(false); this.stopAutoMove();
+        this.solverDialog.reset(code);
         const result = this.controller.startGame(checked.mapData);
         if (!result.success) { this.showToast(result.error, 4000, 'error'); return false; }
         const encoded = code ? { success: true, code } : this.generateShareCode();
@@ -150,7 +169,7 @@ class GhostMazeGame extends CanvasApp {
         }
         return this.startGame(result.data.mapData, code);
     }
-    processAction(action) { return this.state === GAME_STATES.PLAYING ? this.controller.processAction(action) : null; }
+    processAction(action) { return this.state === GAME_STATES.PLAYING && !this.solverDialog.open ? this.controller.processAction(action) : null; }
     movePlayer(dx, dy) { return this.processAction({ type: 'MOVE', payload: { dx, dy } }); }
     useStair() { return this.processAction({ type: 'USE_STAIR' }); }
     revivePlayer() { this.controller.revive(); }
@@ -177,8 +196,7 @@ class GhostMazeGame extends CanvasApp {
         const displayedPlayer = this.getGameView().player;
         UI.updateProximityWarning({ ghosts: current.layerStates[displayedPlayer.layer].ghosts, player: displayedPlayer,
             ghostProximityDisplay: document.getElementById('ghost-proximity-display') });
-        const outcome = this.replay ? '' : current.isWon ? ' · 已通关' : current.isDead ? ' · 已死亡' : '';
-        document.getElementById('mode-display').textContent = (this.replay ? '回放 · ' : '') + (mode === 'exploration' ? '探索模式' : '死亡循环') + outcome;
+        document.getElementById('mode-display').textContent = (this.replay ? '回放 · ' : '') + (mode === 'exploration' ? '探索模式' : '死亡循环');
     }
     updateHistoryButtons() {
         const disabled = !!this.replay || !this.controller.currentGameState;
@@ -187,7 +205,8 @@ class GhostMazeGame extends CanvasApp {
         for (const id of ['rewind-btn', 'death-rewind-btn', 'game-over-rewind-btn']) document.getElementById(id).disabled = disabled || !this.controller.canRewind;
         const replayButton = document.getElementById('watch-replay-btn');
         replayButton.disabled = !this.controller.mapData;
-        replayButton.hidden = !!this.replay || this.state === GAME_STATES.WON;
+        replayButton.hidden = !!this.replay;
+        document.getElementById('solve-map-btn').disabled = !this.controller.mapData;
     }
     handleUndo() { this.stopAutoMove(); const result = this.controller.undo(); if (!result.ok && result.error) this.showToast(result.error, 2000, 'error'); }
     handleSave() { const result = this.controller.save(); this.showToast(result.ok ? '已在第 ' + result.step + ' 步存档' : result.error, 2000, result.ok ? 'success' : 'error'); }
@@ -203,7 +222,7 @@ class GhostMazeGame extends CanvasApp {
         document.getElementById('map-actions').hidden = !!this.replay;
         document.getElementById('generate-map-btn').hidden = !!this.replay;
         document.getElementById('play-options-controls').hidden = !!this.replay && !exploration && !mobile;
-        UI.updateDpadVisibility(this.state !== GAME_STATES.PLAYING || document.getElementById('new-map-overlay').style.display === 'flex');
+        UI.updateDpadVisibility(this.state !== GAME_STATES.PLAYING || document.getElementById('new-map-overlay').style.display === 'flex' || this.solverDialog.open);
     }
     stopAutoMove() {
         clearInterval(this.autoMoveInterval); this.autoMoveInterval = null;
@@ -245,6 +264,10 @@ class GhostMazeGame extends CanvasApp {
         const route = ReplaySerializer.generateShareCode(active.mapData, this.replay ? active.history.actions : this.controller.actions);
         return route.success ? { success: true, map: map.code, replay: route.code } : route;
     }
+    solveMap() {
+        if (this.replay || !this.controller.mapData) return;
+        this.solverDialog.show(this.controller.mapData, this.mapCode);
+    }
     watchReplay() {
         const result = this.replayCodes();
         if (!result.success) { this.showToast(result.error, 3000, 'error'); return; }
@@ -252,6 +275,7 @@ class GhostMazeGame extends CanvasApp {
         this.openReplay(this.activeController.mapData, actions, result.map, result.replay);
     }
     openReplay(mapData, actions, mapCode, replayCode) {
+        this.returnToSolutions = false;
         this.pauseReplay(); this.seekAbort?.abort(); this.stopAutoMove(); this.stopAnimationLoop(); this.hideAllOverlays();
         if (!this.replay) this.playVision = this.debugVision;
         const mapDefinition = new MapDefinition(mapData), timeline = new ActionHistory(mapDefinition, actions);
@@ -319,6 +343,7 @@ class GhostMazeGame extends CanvasApp {
     }
     closeReplay(sync = true) {
         if (!this.replay) return;
+        const returnToSolutions = this.returnToSolutions; this.returnToSolutions = false;
         this.pauseReplay(); this.seekAbort?.abort(); this.replay = null;
         this.debugVision = this.playVision; document.getElementById('full-vision-toggle').checked = this.debugVision;
         document.getElementById('replay-controls').hidden = true; document.getElementById('play-history-controls').hidden = false;
@@ -327,6 +352,7 @@ class GhostMazeGame extends CanvasApp {
             if (this.controller.currentGameState.isWon) this.showOutcome('win', this.controller._winStats().text);
             else if (this.controller.currentGameState.isDead) { const stats = this.controller._deathStats(); this.showOutcome(stats.overlay, stats.message); }
             this.updateURLWithShareCode(this.mapCode); this.updateEditorLink();
+            if (returnToSolutions) this.solveMap();
         }
     }
     loadReplayStep(replay, step) {
