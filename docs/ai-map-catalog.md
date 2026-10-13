@@ -27,6 +27,19 @@
 详细结果见 [边界审查](rule-boundaries-20261012.md)。
 <!-- current-rule-audit:end -->
 
+## 2026-10-13 新候选：《再借》
+
+21格、两鬼、一个A按钮，两反相A门与一普通门，无钥匙/数字门/玻璃，开局中性。左上无用格、突出出生格不保留；已安置的鬼后续还需重新启用。暂无用户评价或真人路线，未加入现十张地图集；[作品说明](../../ghost-maze-ai/examples/recruited-return-20261013/README.md)。
+
+[正式站试玩](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA)
+
+<details>
+<summary>参考解法（含答案）</summary>
+
+[回放](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA&replay=APJU70bDyl3eIDK1Wg8M1w)。独立最短44；全部最优无重合。精确完整状态核验确认原下鬼真实静止普通门西侧后，在已按至少两次A时重新移动，帮助原上鬼真的受挡停内角，其后再按A；所有通关至少三A，不说全部路线恰好三按或参考唯一。编号/码/去目标/实际入场及网页关键局面通过。自动证据不代替人类新意或挑战评价。
+
+</details>
+
 ## 2026-10-13 新候选：《借舍》
 
 23格、两鬼、一个按钮，零钥匙；开局和实际入场中性，有安全观察窗。手工房间接替构造经过逐门对照，删两扇冗余门和无用支路、缩紧守卫区；用户评价“一般”，指出左上和突出出生格冗余，困鬼及二次引鬼没有新意或难点；删格对照支持冗余，见[复盘](../../ghost-maze-ai/docs/borrowed-room-review-20261013.md)。尚无真人路线，未加入现十张地图集。完整资料见[作品说明](../../ghost-maze-ai/examples/borrowed-room-20261013/README.md)。以下历史批量统计不含本题。
