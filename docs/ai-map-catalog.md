@@ -24,6 +24,19 @@
 详细结果见 [边界审查](rule-boundaries-20261012.md)。
 <!-- current-rule-audit:end -->
 
+## 2026-10-13 新候选：《暂驻》
+
+26格、两鬼、一个按钮，无钥匙和玻璃，开局／实际入场当步中性。手工停位复用构造经有限门/通路对照、独立验证与精简，删冗余钥匙任务及门属性，保留规则外环。暂无用户评述与真人路线，未上架；[作品说明](../../ghost-maze-ai/examples/temporary-stay-20261013/README.md)。以下历史统计未批量重扫，不包含本题。
+
+[正式站试玩](https://ghostmaze.novic.cc/?map=AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA)
+
+<details>
+<summary>参考解法（含答案）</summary>
+
+[回放](https://ghostmaze.novic.cc/?map=AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA&replay=CL4EDXnUQDZX_AKl28CM)。独立最短39；全部并列最优无重合、实际入场和码往返逐状态一致。先借另一鬼停位，按A隔开追击并打开出口，随后仍须主动引走出口前的暂驻鬼。精确位置监控证明真实停车而非经过；相关关系是全部无伤通关所需，参考具体转弯并非唯一走法。尚无人类质量评价，不升级为精妙标签。
+
+</details>
+
 ## 2026-10-13 《折返》：用户否决，不入地图集
 
 22格、两鬼、两钥匙，无按钮和玻璃，中性开局。38个求解器状态已纳入11图508状态的规划库，未训练、不是真人评述。用户评述：“太容易想到了，也没什么新意”（2026-10-13）；明确不入地图集，暂无真人路线；[作品说明](../../ghost-maze-ai/examples/returning-guard-20261013/README.md)。以下历史统计未重新扫描，不包含本题。
