@@ -12,4 +12,3 @@
 | research | 调研背景 | 出现具体问题时参考 |
 
 真实反馈不因归档消失，也不将亲缘图视为新独立好图。现在持续要用的经验在AI[方法](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/methodology.md)，人读摘要在本体[设计小册](../map-design-guide.md)。日常入口见[文档索引](../README.md)。
-
