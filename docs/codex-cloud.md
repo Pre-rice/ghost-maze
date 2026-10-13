@@ -1,81 +1,28 @@
-# Codex 云端迁移与交接
+# 云端接手、验收与资料保存
 
-2026-10-13 当前交付约定：地图与参考回放必须使用 `https://ghostmaze.novic.cc/`，Sites 仅用于站点改动预览。用户自行访问，不自动打开侧边页面；只确认 GitHub 推送结果，不检查正式站或部署状态。旧记录中的云端／Sites 地图链接属于历史证据，不再用于新交付。
+更新：2026-10-13。当前云端多仓库环境已运行，两个main的写入凭据已通过实际推送验证；此前“待创建环境”“缺写凭据”是历史状态，见[旧迁移全文](archive/worklogs/codex-cloud-before-reorganization-20261013.md)。
 
+## 接手当前任务
 
-2026-10-12 最新约定：正式站由 GitHub main 推送触发 Vercel 自动部署，已替代 Netlify，域名 ghostmaze.novic.cc 不变。用户已批准本轮界面发布，要求推送完成后直接继续主线，不检查正式站或部署状态。GitHub 的有效写授权须以实际推送验证，不能仅据 CLI 状态或公开仓库读取判断。 当前实例已通过 API 与两仓 main 的实际推送验证，本次更新已推送；不再缺本次写入授权。
+1. 保持同级ghost-maze与ghost-maze-ai，阅读两个AGENTS、本体[文档索引](README.md)和AI[当前状态](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/status.md)。设计前必读[方法](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/methodology.md)与[设计小册](map-design-guide.md)；按任务读[架构](architecture.md)。
+2. 核对两个main、未提交修改、AI引擎内容锁与私人资料，不回退已有工作。默认main，隔离分支先说明原因。
+3. Node.js22.21.1、Python3；本体不安装依赖，AI仓npm ci。运行npm run cloud:check，必须通过本体、AI、内容锁、原种子与11HTTP／代理检查，不写真人反馈。
+4. 本地联调从AI仓npm run cloud:serve -- 4206，入口/game/、/game/editor.html。需要实际公网预览时由本次环境取得地址，设置GHOST_MAZE_HOST=0.0.0.0和GHOST_MAZE_ORIGIN为真实协议＋主机后重启；localhost不冒充可访问链接。
 
-更新：2026-10-11。本文件同时服务游戏本体与 AI 工具。迁移准备与 Windows／Linux 验收已完成；用户已批准两仓 main 推送，线上网站已同步本次架构升级。真实云端环境仍需在用户账号内创建。
+当前共同规则锁为 `sha256:c588e3aeeef0fe67237ca78500d7299c3addd56afa45522d21449162faa207f4`；只有真实规则修改才更新锁并重验相关证书。原seed、历史地图、反馈与录制保持原件，不能为通过检查覆盖不同资料。
 
-## 用户需要做的操作
+## 产品入口与发布
 
-两仓已同步 GitHub `main`，推送与网站更新已完成。完整真人录制、未跟踪反馈和研究输出使用私人资料包；公开仓库保留既有源码历史、文档与六份已提交的反馈摘要。云端环境设为私人使用。
+地图与参考回放用https://ghostmaze.novic.cc/，地图集/maps.html，不打开用户侧边页。Sites仅用于站点改动预览。GitHub main推送触发Vercel部署，替代Netlify，域名未变；只核验实际推送，不检查正式站或部署。
 
-1. 在 ChatGPT 网页或桌面应用中选择 `Work in > Cloud > Select environment > Create environment`，连接 GitHub，同时选择 `Pre-rice/ghost-maze` 和 `Pre-rice/ghost-maze-ai`，选择 `Get started`。采用当前多仓库云端环境，不使用旧版单仓库环境。
-2. 上传准备好的 `cloud-data.zip`，将下面的环境准备指令交给云端设置对话。验收通过后保存设置并选择 `Publish`，等到 `Environment published` 再开始任务。
-3. 第一次任务使用本文件末尾的交接指令。以两个仓库的 `main` 为基线；每轮完成后明确报告是否已提交、是否已进入远端 `main`，不要把环境保存当作 Git 提交。
+目前无需API Key、训练服务或生产部署凭据。新地图按已授权任务设计与验证，只有用户明确选入才上架。当前任务是收尾与文档重整，报告后暂停，不由接手流程自动生成新图或开始训练。
 
-## 环境准备指令（可直接复制）
+## 私人资料与新任务
 
-```text
-准备鬼迷宫的多仓库云端环境。两个仓库都使用最新 main，保持同级目录，名称必须是 ghost-maze 和 ghost-maze-ai。不要复制另一套游戏规则，也不要启用历史 vendor/ghost-maze 子模块作为当前引擎。
+源码、当前说明、公开反馈摘要与证据通过Git保存；完整真人录制、未跟踪反馈、迁移资料与runs通过私人包保存，不公开上传私人原件。
 
-使用 Node.js 22.21.1 和 Python 3，无新增项目依赖。先阅读两仓 AGENTS.md 与 ghost-maze/docs/codex-cloud.md。游戏本体不用安装依赖，AI 仓运行 npm ci。
+恢复：在AI仓 `python3 scripts/restore-cloud-data.py <实际资料包路径>`，逐文件SHA-256核对，已有不同内容拒绝覆盖。新任务用最新资料包；需要保存环境安装或资料恢复流程时更新环境并重新发布，新任务仍需检查，环境保存不等于Git提交。
 
-我已上传 cloud-data.zip。在 AI 仓运行 python3 scripts/restore-cloud-data.py <实际上传路径>，它会核对每个文件并拒绝覆盖不同资料。然后运行 npm run cloud:check，必须通过本体测试、AI 测试、共同规则锁、原种子和 HTTP 入口检查。
+新增私人资料后：`python3 scripts/export-cloud-data.py artifacts/cloud-data-新日期或序号.zip`，使用新名，保留全部旧包与原件。导出会逐文件建清单并检查ZIP；按实际可用文件交付渠道提供，不能把只在临时云端存在称为用户已下载。
 
-把上述已验证命令记录到环境的 Install script；把“从 AI 仓运行 npm run cloud:serve -- 4206，确认 /game/ 可用，停止时关闭本任务服务”记录到 Start skill。需要浏览器预览代理时设置 GHOST_MAZE_HOST=0.0.0.0；取得真实预览地址后，将 GHOST_MAZE_ORIGIN 设为该地址的协议和主机，不包含路径，重启服务并确认打开页面和留档接口可用。否则保持默认本地监听。服务只从已核验种子构建入口，不修复旧跨层地图。
-
-网络选择 Package managers；下载指定 Node.js 版本时额外允许 nodejs.org。当前开发、求解、回放和数据制备不需要 API Key，不配置 Langfuse、训练服务或生产部署凭据。
-
-检查资料恢复、目录结构和服务入口。报告真实通过与未完成项后停止，等我发布环境；不要擅自改页面、重新生成目录、修复旧题或开始训练。
-```
-
-当前云端会自行准备依赖；上述指令用于把已核验流程带入环境的 Install script 和 Start skill，不要求用户手写 Bash 脚本。
-
-## 当前成果和关键决策
-
-- 游玩、AI 搜索／训练数据制备、回放使用同一游戏规则。当前共同规则内容锁仍为 `sha256:5cbe15023dbe0892c58febad1e399cf8cc81266a09c57cca210777124f2ffec5`。
-- 有效移动、按钮、楼梯都计步；无体力。历史只保存操作，局面临时缓存；存档只在本局，不写本机存储。
-- 探索复活保留物理变化与累计路线；死亡循环只保留最后轮，复活保留已探索区域。加载回放时，探索替换路线视野，死亡循环加一并与原探索取并集。
-- 编辑器独立；主页只读地图。主题只有深／浅，首次按系统偏好选取；桌面隐藏方向面板和开关，手机保留。
-- 文案使用“重置地图”“全图视野”“加载该步”。不增加分类、分享按钮、解法录制框或额外入口。地图与回放直接复制地址栏链接；回放进入时暂停。随机地图先打开参数设置。
-- 新分享码无格式版本，无旧版兼容。回放地址必须同时包含原地图码和操作码。17 张历史非法／冲突图保留原件和原因，不猜测修复。
-- [地图总目录](ai-map-catalog.md)：384 份来源、336 张去重地图、319 张合法地图、291 条当前规则参考通关路线；14 份真人路线迁移已核验。这些数字不代表正式作品数量、人类质量或全部最短路线。
-- AI 尚未训练模型；“可解、必要性、解长、搜索成本”均不能代替人类趣味验收。当前迁移不恢复出题或训练。
-
-完整产品说明见[交付记录](architecture-delivery-20261011.md)，协议见[分享码机制](share-codes.md)。旧带日期记录中的体力、旧码、自动播放与验收数字仅为历史证据。
-
-## 资料与备份
-
-两个 Git 仓库包含运行所需源码、示例、研究文档与测试。`cloud-data.zip` 另带真人原始录制、反馈、迁移结果、研究输出、目录核验与架构验收证据，全部逐文件 SHA-256 校验，恢复不会覆盖不同文件。
-
-此前 AI 分支已提交六份原始反馈摘要，研究文档也引用真实评价；本次获批推送已保留这些历史与摘要。私人资料包用于保存完整原始录制、未跟踪反馈和研究输出，公开仓库的既有历史继续保留。
-
-旧 `codex/p2-button-timing` 工作树的代码和资料在资料包 `archives/cloud-migration/button-timing/`，所有已有 Git 分支历史在 `archives/cloud-migration/history/` 的 bundle 中。它们是历史档案，不合入当前玩法或作为另一套运行引擎。需要继续旧分支工作时先说明范围。
-
-迁移前完整工作副本和 Git 历史另存 `local-backup.zip`，包括本机 Codex 通信诊断和旧 guard 脚本。它只保留本地，不上传云端或公开 GitHub。缓存、node_modules、虚拟环境和本机账号配置不进入资料包。
-
-Git 属性保留文件原始字节，避免 Windows 与 Linux 的换行转换破坏规则锁、录制来源哈希和证据。以后真实规则修改才更新内容锁，不能为了让检查变绿而重写锁或原始资料。
-
-源码更新用 Git；新增真人录制和反馈需要明确导出保存，不能只留在临时云端任务。新任务从已发布环境另起工作区，既有任务保留自己的状态；更新公共资料或安装流程后应重新发布环境并在新任务检查。
-
-云端任务新增或修改私人资料后，AI 应运行 `python3 scripts/export-cloud-data.py artifacts/cloud-data-日期.zip`，提供下载，使用新文件名保留旧包。新任务用同一个恢复工具导入最新包，或在环境设置恢复后重新发布。导出与恢复使用同一清单格式，原录制和历史档案一并保留；用户不需要手工挑文件。
-
-## 验收与日常运行
-
-在 AI 仓执行 `npm run cloud:check`，统一核验两个仓库、锁、种子及八个 HTTP 入口。启动 `npm run cloud:serve -- 4206` 后，游玩入口为 `/game/`，编辑器为 `/game/editor.html`。
-
-代理保留或改写 Host 均已提供明确地址配置；`cloud:check` 验证这两种请求及留档来源校验。真实预览地址随云端任务变化，由 Start skill 在每个任务取得并设置，不把本次域名固定到环境变量或源码中。
-
-浏览器主要检查 UI 或规则升级；日常每张 AI 地图用共同规则证书、合法性和新码往返核验，避免重复整段浏览器通关。预览地址的端口由当前云端任务给出，本机 `127.0.0.1:4206` 链接不会自动成为公网地址。
-
-## 第一次云端任务指令（可直接复制）
-
-```text
-接手鬼迷宫。先读两个仓库的 AGENTS.md、游戏本体 docs/codex-cloud.md 和 docs/architecture-delivery-20261011.md。核对两个 main、共同规则锁和迁移资料，运行 npm run cloud:check，启动 cloud:serve 并给我可访问的试玩入口。
-
-只报告当前状态、验收结果和实际缺失项，不擅自改页面、生成地图或训练。默认以 main 开发，完成的改动及时提交回 main；需要隔离分支先说明理由。不要回退已有修改或替换已确认方案；你的判断需要有依据，改变决定时解释此前与现在的理由。只向我呈现产品状态和决策需要的信息，不报告代码细节。
-```
-
-官方依据：[当前 Codex Cloud](https://learn.chatgpt.com/docs/cloud)、[当前多仓库环境与保存机制](https://learn.chatgpt.com/docs/environments/cloud-environments)。本地 Linux 全新检出可以验证便携性，不能代替用户账号内的首次云端环境验收。
+旧按钮时机分支与Git bundle在archives/cloud-migration，旧LLM资料在AI docs/archive；不作为另一套运行引擎或当前任务。初始云端环境准备指令、迁移源与本机备份边界保留在旧迁移全文，按需追溯。

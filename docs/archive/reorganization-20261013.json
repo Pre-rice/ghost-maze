@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-13",
+  "purpose": "当前入口与历史过程分开；旧事实不删除，仅调整资料位置及相对链接。完整原字节另在私人资料与对应Git前一提交保留。",
+  "records": [
+    {
+      "repository": "ghost-maze",
+      "oldPath": "AGENTS.md",
+      "archivePath": "docs/archive/worklogs/agents-before-reorganization-20261013.md",
+      "operation": "snapshot",
+      "originalSha256": "6423eb8e2316e9eabdca4d410ae385c9ff26816a684bb9d92eb05480c9869d8e",
+      "archivedSha256": "a3ba101dd1320be07d3b6e919605c0a3fb63fcfda07c577f2bb10a7cebb37305"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "README.md",
+      "archivePath": "docs/archive/worklogs/readme-before-reorganization-20261013.md",
+      "operation": "snapshot",
+      "originalSha256": "1dd102fbef0699337aeeafc8ff8a95b8cddb95cc0efb071d7b7e3c2e0eda092e",
+      "archivedSha256": "344913a6ad31e5ddb924490e1e3c987e3e00f24903977507d3c2d0bd7775d922"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "docs/codex-cloud.md",
+      "archivePath": "docs/archive/worklogs/codex-cloud-before-reorganization-20261013.md",
+      "operation": "snapshot",
+      "originalSha256": "cf05730f74faaab28bb93d2245989a402ff2f70c9dbcfd2a9520801a2ecc10a4",
+      "archivedSha256": "2160bf25f2a42f4063536db37dde73151e73e8d8c36b235b690c9f82c6554aeb"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "docs/ai-puzzle-generation-research.md",
+      "archivePath": "docs/archive/research/ai-puzzle-generation-research.md",
+      "operation": "move",
+      "originalSha256": "0f0c5fe92d4bbdf4a2e02be7fb9c12850b0a7967856089339b6af76e0656f52a",
+      "archivedSha256": "29781d86c1fc2d496018fe4689a4fbdfaba8632091e042741c9885f883c5ae32"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "docs/ai-training-plan.md",
+      "archivePath": "docs/archive/plans/ai-training-plan.md",
+      "operation": "move",
+      "originalSha256": "e08e78d756acf7a4388e403055adc207ae245cb818102d3b395c4d72e08599f1",
+      "archivedSha256": "bac93f55f886c45b6f136e08138492518c2262b94dd55ec126cb10f706a7b985"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "docs/architecture-delivery-20261011.md",
+      "archivePath": "docs/archive/delivery/architecture-delivery-20261011.md",
+      "operation": "move",
+      "originalSha256": "acc99a38424c316eab08d173cfd667957fe42fd68c25a91c8318124a8358a337",
+      "archivedSha256": "3b33d01eccbb08e6de394631cb189a6be239a24083ba15c9f0139bb93916b2b7"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "docs/architecture-diagnosis-20261010.md",
+      "archivePath": "docs/archive/delivery/architecture-diagnosis-20261010.md",
+      "operation": "move",
+      "originalSha256": "04f8a3d61a0c2216dc47bc44751685d2dae0f9389fc92974c2fd0006ed08478b",
+      "archivedSha256": "ad435d24f8ecc72f67fa8a9b772a6566c8e597bf447ad2d9c9de705aa93b3dd0"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "docs/architecture-execution-plan-20261011.md",
+      "archivePath": "docs/archive/plans/architecture-execution-plan-20261011.md",
+      "operation": "move",
+      "originalSha256": "d7333a85356660c7dd582bc55da0ded62abbf8557b6ad2512e552663a2dbba8a",
+      "archivedSha256": "644a1eb33e9df310c2f86dc7b144a12637dba5095eba36376c4e391ac61143ef"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "docs/protocol-v2.md",
+      "archivePath": "docs/archive/delivery/protocol-v2.md",
+      "operation": "move",
+      "originalSha256": "af84e94a2b80aa012fa9a8285999a4f58e12e8223075ecb2676226b78fd6f2d1",
+      "archivedSha256": "ebd8690eae12ca4fe4968ce000c7a004ad3007807c373b8e2a80d3008a0702c5"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "docs/render-share-fix-20261009.md",
+      "archivePath": "docs/archive/delivery/render-share-fix-20261009.md",
+      "operation": "move",
+      "originalSha256": "152e29f7e21b877dd4f62891e44a62318819569bc6556108dba5454a6c7f9abe",
+      "archivedSha256": "94fb9aa4f56d771814b7d0339ce2b65b457be1bd7e777c4d5dbf94551babaab1"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "docs/rule-boundaries-20261012.md",
+      "archivePath": "docs/archive/reviews/rule-boundaries-20261012.md",
+      "operation": "move",
+      "originalSha256": "fb59d9d3a7ab17fe0b82096a0d78b01a509dd383b6a2d7deea5684b2571cf5e8",
+      "archivedSha256": "878f8ae1e369421a3ecf59e302f4dfc6e7beba971ce2489bb4ad235a9702e6a7"
+    },
+    {
+      "repository": "ghost-maze",
+      "oldPath": "docs/ui-gallery-preview-20261012.md",
+      "archivePath": "docs/archive/delivery/ui-gallery-preview-20261012.md",
+      "operation": "move",
+      "originalSha256": "a53c32ee8c36a0385932f34a63100c0e73dce0e0c07b4fcaadb5ff9913c70160",
+      "archivedSha256": "aeecdda9f7eb2f9c4dba7da7b38e235a7afaf32a2d43f28a6971c3dd7017f665"
+    }
+  ],
+  "rootMarkdown": {
+    "beforeRootMarkdown": 12,
+    "afterRootMarkdown": 6
+  }
+}

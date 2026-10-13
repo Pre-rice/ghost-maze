@@ -1,3 +1,5 @@
+> 历史资料：保留整理前的判断与过程，不代表当前任务或状态。现行入口见[文档索引](../../README.md)。
+
 # 鬼争位与边界机制审查
 
 ## 2026-10-12 最新标准与《借影》维护
@@ -10,7 +12,7 @@
 
 验收：本体 159、AI 131 项，规则锁与原种子、11 HTTP 入口和代理来源全部通过；维护图地图码／操作码往返与按钮依附通过。浏览器14项通过、零脚本错误，核对了控距安置关键步与59步终局。私人预览已更新，当前 main 按已有发布授权同步，不检查 Vercel 或正式站。没有新谜题生成或模型训练。
 
-[维护版与原解法](../../ghost-maze-ai/examples/borrowed-shelter-overlapfix-20261012/README.md)；[最新审查](../../ghost-maze-ai/data/manifests/optimal-boundaries-20261012.json)。
+[维护版与原解法](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/borrowed-shelter-overlapfix-20261012/README.md)；[最新审查](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/optimal-boundaries-20261012.json)。
 
 
 更新：2026-10-12。两仓继续本地 main；私人预览已更新，正式仓库推送暂留到受影响地图的处理决定明确之后。没有访问 Vercel 或正式站。
@@ -61,7 +63,7 @@
 
 私人预览：https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site。用户自行访问，不打开侧边 Page。仅进行了受影响地图的维护对照，没有新谜题交付或模型训练。
 
-批量证据：[规则审查清单](../../ghost-maze-ai/data/manifests/rule-boundaries-20261012.json)，复用范围：[当前地图库](../../ghost-maze-ai/data/manifests/puzzle-library-policy.json)。历史资料保留，不重写旧证书。
+批量证据：[规则审查清单](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/rule-boundaries-20261012.json)，复用范围：[当前地图库](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/puzzle-library-policy.json)。历史资料保留，不重写旧证书。
 
 ## 重合回放（2026-10-12）
 

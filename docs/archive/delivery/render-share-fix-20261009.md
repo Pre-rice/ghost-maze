@@ -1,3 +1,5 @@
+> 历史资料：保留整理前的判断与过程，不代表当前任务或状态。现行入口见[文档索引](../../README.md)。
+
 # 补角渲染与分享加载修复（2026-10-09）
 
 本次修复针对地图外散落方块、字母门打开后的方块残留，以及分享加载对外部压缩库的等待。只调整渲染与压缩方式，地图、游戏逻辑和分享码 v3 字节布局保持原样。
@@ -32,7 +34,7 @@
 
 [打开本体修复预览](http://127.0.0.1:4184/game/?map=Y-bgYGZlSGFkZGJlkBORkeFhYGACcpgYmJlYGR2ZGBmcWFiYnVYBwZJV-71W_A0VDYWBuj8g4bpVK1atBPMDuBwZnIDQkdGJAQA)。4178 仍保留旧入口，用户原页面未刷新。预览使用 AI 服务可选 webGameRoot 指向本体，录制核验仍由固定参考引擎进行；此预览录制只写独立 QA 目录。
 
-证据：[浏览器测量](../../ghost-maze-ai/runs/wall-share-20261009/browser-report.json)、[压缩对照](../../ghost-maze-ai/runs/wall-share-20261009/compression-profiles.json)、[修复前截图](../../ghost-maze-ai/runs/wall-share-20261009/baseline-verified.png)、[修复后截图](../../ghost-maze-ai/runs/wall-share-20261009/preview-verified.png)。复查脚本在同目录，preview.mjs 可重新启动预览服务。
+证据：[浏览器测量](../../../../ghost-maze-ai/runs/wall-share-20261009/browser-report.json)、[压缩对照](../../../../ghost-maze-ai/runs/wall-share-20261009/compression-profiles.json)、[修复前截图](../../../../ghost-maze-ai/runs/wall-share-20261009/baseline-verified.png)、[修复后截图](../../../../ghost-maze-ai/runs/wall-share-20261009/preview-verified.png)。复查脚本在同目录，preview.mjs 可重新启动预览服务。
 
 ## 复测补充（2026-10-10，4194 上的 8×8 自由地图）
 
