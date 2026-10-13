@@ -19,7 +19,7 @@
 | 9 | [《后路》](#9-后路) | 2026-10-12 | 23 / 2 / 3 | A/B 字母门、普通门、钥匙门、0 门 |
 | 10 | [《暂驻》](#10-暂驻) | 2026-10-13 | 26 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇 0 门 |
 | 11 | [《再借》](#11-再借) | 2026-10-13 | 21 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇普通门 |
-| 12 | [《楼间》](#12-楼间) | 2026-10-13 | 11 / 1 / 0 | 两层、两对楼梯、一个 A 按钮、两扇反相 A 门、一扇普通门 |
+| 12 | [《楼间》](#12-楼间) | 2026-10-13 | 11 / 1 / 0 | 两层、两对楼梯、两个同相 A 门、一个 A 按钮（10-14 修补） |
 
 ## 1. 错位
 
@@ -133,15 +133,17 @@
 
 ## 12. 楼间
 
-**当前状态：** 楼梯机制修正后，原参考第3步死亡，原图无伤无复活无解。原图、上架决定和真实简评保留；下列设计思想为生成时依据，不能作为当前有效入门题。等待修补处理，见[规则影响](archive/inspections/stair-adjacency-20261013.md)。
+**当前状态：** 2026-10-14 完成楼梯规则修补，保留两层11格及原入门位置，最短19且唯一。原版地图与证据另存，原26步参考不能用于新规则。修补版未收到新的真人评价。
 
-**设计思想：** 先借楼梯把鬼移离上层，原开关的楼梯另一端却留下危险；换另一处楼梯重新带它上来，再改变下层停位，让原开关恢复安全。用少量元件介绍玩家与鬼的跨层关系。
+**设计思想：** 开A同时释放上层鬼，直接前往目标会被追到。先下楼绕到另一处楼梯，从另一端重新引近鬼，再下楼把它带走；沿下层返回原楼梯，转向上层目标。鬼当步正常行动，每回合只走一格，没有上楼停顿。
 
-**关键发现：** 设计者预期是“清空一层之后，还要安排楼梯另一端”；你将它定位为基础多层入门关，没有明确确认强顿悟或高挑战。至少三次搬运的机械必要性不等于精妙。
+**关键发现：** 预期是利用不同楼梯改变接近鬼的方向与它的楼层；所有通关都需让鬼跨层至少两次。你将原版定位为基础多层入门关，未确认强顿悟或高挑战；该评价不扩大为修补版已被重新认可。
 
-**你的简评：** “基础的多层谜题”，适合作为简单起始作品，让玩家了解楼梯基本机制；明确要求上架。后续希望最精妙的部分依赖楼梯实现。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/stair-relocation-review-20261013.md)。
+**原版简评：** “基础的多层谜题”，适合作为简单起始作品，让玩家了解楼梯基本机制；明确要求上架。后续希望最精妙部分依赖楼梯实现。[原评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/stair-relocation-review-20261013.md)。
 
-[试玩](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA) · [参考解法](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA&replay=OmPml1EpstcImB8UeA)
+**修补依据：** 移动初始鬼后必须同时关上目标门，否则四步直达；普通门去除仍保持19步与原最优动作，已删去。不改原版评述，不新增质量样本。[原件与修补说明](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/stair-relocation-repair-20261014/README.md)。
+
+[试玩](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA) · [参考解法](REhttps://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA)
 
 ## 怎样继续使用这份小册
 

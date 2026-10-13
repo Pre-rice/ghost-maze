@@ -90,10 +90,13 @@ export const aiMaps = [
     },
     {
         "title": "楼间",
-        "mapCode": "AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA",
-        "replayCode": "OmPml1EpstcImB8UeA",
+        "mapCode": "AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA",
+        "replayCode": "NnxkDKcpsteXxcA",
         "cells": 11,
         "ghosts": 1,
-        "keys": 0
+        "keys": 0,
+        "humanFeedbackStatus": "repair_not_reviewed",
+        "galleryDecision": "maintained_selected_slot",
+        "originalMapId": "39e2a07b02398c38449b7d3da8dec407a3ebb38e92e8cf5c71e12926ed05a1da"
     }
 ];
