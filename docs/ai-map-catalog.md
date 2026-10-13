@@ -1,19 +1,19 @@
 # AI 地图总目录
 
-[地图集设计小册](map-design-guide.md)简要解释当前十一图的设计思想与尤里卡时刻；[文档索引](README.md)区分现行约定和历史档案。本目录仍统一保存所有历史地图、参考与真实简评，按需查证。公开源码与反馈摘要使用GitHub入口；runs及私人录制链接只用于已恢复资料的本地资料库，不代表公开下载。
+[地图集设计小册](map-design-guide.md)简要解释当前十二图的设计思想与尤里卡时刻；[文档索引](README.md)区分现行约定和历史档案。本目录仍统一保存所有历史地图、参考与真实简评，按需查证。公开源码与反馈摘要使用GitHub入口；runs及私人录制链接只用于已恢复资料的本地资料库，不代表公开下载。
 
-2026-10-13 当前地图集11张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》。本次按用户决定新增《再借》，原十张地图与参考码保持。下列2026-10-12九图审查段为当时快照。
+2026-10-13 当前地图集12张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》《楼间》。本次按用户决定新增《楼间》作为多层入门关，原十一张地图与参考码保持。下列2026-10-12九图审查段为当时快照。
 
-## 2026-10-13 新候选：《楼间》
+## 2026-10-13 上架：《楼间》（多层入门）
 
-两层共11格、一鬼、一个A按钮、两反相A门、一普通门、两对楼梯，无钥匙或玻璃。当前是跨层重安排的精简候选，尚无用户评价、未上架；不是已确认的精妙或高难度图。最初第二鬼的熟悉困鬼流程已按删减对照去除。见[作品与设计卡](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/stair-relocation-20261013/README.md)。
+两层共11格、一鬼、一个A按钮、两反相A门、一普通门、两对楼梯，无钥匙或玻璃。用户定位为“基础的多层谜题”，适合作为简单起始作品，让玩家了解楼梯基本机制，明确要求上架；未确认强顿悟或高难度。[真实评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/stair-relocation-review-20261013.md)。最初第二鬼的熟悉困鬼流程已按删减对照去除。见[作品与设计卡](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/stair-relocation-20261013/README.md)。
 
 [正式站试玩](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA)。网站“求解”提供全部最优解入口。
 
 <details>
 <summary>关键发现与参考（含答案）</summary>
 
-第一次送鬼下楼，会在原开关的楼梯另一端留下危险；需要把它重新引上来，经另一条楼梯再送下去，最后借普通门让它离开楼梯位置。独立最短26，唯一最优，所有无伤通关至少三次鬼跨层；无重合、无玻璃、去终点仍安全。指定下层左侧实际入场与参考逐步一致，八项本地网站检查通过。[回放](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA&replay=OmPml1EpstcImB8UeA)。设计者预期关键不记作用户实际顿悟，原规划库14图634行未变。
+第一次送鬼下楼，会在原开关的楼梯另一端留下危险；需要把它重新引上来，经另一条楼梯再送下去，最后借普通门让它离开楼梯位置。独立最短26，唯一最优，所有无伤通关至少三次鬼跨层；无重合、无玻璃、去终点仍安全。指定下层左侧实际入场与参考逐步一致，八项本地网站检查通过。[回放](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA&replay=OmPml1EpstcImB8UeA)。设计者预期关键不记作用户实际顿悟；最优规划资料同步新清单，不混作高质量标签或真人路线。
 
 </details>
 

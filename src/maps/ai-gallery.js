@@ -87,5 +87,13 @@ export const aiMaps = [
         "cells": 21,
         "ghosts": 2,
         "keys": 0
+    },
+    {
+        "title": "楼间",
+        "mapCode": "AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA",
+        "replayCode": "OmPml1EpstcImB8UeA",
+        "cells": 11,
+        "ghosts": 1,
+        "keys": 0
     }
 ];

@@ -1,6 +1,6 @@
 # 地图集设计小册
 
-更新：2026-10-13。这里按首次交付／发现记录的顺序，简要总结目前上架的十一张图。**正文包含解谜关键；准备首次试玩时请直接访问[无图地图集](https://ghostmaze.novic.cc/maps.html)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
+更新：2026-10-13。这里按首次交付／发现记录的顺序，简要总结目前上架的十二张图。**正文包含解谜关键；准备首次试玩时请直接访问[无图地图集](https://ghostmaze.novic.cc/maps.html)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
 
 “关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《错位》《接力》《再借》的关键也依据你[本次明确总结](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/recruited-return-review-20261013.md#本次重整的设计方向)。
 
@@ -19,6 +19,7 @@
 | 9 | [《后路》](#9-后路) | 2026-10-12 | 23 / 2 / 3 | A/B 字母门、普通门、钥匙门、0 门 |
 | 10 | [《暂驻》](#10-暂驻) | 2026-10-13 | 26 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇 0 门 |
 | 11 | [《再借》](#11-再借) | 2026-10-13 | 21 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇普通门 |
+| 12 | [《楼间》](#12-楼间) | 2026-10-13 | 11 / 1 / 0 | 两层、两对楼梯、一个 A 按钮、两扇反相 A 门、一扇普通门 |
 
 ## 1. 错位
 
@@ -129,6 +130,16 @@
 **你的简评：** ‘妙！’‘这图非常棒，很有新意’，明确要求上架。没有实际操作录制，提示或参考使用情况未报告。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/recruited-return-review-20261013.md)。
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA&replay=APJU70bDyl3eIDK1Wg8M1w)
+
+## 12. 楼间
+
+**设计思想：** 先借楼梯把鬼移离上层，原开关的楼梯另一端却留下危险；换另一处楼梯重新带它上来，再改变下层停位，让原开关恢复安全。用少量元件介绍玩家与鬼的跨层关系。
+
+**关键发现：** 设计者预期是“清空一层之后，还要安排楼梯另一端”；你将它定位为基础多层入门关，没有明确确认强顿悟或高挑战。至少三次搬运的机械必要性不等于精妙。
+
+**你的简评：** “基础的多层谜题”，适合作为简单起始作品，让玩家了解楼梯基本机制；明确要求上架。后续希望最精妙的部分依赖楼梯实现。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/stair-relocation-review-20261013.md)。
+
+[试玩](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA) · [参考解法](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA&replay=OmPml1EpstcImB8UeA)
 
 ## 怎样继续使用这份小册
 
