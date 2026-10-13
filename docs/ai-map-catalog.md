@@ -24,16 +24,16 @@
 详细结果见 [边界审查](rule-boundaries-20261012.md)。
 <!-- current-rule-audit:end -->
 
-## 2026-10-13 新候选：《折返》
+## 2026-10-13 《折返》：用户否决，不入地图集
 
-22格、两鬼、两钥匙，无按钮和玻璃，中性开局。38个求解器状态已纳入11图508状态的规划库，未训练、不是真人评述。暂无用户评述与真人路线，未上架；[作品说明](../../ghost-maze-ai/examples/returning-guard-20261013/README.md)。以下历史统计未重新扫描，不包含本题。
+22格、两鬼、两钥匙，无按钮和玻璃，中性开局。38个求解器状态已纳入11图508状态的规划库，未训练、不是真人评述。用户评述：“太容易想到了，也没什么新意”（2026-10-13）；明确不入地图集，暂无真人路线；[作品说明](../../ghost-maze-ai/examples/returning-guard-20261013/README.md)。以下历史统计未重新扫描，不包含本题。
 
-[试玩](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADIAfiI-Jj8AAGoICg0BeYAVVF1QKgUDqIqqAAAAIEKqhBCqQsOgAAAAAAQ)
+[试玩](https://ghostmaze.novic.cc/?map=AADIAfiI-Jj8AAGoICg0BeYAVVF1QKgUDqIqqAAAAIEKqhBCqQsOgAAAAAAQ)
 
 <details>
 <summary>参考解法（含答案）</summary>
 
-[回放](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADIAfiI-Jj8AAGoICg0BeYAVVF1QKgUDqIqqAAAAIEKqhBCqQsOgAAAAAAQ&replay=EATE513_1WqH_BioP9Vw)。独立求解最短38；全部并列最优解无非死亡鬼重合、实际入场逐步状态一致。守钥匙鬼先下移再返回接手追击；六项全部通关必要、两项右侧转弯只在最优范围必要（有40步替代）。自动证据不代表真人精妙评价。
+[回放](https://ghostmaze.novic.cc/?map=AADIAfiI-Jj8AAGoICg0BeYAVVF1QKgUDqIqqAAAAIEKqhBCqQsOgAAAAAAQ&replay=EATE513_1WqH_BioP9Vw)。独立求解最短38；全部并列最优解无非死亡鬼重合、实际入场逐步状态一致。守钥匙鬼先下移再返回接手追击；六项全部通关必要、两项右侧转弯只在最优范围必要（有40步替代）。自动证据不代表真人精妙评价。
 
 </details>
 
@@ -41,12 +41,12 @@
 
 22格、两鬼、两钥匙，无按钮和玻璃，中性开局。已制备44个求解器规划状态，未训练，不是独立作品或真人好评。暂无用户评述与真人路线，未加入九图网页地图集；完整资料见[作品说明](../../ghost-maze-ai/examples/borrowed-route-20261013/README.md)。本条当前规则证据有效，以下历史统计未重新批量扫描，不包含本题。
 
-[试玩](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADIAHwo-Ln4AAEkICAsBA8AFVCSKQacJAqqAAAABHdBVCCFRECAAAAAAAg)
+[试玩](https://ghostmaze.novic.cc/?map=AADIAHwo-Ln4AAEkICAsBA8AFVCSKQacJAqqAAAABHdBVCCFRECAAAAAAAg)
 
 <details>
 <summary>参考解法（含答案）</summary>
 
-[回放](https://ghostmaze-ui-preview-20261012.prerice.chatgpt.site/?map=AADIAHwo-Ln4AAEkICAsBA8AFVCSKQacJAqqAAAABHdBVCCFRECAAAAAAAg&replay=AMmRO4T_xgqXzwLVaoPC_w)。独立求解最短44；所有并列最优解无非死亡鬼重合，实际入场与区域内逐步状态一致。主要设计关系是提前打开眼下可绕开的门，为后来的鬼安排停位；自动证据不代表人类顿悟目标已达成。
+[回放](https://ghostmaze.novic.cc/?map=AADIAHwo-Ln4AAEkICAsBA8AFVCSKQacJAqqAAAABHdBVCCFRECAAAAAAAg&replay=AMmRO4T_xgqXzwLVaoPC_w)。独立求解最短44；所有并列最优解无非死亡鬼重合，实际入场与区域内逐步状态一致。主要设计关系是提前打开眼下可绕开的门，为后来的鬼安排停位；自动证据不代表人类顿悟目标已达成。
 
 </details>
 
