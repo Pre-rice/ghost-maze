@@ -4,6 +4,19 @@
 
 2026-10-13 当前地图集12张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》《楼间》。本次按用户决定新增《楼间》作为多层入门关，原十一张地图与参考码保持。下列2026-10-12九图审查段为当时快照。
 
+## 2026-10-13 新候选：《留客》
+
+两层14格、两鬼，一个A按钮和三扇A门、两对楼梯，无钥匙／数字门／普通门／玻璃；冷入口与全部最优边界通过。楼梯两端的牵制是本次新的研究方向，尚无真人评价、未上架，不称已确认的高难度或精妙图。原地图集十二图保持。[作品与依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/stair-valve-20261013/README.md)。
+
+[正式站试玩](https://ghostmaze.novic.cc/?map=AWN4ocDAwMDcyMDAy3CAgYGBaYEHBwMEdHCBSAWFhISEBAYNBgWhBrDwH8YfYAkGASGmBfoXGBhYGJQB)。网站“求解”提供最优解入口。
+
+<details>
+<summary>设计关键与参考（含答案）</summary>
+
+先让本层鬼足够接近，沿同方向离开楼梯时让它优先占位，阻止另一层鬼过来；另一端暂留的鬼之后才迁移，保留重新安排上层追鬼的空间。较近／较远的两条等长接近前缀，其公开鬼位不同，分别证明能续解／已经无解。22步唯一最优，原图禁此楼梯争位则无解，去终点仍安全。编号／数组一致与真实入场通过；三鬼旧房间、普通门与目标A按反例精简。[回放](https://ghostmaze.novic.cc/?map=AWN4ocDAwMDcyMDAy3CAgYGBaYEHBwMEdHCBSAWFhISEBAYNBgWhBrDwH8YfYAkGASGmBfoXGBhYGJQB&replay=RvY1_B6igAVkJmSw)。预测的认识变化不当作真人顿悟，现有规划库15图660行保持。
+
+</details>
+
 ## 2026-10-13 上架：《楼间》（多层入门）
 
 两层共11格、一鬼、一个A按钮、两反相A门、一普通门、两对楼梯，无钥匙或玻璃。用户定位为“基础的多层谜题”，适合作为简单起始作品，让玩家了解楼梯基本机制，明确要求上架；未确认强顿悟或高难度。[真实评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/stair-relocation-review-20261013.md)。最初第二鬼的熟悉困鬼流程已按删减对照去除。见[作品与设计卡](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/stair-relocation-20261013/README.md)。
