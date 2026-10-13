@@ -4,6 +4,19 @@
 
 2026-10-13 当前地图集11张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》。本次按用户决定新增《再借》，原十张地图与参考码保持。下列2026-10-12九图审查段为当时快照。
 
+## 2026-10-13 新候选：《楼间》
+
+两层共11格、一鬼、一个A按钮、两反相A门、一普通门、两对楼梯，无钥匙或玻璃。当前是跨层重安排的精简候选，尚无用户评价、未上架；不是已确认的精妙或高难度图。最初第二鬼的熟悉困鬼流程已按删减对照去除。见[作品与设计卡](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/stair-relocation-20261013/README.md)。
+
+[正式站试玩](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA)。网站“求解”提供全部最优解入口。
+
+<details>
+<summary>关键发现与参考（含答案）</summary>
+
+第一次送鬼下楼，会在原开关的楼梯另一端留下危险；需要把它重新引上来，经另一条楼梯再送下去，最后借普通门让它离开楼梯位置。独立最短26，唯一最优，所有无伤通关至少三次鬼跨层；无重合、无玻璃、去终点仍安全。指定下层左侧实际入场与参考逐步一致，八项本地网站检查通过。[回放](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcWxi6WBAQy0FrRAGI0gFSwOUgwODAwc3FOEoPIBgifAtAMTCwA&replay=OmPml1EpstcImB8UeA)。设计者预期关键不记作用户实际顿悟，原规划库14图634行未变。
+
+</details>
+
 <!-- current-rule-audit:start -->
 ## 2026-10-12 九图规则审查（当时快照）
 
