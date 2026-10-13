@@ -29,7 +29,7 @@
 
 ## 2026-10-13 新候选：《借舍》
 
-23格、两鬼、一个按钮，零钥匙；开局和实际入场中性，有安全观察窗。手工房间接替构造经过逐门对照，删两扇冗余门和无用支路、缩紧守卫区；尚无用户评述与真人路线，未加入九图。完整资料见[作品说明](../../ghost-maze-ai/examples/borrowed-room-20261013/README.md)。以下历史批量统计不含本题。
+23格、两鬼、一个按钮，零钥匙；开局和实际入场中性，有安全观察窗。手工房间接替构造经过逐门对照，删两扇冗余门和无用支路、缩紧守卫区；用户评价“一般”，指出左上和突出出生格冗余，困鬼及二次引鬼没有新意或难点；删格对照支持冗余，见[复盘](../../ghost-maze-ai/docs/borrowed-room-review-20261013.md)。尚无真人路线，未加入现十张地图集。完整资料见[作品说明](../../ghost-maze-ai/examples/borrowed-room-20261013/README.md)。以下历史批量统计不含本题。
 
 [正式站试玩](https://ghostmaze.novic.cc/?map=AADAAPzP7DwYAAFS4DNKARgACqoKbopyqWATECgAAAAgxEqxyhSCECQAAACA)
 
