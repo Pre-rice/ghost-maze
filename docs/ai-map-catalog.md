@@ -4,6 +4,21 @@
 
 2026-10-14 当前地图集12张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》《楼间》。楼梯修正规则保持，原十一张单层图全部最优路线不变；《楼间》已完成基础入门关修补，原图与评述留存。《留客》旧稿退役。下列2026-10-13／10-12段为历史快照。
 
+## 2026-10-14 新候选：《腾位》
+
+20格、三鬼、一个A按钮、一扇A门，零钥匙／普通门／玻璃；初态可以观察，出口可见。由保护位置研究逆向构造，删掉任务、整组B、第四鬼及三扇门；原件和反例留存。尚无真人评述，未入集。[作品与设计卡](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/protective-slot-20261014/README.md)。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAAD9_PAQEBGZYFJBkAGAAABVUlciUoqAAAAAAABAkBEIBQCgAAA)
+
+<details>
+<summary>设计思想与参考（含答案）</summary>
+
+先让出口鬼优先进入门后，阻住侧鬼，而另一鬼继续靠近，改变左侧鬼的间距。关A后释放队列，另一鬼接替相同门后的保护位置，出口鬼改为回程追者。自然先引左鬼、或者只按A困出口鬼的前缀都经两种环境穷尽续解无解。初期制动及真实停位交接分别为原图全部通关必要；不以先后经过同格冒充保护。
+
+唯一最优23，全部最优无重合，去终点仍安全；实际入场、全部可达动作六排列／变编号与码往返通过。七项本地产品网页检查通过，未检查正式站或部署。预期关键发现未获用户确认，不自评精妙，不继承《再借》好评。[参考回放](https://ghostmaze.novic.cc/?map=AADAAAD9_PAQEBGZYFJBkAGAAABVUlciUoqAAAAAAABAkBEIBQCgAAA&replay=CMZj1sChD0qpf1Q)。
+
+</details>
+
 ## 2026-10-14 《楼间》规则修补
 
 原布局仍是两层11格、一鬼、一个A按钮、两对楼梯；把初始鬼后移、目标门初态关闭，删除已经不再影响解法的普通门，保留两扇同相A门。最短19且唯一，所有通关至少两次鬼跨层；全部最优不重合、去终点仍安全、真实冷入口一致。10项产品网页检查通过，未检查正式站或部署。
@@ -17,7 +32,7 @@
 
 先开A放出鬼，再经另一处楼梯重新引近它，随后下楼带走；沿下层返回原楼梯，借转向保持距离安全取目标。不能依赖抵达楼梯口后的停顿，楼梯两端抵达即互见追击。
 
-[回放](REhttps://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA)。原十四图规划行校验和保持，新增修补版19行，并沿用原多层亲缘组；不作为新的真人好评或路线。
+[回放](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA&replay=NnxkDKcpsteXxcA)。修补版沿用原多层亲缘组，不作为新的真人好评或路线。
 
 </details>
 
