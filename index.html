@@ -30,15 +30,15 @@
             <div id="ghost-proximity-display" class="label">周围鬼数: 0</div>
         </div>
     </div>
-    <div class="control-group">
+    <div id="play-options-controls" class="control-group">
         <div id="play-history-controls" class="share-buttons-container">
             <button id="undo-btn" class="secondary">撤回</button><button id="save-btn" class="secondary">存档</button><button id="rewind-btn" class="secondary">回溯</button>
         </div>
-        <div class="toggle-controls-wrapper">
-            <div class="toggle-switch"><span class="label">全图视野</span><input type="checkbox" id="full-vision-toggle"><label for="full-vision-toggle">全图视野</label></div>
+        <div id="view-options-controls" class="toggle-controls-wrapper">
+            <div id="full-vision-control" class="toggle-switch"><span class="label">全图视野</span><input type="checkbox" id="full-vision-toggle"><label for="full-vision-toggle">全图视野</label></div>
             <div id="dpad-toggle-control" class="toggle-switch"><span class="label">方向按键</span><input type="checkbox" id="dpad-toggle" checked><label for="dpad-toggle">方向按键</label></div>
         </div>
-        <div class="map-actions"><button id="watch-replay-btn" class="secondary">回放</button><button id="reset-map-btn" class="secondary">重置地图</button></div>
+        <div id="map-actions" class="map-actions"><button id="watch-replay-btn" class="secondary">回放</button><button id="reset-map-btn" class="secondary">重置地图</button></div>
         <button id="generate-map-btn">随机生成新地图</button>
     </div>
     <div id="replay-controls" class="control-group" hidden>

@@ -174,9 +174,10 @@ class GhostMazeGame extends CanvasApp {
         UI.updateUIDisplays({ gameMode: mode, player: current.player, loopCount: current.loopCount,
             healthDisplay: document.getElementById('player-health-display'), stepsDisplay: document.getElementById('player-steps-display'),
             keysDisplay: document.getElementById('player-keys-display') });
-        UI.updateProximityWarning({ ghosts: current.layerStates[current.player.layer].ghosts, player: current.player,
+        const displayedPlayer = this.getGameView().player;
+        UI.updateProximityWarning({ ghosts: current.layerStates[displayedPlayer.layer].ghosts, player: displayedPlayer,
             ghostProximityDisplay: document.getElementById('ghost-proximity-display') });
-        const outcome = current.isWon ? ' · 已通关' : current.isDead ? ' · 已死亡' : '';
+        const outcome = this.replay ? '' : current.isWon ? ' · 已通关' : current.isDead ? ' · 已死亡' : '';
         document.getElementById('mode-display').textContent = (this.replay ? '回放 · ' : '') + (mode === 'exploration' ? '探索模式' : '死亡循环') + outcome;
     }
     updateHistoryButtons() {
@@ -191,7 +192,19 @@ class GhostMazeGame extends CanvasApp {
     handleUndo() { this.stopAutoMove(); const result = this.controller.undo(); if (!result.ok && result.error) this.showToast(result.error, 2000, 'error'); }
     handleSave() { const result = this.controller.save(); this.showToast(result.ok ? '已在第 ' + result.step + ' 步存档' : result.error, 2000, result.ok ? 'success' : 'error'); }
     handleRewind() { this.stopAutoMove(); const result = this.controller.rewind(); if (!result.ok) this.showToast(result.error, 2000, 'error'); }
-    updateDpadVisibility() { UI.updateDpadVisibility(this.state !== GAME_STATES.PLAYING || document.getElementById('new-map-overlay').style.display === 'flex'); }
+    updateDpadVisibility() {
+        const exploration = this.activeController.mapDefinition?.gameMode !== 'death-loop';
+        const mobile = window.matchMedia('(max-width: 768px)').matches;
+        document.getElementById('full-vision-control').hidden = !exploration;
+        document.getElementById('ghost-proximity-display').hidden = !exploration;
+        const viewOptions = document.getElementById('view-options-controls');
+        viewOptions.hidden = !exploration && !mobile;
+        viewOptions.classList.toggle('single-toggle', !exploration);
+        document.getElementById('map-actions').hidden = !!this.replay;
+        document.getElementById('generate-map-btn').hidden = !!this.replay;
+        document.getElementById('play-options-controls').hidden = !!this.replay && !exploration && !mobile;
+        UI.updateDpadVisibility(this.state !== GAME_STATES.PLAYING || document.getElementById('new-map-overlay').style.display === 'flex');
+    }
     stopAutoMove() {
         clearInterval(this.autoMoveInterval); this.autoMoveInterval = null;
         clearInterval(this.dpadInterval); this.dpadInterval = null; this.stopDpad?.();
@@ -215,7 +228,7 @@ class GhostMazeGame extends CanvasApp {
     updateLayerPanel() {
         const active = this.activeController, md = active.mapDefinition;
         LayerManager.updateLayerPanelUI({ multiLayerMode: md.multiLayerMode, layerCount: md.layerCount,
-            currentLayer: active.viewLayer, playerLayer: active.currentGameState.player.layer,
+            currentLayer: active.viewLayer, playerLayer: this.getGameView().playerLayer,
             editorActive: false, hasStartPoint: true, onLayerClick: index => this.switchToLayer(index) });
     }
     updateURLWithShareCode(code, replayCode = null) {
@@ -272,7 +285,8 @@ class GhostMazeGame extends CanvasApp {
         try {
             const current = await replay.history.stateAtAsync(step, { signal });
             if (this.replay !== replay || signal.aborted) return;
-            replay.currentGameState = current; replay.currentStep = step; replay.viewLayer = current.player.layer;
+            replay.currentGameState = current; replay.currentStep = step;
+            replay.viewLayer = current.isDead ? replay.mapDefinition.playerStart.layer : current.player.layer;
             this.syncReplay();
         } catch (error) {
             if (error.name !== 'AbortError') { this.pauseReplay(); this.showToast(error.message, 5000, 'error'); }

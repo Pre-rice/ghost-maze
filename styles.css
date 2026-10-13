@@ -769,6 +769,7 @@ display: none !important;
 .header-controls a:focus-visible, .header-controls button:focus-visible, summary:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 3px; }
 .control-group .status-bar { gap: 8px; flex-wrap: wrap; }
 .toggle-controls-wrapper { margin: 4px 0; }
+.toggle-controls-wrapper.single-toggle .toggle-switch { width: 100%; }
 .overlay-content .buttons { flex-wrap: wrap; }
 .overlay-content .buttons button { white-space: nowrap; }
 

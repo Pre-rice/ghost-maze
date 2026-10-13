@@ -1,3 +1,5 @@
+import { GAME_STATES } from '../core/constants.js';
+
 /**
  * viewSlice - 视图快照（渲染/输入的唯一读取通道）
  *
@@ -16,6 +18,9 @@
 export function computeGameView({ mapDef, gameState, viewLayer }, renderParams) {
     const layerDef = mapDef.layers[viewLayer];
     const layerState = gameState.layerStates[viewLayer];
+    // 致死回放帧在出生点画玩家，不改变死亡局面、历史或加载该步的真实状态。
+    const player = renderParams.state === GAME_STATES.REPLAY && gameState.isDead
+        ? { ...gameState.player, ...mapDef.playerStart, trail: [] } : gameState.player;
     return {
         // 宿主渲染参数（非数据源）
         canvas: renderParams.canvas,
@@ -24,7 +29,7 @@ export function computeGameView({ mapDef, gameState, viewLayer }, renderParams) 
         cellSize: renderParams.cellSize,
         colors: renderParams.colors,
         drawOffset: renderParams.drawOffset,
-        debugVision: renderParams.debugVision,
+        debugVision: mapDef.gameMode === 'death-loop' || renderParams.debugVision,
         // 权威源投影（引用，不拷贝）
         width: mapDef.width,
         height: mapDef.height,
@@ -37,8 +42,8 @@ export function computeGameView({ mapDef, gameState, viewLayer }, renderParams) 
         buttons: layerDef.initialEntities.buttons,
         stairs: mapDef.stairs,
         endPos: layerDef.initialEntities.endPos,
-        player: gameState.player,
-        playerLayer: gameState.player.layer,
+        player,
+        playerLayer: player.layer,
         currentLayer: viewLayer,
         multiLayerMode: mapDef.multiLayerMode,
     };

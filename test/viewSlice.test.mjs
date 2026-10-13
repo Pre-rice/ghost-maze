@@ -12,6 +12,9 @@ import { computeGameView, computeEditorView, pruneTrails } from '../src/view/vie
 import { EditorDocument } from '../src/editor/editorSession.js';
 import { MapDefinition } from '../src/core/mapDefinition.js';
 import { GameLogic } from '../src/core/gameLogic.js';
+import { ActionHistory } from '../src/core/actionHistory.js';
+import { makeMap } from './helpers/map-fixture.mjs';
+import { GAME_STATES } from '../src/core/constants.js';
 import * as Renderer from '../src/view/renderer.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -350,6 +353,30 @@ test('computeEditorView 投影产物喂渲染层跑通（renderStaticLayer + dra
     Renderer.renderStaticLayer(makeCanvas(ctx), makeCanvas(ctx), view);
     Renderer.drawEditor(ctx, view);
     assert(true, '无异常');
+});
+
+test('死亡回放只在出生点投影玩家，历史、致死位置及存活前帧保持', () => {
+    for (const gameMode of ['exploration', 'death-loop']) {
+        const mapDef = new MapDefinition(makeMap({ gameMode, initialGhosts: [{ x: 1, y: 0, id: 0 }] }));
+        const history = new ActionHistory(mapDef, ['R']);
+        const gameState = history.stateAt(1), before = JSON.stringify(gameState);
+        assert(gameState.isDead, '真实移动产生死亡帧');
+        assertEq(gameState.player.x, 1, '历史保留实际死亡位置');
+        const params = { state: GAME_STATES.REPLAY, debugVision: false };
+        const view = computeGameView({ mapDef, gameState, viewLayer: 0 }, params);
+        assertEq(view.player.x, 0, '画面显示出生位置');
+        assertEq(view.player.y, 0);
+        assertEq(view.player.hp, gameState.player.hp, '不补生命或隐式复活');
+        assertEq(view.player.steps, 1, '死亡这步仍计入回放');
+        assertEq(view.player.trail.length, 0, '不把死亡轨迹拖到出生位置');
+        assertEq(view.debugVision, gameMode === 'death-loop', '只有死亡循环固定全图');
+        assertEq(JSON.stringify(gameState), before, '只读投影不污染缓存');
+        assertEq(history.stateAt(1).player.x, 1, '再次取死亡帧仍为原局面');
+        const play = computeGameView({ mapDef, gameState, viewLayer: 0 }, { ...params, state: GAME_STATES.DEAD });
+        assertEq(play.player, gameState.player, '游玩的致死位置保持');
+        const initial = history.stateAt(0);
+        assert(!initial.isDead, '回放前一步没有被死亡投影污染');
+    }
 });
 
 summary('viewSlice');
