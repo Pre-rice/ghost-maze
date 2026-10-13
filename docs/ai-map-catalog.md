@@ -1,7 +1,7 @@
 <!-- current-rule-audit:start -->
 # AI 地图总目录
 
-2026-10-13 当前地图集10张：《暂驻》按用户明确肯定与上架决定新增，原九张地图及参考码保持。新评价见下方索引；下列2026-10-12九图审查段为当时快照。
+2026-10-13 当前地图集11张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》。本次按用户决定新增《再借》，原十张地图与参考码保持。下列2026-10-12九图审查段为当时快照。
 
 更新：2026-10-12。以下为新规则的有效审查；后面的旧资料保留真实评述，不能作为已通过当前规则的复用名单。
 
@@ -9,7 +9,6 @@
 
 | 已上架地图 | 原参考路线 | 当前最短 | 原动作与鬼位相同 | 设计边界 |
 | --- | --- | --- | --- | --- |
-| 2026-10-13 | [《暂驻》](https://ghostmaze.novic.cc/?map=AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA) | 39 | “好图”；设计很简洁，只有A字母门和一个0数字门，也有一定挑战性；明确要求加入地图集。未提供本题操作录制或参考使用情况。 | [记录](../../ghost-maze-ai/docs/temporary-stay-review-20261013.md) |
 | [《后路》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA) | 59 | 59 | 是 | 全部最优解通过 |
 | [《换岗》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMAEC4C10BaeArgOw0oSAiBcgpwAAAKABZrEDmOQCBGYCoCQEgAAAwIMIBA) | 68 | 68 | 是 | 全部最优解通过 |
 | [《换边》](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMILCFs0T4C0sDiMnEAQA) | 28 | 28 | 是 | 全部最优解通过 |
@@ -27,16 +26,16 @@
 详细结果见 [边界审查](rule-boundaries-20261012.md)。
 <!-- current-rule-audit:end -->
 
-## 2026-10-13 新候选：《再借》
+## 2026-10-13 上架：《再借》
 
-21格、两鬼、一个A按钮，两反相A门与一普通门，无钥匙/数字门/玻璃，开局中性。左上无用格、突出出生格不保留；已安置的鬼后续还需重新启用。暂无用户评价或真人路线，未加入现十张地图集；[作品说明](../../ghost-maze-ai/examples/recruited-return-20261013/README.md)。
+21格、两鬼、一个A按钮，两反相A门与一普通门，无钥匙/数字门/玻璃，开局中性。左上无用格、突出出生格不保留；已安置的鬼后续还需重新启用。用户评价“妙”“非常棒，很有新意”，关键发现是重新引动先前安置的鬼，帮助阻挡另一只鬼；明确要求上架，尚无真人操作录制；[作品说明](../../ghost-maze-ai/examples/recruited-return-20261013/README.md)。
 
 [正式站试玩](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA)
 
 <details>
 <summary>参考解法（含答案）</summary>
 
-[回放](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA&replay=APJU70bDyl3eIDK1Wg8M1w)。独立最短44；全部最优无重合。精确完整状态核验确认原下鬼真实静止普通门西侧后，在已按至少两次A时重新移动，帮助原上鬼真的受挡停内角，其后再按A；所有通关至少三A，不说全部路线恰好三按或参考唯一。编号/码/去目标/实际入场及网页关键局面通过。自动证据不代替人类新意或挑战评价。
+[回放](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA&replay=APJU70bDyl3eIDK1Wg8M1w)。独立最短44；全部最优无重合。精确完整状态核验确认原下鬼真实静止普通门西侧后，在已按至少两次A时重新移动，帮助原上鬼真的受挡停内角，其后再按A；所有通关至少三A，不说全部路线恰好三按或参考唯一。编号/码/去目标/实际入场及网页关键局面通过。自动证据不代替人类新意或挑战评价。 交付后追加[安全入困局与控距对照](../../ghost-maze-ai/examples/recruited-return-20261013/README.md)，等长前缀只差公开鬼位，可解／无解由双续解核验；不冒充用户错误，原题和回放不变。
 
 </details>
 
@@ -112,14 +111,16 @@
 | 评价日期 | 地图 | 参考步数 | 用户简评与限制 | 评述依据 |
 | --- | --- | --- | --- | --- |
 | 2026-09-30 | [《错位》](https://ghostmaze.novic.cc/?map=AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA) | 37 | 原称“单层组合题”，2026-10-12 补正式名称；“太妙了！好设计！”；想了好一阵子，指出左上 B 门没有作用。 | [记录](../../ghost-maze-ai/docs/status.md) |
-| 2026-10-09 | [《归途》](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA) | 39 | 原称“永久回路”，2026-10-12 补正式名称；“不错的图”；想出解法不难，元素用途明显，可以线性推导，希望难度来自巧妙解法。 | [记录](../../ghost-maze-ai/docs/permanent-return-review-20261009.md) |
 | 2026-10-09 | [《接力》](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA) | 31 | 原称“双鬼交接”，2026-10-12 补正式名称；“妙！”“想了好久才想出来”“媲美第一张图”；明确设计正反馈。 | [记录](../../ghost-maze-ai/docs/twin-handoff-review-20261009.md) |
+| 2026-10-09 | [《归途》](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA) | 39 | 原称“永久回路”，2026-10-12 补正式名称；“不错的图”；想出解法不难，元素用途明显，可以线性推导，希望难度来自巧妙解法。 | [记录](../../ghost-maze-ai/docs/permanent-return-review-20261009.md) |
+| 2026-10-10 | [《借影》](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA) | 59 | 原称“借用庇护·修正版”，2026-10-12 补正式名称；看参考回放后评价“妙，好设计”；不记为无提示独立通关。 | [记录](../../ghost-maze-ai/docs/borrowed-shelter-review-20261010.md) |
 | 2026-10-10 | [《回环》](https://ghostmaze.novic.cc/?map=AADBweHh4eDAwAE1YEKQICGUCQAgBXCqA4gTIKAkEQACgAEQJygnEFziCc5AkBIAABAgAxAgwA) | 70 | “你的设计是很不错的”；比较困难、勉强可称精妙，但担忧复杂性堆砌。看五步提示后通关。 | [记录](../../ghost-maze-ai/docs/shelter-exchange-review-20261010.md) |
 | 2026-10-10 | [《回位》](https://ghostmaze.novic.cc/?map=AADAAOHg4ODgAAE-gIKgfIMwiAACAKguAXOAcAcAVAAAAAXOQXOcgUgRAuIAAAAwQAwgQAwggQ) | 35 | “不错的谜题”；同时评价近期《借位》《回位》平平无奇、缺乏新意，已掌握套路后没有“妙”的感觉。已通关。 | [记录](../../ghost-maze-ai/docs/architecture-diagnosis-handoff-20261010.md) |
-| 2026-10-10 | [《借影》](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgLgHHAAKoABIBUE4gucQTnIIQQgAAECGAEGIEGGA) | 59 | 原称“借用庇护·修正版”，2026-10-12 补正式名称；看参考回放后评价“妙，好设计”；不记为无提示独立通关。 | [记录](../../ghost-maze-ai/docs/borrowed-shelter-review-20261010.md) |
-| 2026-10-12 | [《后路》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA) | 59 | “不错，比上一张有进步”；需要考虑先捡哪个钥匙、规划路线，但推理仍线性，很快想到。期待更精妙、有新意与再次眼前一亮；本轮暂停设计，转向本体修改。 | [记录](../../ghost-maze-ai/docs/deferred-key-cold-entry-review-20261012.md) |
 | 2026-10-12 | [《换边》](https://ghostmaze.novic.cc/?map=AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMILCFs0T4C0sDiMnEAQA) | 28 | “不错”，比前面几题更巧、简洁；解法仍简单、容易想到，地图复杂性有限。有甜点单元／靠前简单关的价值，尚未达到主线挑战目标。 | [记录](../../ghost-maze-ai/docs/room-transfer-review-20261012.md) |
 | 2026-10-12 | [《换岗》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMAEC4C10BaeArgOw0oSAiBcgpwAAAKABZrEDmOQCBGYCoCQEgAAAwIMIBA) | 68 | “不错的谜题”；复杂性还可以、需要动脑、布局简洁，但每一步容易想到，没有眼前一亮或顿悟感。后续尽量避免开局被追，并核验从整图进入单元当步的状态一致。 | [记录](../../ghost-maze-ai/docs/shelter-role-exchange-review-20261012.md) |
+| 2026-10-12 | [《后路》](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA) | 59 | “不错，比上一张有进步”；需要考虑先捡哪个钥匙、规划路线，但推理仍线性，很快想到。期待更精妙、有新意与再次眼前一亮；本轮暂停设计，转向本体修改。 | [记录](../../ghost-maze-ai/docs/deferred-key-cold-entry-review-20261012.md) |
+| 2026-10-13 | [《暂驻》](https://ghostmaze.novic.cc/?map=AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA) | 39 | “好图”；设计很简洁，只有A字母门和一个0数字门，也有一定挑战性；明确要求加入地图集。未提供本题操作录制或参考使用情况。 | [记录](../../ghost-maze-ai/docs/temporary-stay-review-20261013.md) |
+| 2026-10-13 | [《再借》](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA) | 44 | “妙！”“非常棒，很有新意”；重新引动先前安置的鬼，让它帮助阻挡另一只鬼；明确要求上架。提示／参考使用未报告，无真人录制。 | [记录](../../ghost-maze-ai/docs/recruited-return-review-20261013.md) |
 
 另附[用户优化图](https://ghostmaze.novic.cc/?map=AADAAHB4cDAwAAFkgCoCQEQAAKAuQJAAHAKAAAAAEBjaCUAoByAAAAAQAA)：用户亲自修改并认为关键思路更精妙；参考与真人路线均为 40 步。它是单层组合题的亲缘改图，不计为新的 AI 独立作品，详见[当时说明](../../ghost-maze-ai/examples/user-refinements/README.md)。
 
