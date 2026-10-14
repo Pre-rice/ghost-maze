@@ -2,17 +2,17 @@
 export const aiMaps = [
     {
         "title": "错位",
-        "mapCode": "AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA",
-        "replayCode": "GC3I0ymPKVh_qMDymP3A",
-        "cells": 18,
+        "mapCode": "AWM4wGBgYWBgwMDo1CDFpODAwLBApsGBoYCLAQgcVFhBXBCLAQA",
+        "replayCode": "AAJ-1OUyFXgAyMlXAw",
+        "cells": 11,
         "ghosts": 1,
         "keys": 0
     },
     {
         "title": "接力",
-        "mapCode": "AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA",
-        "replayCode": "CMnCC_w_AWlXDelACA",
-        "cells": 14,
+        "mapCode": "AADAAPBwcHBgAAENgIIgWoBA5hAFUEgOADgCBQAAAAFziBVAnIEQJAAAAAEECEA",
+        "replayCode": "CN5HYT8_AVmXDeZACA",
+        "cells": 15,
         "ghosts": 2,
         "keys": 0
     },
@@ -26,11 +26,11 @@ export const aiMaps = [
     },
     {
         "title": "借影",
-        "mapCode": "AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgcuAccAAqgAEgFQTiC5xBOcghBCAAAQIIYAQYgQYY",
-        "replayCode": "CH7k9Zggj90mF8CqMlf2oMzILXA",
+        "mapCode": "AADAwMHh4eHh4AEFICF8AHA2gV4EQiQCAAWQFcDkA44ABVAAEAQE4gucQTiCEEIAAAgggBBiBBg",
+        "replayCode": "GOgozp8CP3SYXwKolf2oMzIYAA",
         "cells": 24,
         "ghosts": 2,
-        "keys": 2
+        "keys": 1
     },
     {
         "title": "回环",
@@ -58,9 +58,9 @@ export const aiMaps = [
     },
     {
         "title": "换岗",
-        "mapCode": "AADBsPDg8DAwMAEC4C10BaeArgOw0oSAiBcgpwAAAKABZrEDmOQCBGYCoCQEgAAAwIMIBA",
-        "replayCode": "AK03CdqPJm9djDqvo8yVV4AJm_6jIg",
-        "cells": 21,
+        "mapCode": "AADA8PDw8DAwMAELIC90BHOAsgPwpQZgOEC5kKcAAOAKAALEDmOQACMwFQEgJAAAQYACGAGEAg",
+        "replayCode": "AIsip9aPJm9eCg2fXDqvyMlVeACZv-oD",
+        "cells": 22,
         "ghosts": 2,
         "keys": 2
     },
@@ -86,6 +86,22 @@ export const aiMaps = [
         "replayCode": "APJU70bDyl3eIDK1Wg8M1w",
         "cells": 21,
         "ghosts": 2,
+        "keys": 0
+    },
+    {
+        "title": "周转",
+        "cells": 15,
+        "ghosts": 2,
+        "keys": 0,
+        "mapCode": "AADAAABgfHh4AAFngIqgJQQgAAAADlQ4UBwKoAAAAAAkBHOQhBYYgAAAIEMAMA",
+        "replayCode": "AF4gB2knYL3YKi1nCv8"
+    },
+    {
+        "title": "同行",
+        "mapCode": "AADAAODgfHh4AAFS4EVIEBCANBACgIA5UBQ0cCqAAAAAQBARxCEFhiAAAAgMAA",
+        "replayCode": "COK8iZEnYL3YKjFWAyJPWdw8",
+        "cells": 19,
+        "ghosts": 3,
         "keys": 0
     }
 ];

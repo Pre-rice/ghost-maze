@@ -4,7 +4,7 @@
 
 ## 给人查阅
 
-- [地图集设计小册](map-design-guide.md)：十一图的基本信息、设计思想、尤里卡时刻和真实简评；含解谜关键。
+- [地图集设计小册](map-design-guide.md)：十三图的基本信息、设计思想、尤里卡时刻和真实简评；含解谜关键。
 - [地图总目录](ai-map-catalog.md)：所有已保存地图及对照、参考、反馈来源；这是资料库，按需查证，不是日常必读日志。
 - [持续设计方法](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/methodology.md)：如何依据反馈改进下一张设计。
 

@@ -2,7 +2,22 @@
 
 [地图集设计小册](map-design-guide.md)简要解释当前十一图的设计思想与尤里卡时刻；[文档索引](README.md)区分现行约定和历史档案。本目录仍统一保存所有历史地图、参考与真实简评，按需查证。公开源码与反馈摘要使用GitHub入口；runs及私人录制链接只用于已恢复资料的本地资料库，不代表公开下载。
 
-2026-10-14 当前地图集11张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》。楼梯修正规则保持，原十一张单层图全部最优路线不变；《楼间》完成规则修补后按用户最新决定撤出；原图、修补版和先前入门评述留存。《留客》旧稿退役。下列2026-10-13／10-12段为历史快照。
+2026-10-14 本轮更新前地图集11张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》。楼梯修正规则保持，原十一张单层图全部最优路线不变；《楼间》完成规则修补后按用户最新决定撤出；原图、修补版和先前入门评述留存。《留客》旧稿退役。下列2026-10-13／10-12段为历史快照。
+
+## 2026-10-14 用户调整与新上架
+
+当前十三张，按首次交付顺序；五图更新为用户提供版，《周转》《同行》加入。其余七张旧图原码保持。下面后续旧候选段落为生成时记录，本轮决定以本表为准。[真实评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-adjustments-20261014.md)。
+
+| 图 | 当前版本 | 格 / 鬼 / 钥匙 | 当前参考 |
+| --- | --- | --- | --- |
+| [《周转》](https://ghostmaze.novic.cc/?map=AADAAABgfHh4AAFngIqgJQQgAAAADlQ4UBwKoAAAAAAkBHOQhBYYgAAAIEMAMA) | 用户优化、已更新 | 15 / 2 / 0 | [参考](https://ghostmaze.novic.cc/?map=AADAAABgfHh4AAFngIqgJQQgAAAADlQ4UBwKoAAAAAAkBHOQhBYYgAAAIEMAMA&replay=AF4gB2knYL3YKi1nCv8) |
+| [《接力》](https://ghostmaze.novic.cc/?map=AADAAPBwcHBgAAENgIIgWoBA5hAFUEgOADgCBQAAAAFziBVAnIEQJAAAAAEECEA) | 用户优化、已更新 | 15 / 2 / 0 | [参考](https://ghostmaze.novic.cc/?map=AADAAPBwcHBgAAENgIIgWoBA5hAFUEgOADgCBQAAAAFziBVAnIEQJAAAAAEECEA&replay=CN5HYT8_AVmXDeZACA) |
+| [《错位》](https://ghostmaze.novic.cc/?map=AWM4wGBgYWBgwMDo1CDFpODAwLBApsGBoYCLAQgcVFhBXBCLAQA) | 用户优化、已更新 | 11 / 1 / 0 | [参考](https://ghostmaze.novic.cc/?map=AWM4wGBgYWBgwMDo1CDFpODAwLBApsGBoYCLAQgcVFhBXBCLAQA&replay=AAJ-1OUyFXgAyMlXAw) |
+| [《借影》](https://ghostmaze.novic.cc/?map=AADAwMHh4eHh4AEFICF8AHA2gV4EQiQCAAWQFcDkA44ABVAAEAQE4gucQTiCEEIAAAgggBBiBBg) | 用户优化、已更新 | 24 / 2 / 1 | [参考](https://ghostmaze.novic.cc/?map=AADAwMHh4eHh4AEFICF8AHA2gV4EQiQCAAWQFcDkA44ABVAAEAQE4gucQTiCEEIAAAgggBBiBBg&replay=GOgozp8CP3SYXwKolf2oMzIYAA) |
+| [《换岗》](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMAELIC90BHOAsgPwpQZgOEC5kKcAAOAKAALEDmOQACMwFQEgJAAAQYACGAGEAg) | 用户优化、已更新 | 22 / 2 / 2 | [参考](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMAELIC90BHOAsgPwpQZgOEC5kKcAAOAKAALEDmOQACMwFQEgJAAAQYACGAGEAg&replay=AIsip9aPJm9eCg2fXDqvyMlVeACZv-oD) |
+| [《同行》](https://ghostmaze.novic.cc/?map=AADAAODgfHh4AAFS4EVIEBCANBACgIA5UBQ0cCqAAAAAQBARxCEFhiAAAAgMAA) | 原版新上架 | 19 / 3 / 0 | [参考](https://ghostmaze.novic.cc/?map=AADAAODgfHh4AAFS4EVIEBCANBACgIA5UBQ0cCqAAAAAQBARxCEFhiAAAAgMAA&replay=COK8iZEnYL3YKjFWAyJPWdw8) |
+
+《换岗》新版不满足中性入场；实际进入当步会改变鬼位，独立试玩可用，整图单元复用需重验。五图全部最优无重合；当前版本的新最优证据不覆盖历史证书。
 
 ## 2026-10-14 新候选：《同行》
 

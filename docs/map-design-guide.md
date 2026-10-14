@@ -1,24 +1,28 @@
 # 地图集设计小册
 
-更新：2026-10-14。这里按首次交付／发现记录的顺序，简要总结目前上架的十一张图。**正文包含解谜关键；准备首次试玩时请直接访问[无图地图集](https://ghostmaze.novic.cc/maps.html)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
+更新：2026-10-14。这里按首次交付／发现记录的顺序，简要总结目前上架的十三张图。**正文包含解谜关键；准备首次试玩时请直接访问[无图地图集](https://ghostmaze.novic.cc/maps.html)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
 
-“关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《错位》《接力》《再借》的关键也依据你[本次明确总结](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/recruited-return-review-20261013.md#本次重整的设计方向)。
+“关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《周转》《同行》的新评述及五图优化见[本轮记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-adjustments-20261014.md)。
+
+《错位》《接力》《再借》的关键也依据你[本次明确总结](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/recruited-return-review-20261013.md#本次重整的设计方向)。
 
 “不错”不等于已达到精妙目标。基本数量来自当前地图集；《借影》为获准维护版，不把维护当新作品。
 
 | 顺序 | 地图 | 首次交付 | 格 / 鬼 / 钥匙 | 主要机制 |
 | --- | --- | --- | --- | --- |
-| 1 | [《错位》](#1-错位) | 2026-09-30 | 18 / 1 / 0 | A/B 字母门、普通门；玻璃仅供观察 |
-| 2 | [《接力》](#2-接力) | 2026-10-09 | 14 / 2 / 0 | A/B 字母门，三个操作站位 |
+| 1 | [《错位》](#1-错位) | 2026-09-30 | 11 / 1 / 0 | A/B 字母门、普通门；玻璃仅供观察 |
+| 2 | [《接力》](#2-接力) | 2026-10-09 | 15 / 2 / 0 | A/B 字母门，三个操作站位 |
 | 3 | [《归途》](#3-归途) | 2026-10-09 | 18 / 2 / 1 | A/B 字母门、单向门、钥匙门 |
-| 4 | [《借影》](#4-借影) | 2026-10-09 | 24 / 2 / 2 | A/B/C 字母门、钥匙门 |
+| 4 | [《借影》](#4-借影) | 2026-10-09 | 24 / 2 / 1 | A/B/C 字母门、钥匙门 |
 | 5 | [《回环》](#5-回环) | 2026-10-10 | 23 / 3 / 2 | A/B/C 字母门、钥匙门 |
 | 6 | [《回位》](#6-回位) | 2026-10-10 | 16 / 2 / 0 | A/B 字母门，四个操作站位 |
 | 7 | [《换边》](#7-换边) | 2026-10-12 | 11 / 1 / 1 | A 字母门、普通门、钥匙门 |
-| 8 | [《换岗》](#8-换岗) | 2026-10-12 | 21 / 2 / 2 | A/B 字母门、普通门、钥匙门 |
+| 8 | [《换岗》](#8-换岗) | 2026-10-12 | 22 / 2 / 2 | A/B 字母门、普通门、钥匙门 |
 | 9 | [《后路》](#9-后路) | 2026-10-12 | 23 / 2 / 3 | A/B 字母门、普通门、钥匙门、0 门 |
 | 10 | [《暂驻》](#10-暂驻) | 2026-10-13 | 26 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇 0 门 |
 | 11 | [《再借》](#11-再借) | 2026-10-13 | 21 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇普通门 |
+| 12 | [《周转》](#12-周转) | 2026-10-14 | 15 / 2 / 0 | A/B字母门、普通门；用户优化版 |
+| 13 | [《同行》](#13-同行) | 2026-10-14 | 19 / 3 / 0 | A/B字母门、普通门、单向门；追者互相占位 |
 
 ## 1. 错位
 
@@ -28,7 +32,9 @@
 
 **你的简评：** ‘太妙了！好设计！’；同时指出左上 B 门无作用。保留好评，也保留冗余意见。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/worklogs/status-before-reorganization-20261013.md)。
 
-[试玩](https://ghostmaze.novic.cc/?map=AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAPD4UNDwAAFBoAdAVgBgQBVBxchJCQFcCqAAAABCCY2gqglQTiAAAAYAQAA&replay=GC3I0ymPKVh_qMDymP3A)
+**本轮调整：** 缩至11格，A/B相邻，去掉左上掉头空间。最后借B引近鬼之前必须准备B关闭，按A保护操作，再按B开放绕行；压缩赶路同时增加门态准备的推理要求。
+
+[试玩](https://ghostmaze.novic.cc/?map=AWM4wGBgYWBgwMDo1CDFpODAwLBApsGBoYCLAQgcVFhBXBCLAQA) · [参考解法](https://ghostmaze.novic.cc/?map=AWM4wGBgYWBgwMDo1CDFpODAwLBApsGBoYCLAQgcVFhBXBCLAQA&replay=AAJ-1OUyFXgAyMlXAw)
 
 ## 2. 接力
 
@@ -38,7 +44,9 @@
 
 **你的简评：** ‘妙！’‘想了好久才想出来’‘媲美第一张图’。有实际保留通关分支，不能据录制长度反推思考时间。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/twin-handoff-review-20261009.md)。
 
-[试玩](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAPBQcHBgAAEMgIIgWIBA3hAFUEgOQBwBAoAAAAC5xAqgTkCIEgAAAACCBCA&replay=CMnCC_w_AWlXDelACA)
+**本轮调整：** 填去中央虚空，15格。新增单入口死路融入外形，不增加任务或新的最优关键；不能因为不在解法上就自动删掉。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAPBwcHBgAAENgIIgWoBA5hAFUEgOADgCBQAAAAFziBVAnIEQJAAAAAEECEA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAPBwcHBgAAENgIIgWoBA5hAFUEgOADgCBQAAAAFziBVAnIEQJAAAAAEECEA&replay=CN5HYT8_AVmXDeZACA)
 
 ## 3. 归途
 
@@ -56,9 +64,11 @@
 
 **关键发现：** 不用等鬼到位后再关门，可以先关门，再靠控距与引导把鬼送到其下方。你看参考回放后明确评价‘妙，好设计’。
 
-**你的简评：** 正反馈来自看回放后的发现，不能记为无提示独立解出。当前是获准维护版：保留这个设计与原 59 步路线，阻止重合捷径。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/borrowed-shelter-review-20261010.md)。
+**你的简评：** 正反馈来自看回放后的发现，不能记为无提示独立解出。当前为用户2026-10-14优化版：保留控距安置，轮廓更匀称、删两B门，只留一钥匙；全部最优无重合。原59步维护版留档。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/borrowed-shelter-review-20261010.md)。
 
-[试玩](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgcuAccAAqgAEgFQTiC5xBOcghBCAAAQIIYAQYgQYY) · [参考解法](https://ghostmaze.novic.cc/?map=AADAwGHh4eHh4AEdYCF8BeCBlANArwIhKAkFMgrgcuAccAAqgAEgFQTiC5xBOcghBCAAAQIIYAQYgQYY&replay=CH7k9Zggj90mF8CqMlf2oMzILXA)
+**本轮调整：** 用户把外形修得更匀称，A/C靠近，删去两个无必要B门，只留一把任务钥匙。第二钥匙可作为引导兴趣点，是否保留由难度与审美决定；钥匙避免与鬼初始位重合。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAwMHh4eHh4AEFICF8AHA2gV4EQiQCAAWQFcDkA44ABVAAEAQE4gucQTiCEEIAAAgggBBiBBg) · [参考解法](https://ghostmaze.novic.cc/?map=AADAwMHh4eHh4AEFICF8AHA2gV4EQiQCAAWQFcDkA44ABVAAEAQE4gucQTiCEEIAAAgggBBiBBg&replay=GOgozp8CP3SYXwKolf2oMzIYAA)
 
 ## 5. 回环
 
@@ -98,7 +108,9 @@
 
 **你的简评：** ‘不错的谜题’，有一定复杂性且简洁；提出后续单元应尽量中性开局，并检查实际进入当步。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/shelter-role-exchange-review-20261012.md)。
 
-[试玩](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMAEC4C10BaeArgOw0oSAiBcgpwAAAKABZrEDmOQCBGYCoCQEgAAAwIMIBA) · [参考解法](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMAEC4C10BaeArgOw0oSAiBcgpwAAAKABZrEDmOQCBGYCoCQEgAAAwIMIBA&replay=AK03CdqPJm9djDqvo8yVV4AJm_6jIg)
+**本轮调整：** 左上扭曲与右侧凹口整理，钥匙移开鬼位；A门封右下掉头位，要求在合适门态到左上掉头。新版初态能被鬼看见，指定外部进入当步会改变鬼位，暂只声明独立试玩可用。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMAELIC90BHOAsgPwpQZgOEC5kKcAAOAKAALEDmOQACMwFQEgJAAAQYACGAGEAg) · [参考解法](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMAELIC90BHOAsgPwpQZgOEC5kKcAAOAKAALEDmOQACMwFQEgJAAAQYACGAGEAg&replay=AIsip9aPJm9eCg2fXDqvyMlVeACZv-oD)
 
 ## 9. 后路
 
@@ -129,6 +141,26 @@
 **你的简评：** ‘妙！’‘这图非常棒，很有新意’，明确要求上架。没有实际操作录制，提示或参考使用情况未报告。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/recruited-return-review-20261013.md)。
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA&replay=APJU70bDyl3eIDK1Wg8M1w)
+
+## 12. 周转
+
+**设计思想：** 两处停位与开门顺序相互制约。先把第一鬼暂留左门外，再迁入右房，为操作A留下保护；目标鬼最后安排到左房。
+
+**关键发现：** 找好顺序，三次调动第一只鬼，为最后通路创造条件。你已明确总结此关键。
+
+**你的简评：** “难度一般，但设计还不错”，明确加入地图集。当前为你的15格优化版，A移近后省去无意义赶路；原17格版保留。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAABgfHh4AAFngIqgJQQgAAAADlQ4UBwKoAAAAAAkBHOQhBYYgAAAIEMAMA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAABgfHh4AAFngIqgJQQgAAAADlQ4UBwKoAAAAAAkBHOQhBYYgAAAIEMAMA&replay=AF4gB2knYL3YKi1nCv8)
+
+## 13. 同行
+
+**设计思想：** 先安排右侧停车与A旁回路。最后按A前重新引上暂留下面的鬼，再带着它与目标鬼先后互相占位阻挡，从下方回路脱身。
+
+**关键发现：** 为最优解提前引出已安置鬼，主动准备后续冲突，而非等打开目标后再逐步处理。你已明确总结。
+
+**你的简评：** 双鬼移动冲突机制“利用得淋漓尽致”，明确加入地图集。所有最优都无对称重合；不把这段评述解释为取消规则中的对称重合。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAODgfHh4AAFS4EVIEBCANBACgIA5UBQ0cCqAAAAAQBARxCEFhiAAAAgMAA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAODgfHh4AAFS4EVIEBCANBACgIA5UBQ0cCqAAAAAQBARxCEFhiAAAAgMAA&replay=COK8iZEnYL3YKjFWAyJPWdw8)
 
 《楼间》已按用户2026-10-14决定撤出：每步几乎只有一种选择，没有思考难度。原入门定位、地图与修补历史留在[总目录](ai-map-catalog.md)及[反馈复盘](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/multilayer-rejection-20261014.md)，不改写此前评价。
 
