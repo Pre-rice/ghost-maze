@@ -143,7 +143,7 @@
 
 **修补依据：** 移动初始鬼后必须同时关上目标门，否则四步直达；普通门去除仍保持19步与原最优动作，已删去。不改原版评述，不新增质量样本。[原件与修补说明](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/stair-relocation-repair-20261014/README.md)。
 
-[试玩](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA) · [参考解法](REhttps://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA)
+[试玩](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA) · [参考解法](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA&replay=NnxkDKcpsteXxcA)
 
 ## 怎样继续使用这份小册
 

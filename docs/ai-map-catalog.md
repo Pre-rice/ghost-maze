@@ -4,6 +4,21 @@
 
 2026-10-14 当前地图集12张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》《楼间》。楼梯修正规则保持，原十一张单层图全部最优路线不变；《楼间》已完成基础入门关修补，原图与评述留存。《留客》旧稿退役。下列2026-10-13／10-12段为历史快照。
 
+## 2026-10-14 新候选：《隔岸》
+
+两层13格、一鬼、两个A按钮、三A门、一普通门、两对楼梯，无钥匙／玻璃；出生直接在下层按钮，初态可观察。删掉原本不改变核心的下层鬼、其走廊和突出出生格。尚无真人评述，未入集。[作品与来源](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/control-face-20261014/README.md)。
+
+[试玩](https://ghostmaze.novic.cc/?map=AWN4wMDA2MjIwMDA4qDDwMDI0ACEICDEyLCAASjH2NwMkuVwYGWoYWBuiGFoLGAByTMyzGhUEAErdWAqAAA)
+
+<details>
+<summary>设计思想与参考（含答案）</summary>
+
+同组门的两个按钮并不一样安全：留在上层再按A会被鬼追到，需要经普通门把鬼留在上层，回到下层远程开门，再由另一处楼梯绕回目标侧。两处可达局面只有玩家可见楼层不同，其余鬼位、门态、平面坐标、资源和生命相同。预期发现是“换控制面”，不是搬鬼必要或隐藏判定。
+
+唯一最优19，原图所有通关都需要上层操作后下层重开；全部最优无重合、去终点仍安全，指定真正入场一致。九项产品网页检查通过，未检查正式站或部署。尚无用户顿悟反馈，不自评精妙或高难。[参考回放](REhttps://ghostmaze.novic.cc/?map=AWN4wMDA2MjIwMDA4qDDwMDI0ACEICDEyLCAASjH2NwMkuVwYGWoYWBuiGFoLGAByTMyzGhUEAErdWAqAAA)。
+
+</details>
+
 ## 2026-10-14 新候选：《腾位》
 
 20格、三鬼、一个A按钮、一扇A门，零钥匙／普通门／玻璃；初态可以观察，出口可见。由保护位置研究逆向构造，删掉任务、整组B、第四鬼及三扇门；原件和反例留存。尚无真人评述，未入集。[作品与设计卡](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/protective-slot-20261014/README.md)。
