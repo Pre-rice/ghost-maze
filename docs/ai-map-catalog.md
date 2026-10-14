@@ -6,16 +6,16 @@
 
 ## 2026-10-14 新候选：《相让》
 
-单层16格、两鬼、一个A按钮、两反相A门、一普通门，无钥匙／玻璃／楼梯；初态可以观察，目标可见。原26格大环被短解否定，删去重复按钮与未用环路。未获真人评述，未入集。[作品与来源](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/reciprocal-braking-20261014/README.md)。
+单层16格、两鬼、一个A按钮、两反相A门、一普通门，无钥匙／玻璃／楼梯；初态可以观察，目标可见。原26格大环被短解否定，删去重复按钮与未用环路。用户认为复杂性太低、随手即解，主要只需考虑第2步后左或下；未入集。[原话及复盘](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/reciprocal-braking-review-20261014.md)。[作品与来源](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/reciprocal-braking-20261014/README.md)。
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAICg4eGAwMAEkgISgHIBACAuBACgkAAUAAUAqgRBCC5AJAWIAAAE)
 
 <details>
 <summary>设计思想与参考（含答案）</summary>
 
-同一对鬼互换帮忙与受挡：先右鬼阻北鬼，再北鬼阻右鬼，分别准备两个停位；最后从普通门的一侧到按钮，使跟随鬼留在另一侧，安全切门。先向下脱身与直接到按钮的安全前缀分别穷尽续解无解。预期新认识未获用户确认，不自评精妙或高难。
+同一对鬼互换帮忙与受挡：先右鬼阻北鬼，再北鬼阻右鬼，分别准备两个停位；最后从普通门的一侧到按钮，使跟随鬼留在另一侧，安全切门。先向下脱身与直接到按钮的安全前缀分别穷尽续解无解。预期未达到挑战目标：第二次制动自动由安全路线带出，未成为新的主动规划。保留原证据和新的负反馈。
 
-最优17，共三种上方收尾；全部最优无重合、去终点仍安全、指定实际入场与码往返一致。十项产品网页检查通过，未检查正式站或部署。[参考回放](REhttps://ghostmaze.novic.cc/?map=AADAICg4eGAwMAEkgISgHIBACAuBACgkAAUAAUAqgRBCC5AJAWIAAAE)，网站求解可查看全部最优入口。
+最优17，共三种上方收尾；全部最优无重合、去终点仍安全、指定实际入场与码往返一致。十项产品网页检查通过，未检查正式站或部署。[参考回放](https://ghostmaze.novic.cc/?map=AADAICg4eGAwMAEkgISgHIBACAuBACgkAAUAAUAqgRBCC5AJAWIAAAE&replay=GHQGozmZ3ZAPAA)，网站求解可查看全部最优入口。
 
 </details>
 
@@ -34,7 +34,7 @@
 
 同组门的两个按钮并不一样安全：留在上层再按A会被鬼追到，需要经普通门把鬼留在上层，回到下层远程开门，再由另一处楼梯绕回目标侧。两处可达局面只有玩家可见楼层不同，其余鬼位、门态、平面坐标、资源和生命相同。预期发现是“换控制面”，不是搬鬼必要或隐藏判定。
 
-唯一最优19，原图所有通关都需要上层操作后下层重开；全部最优无重合、去终点仍安全，指定真正入场一致。九项产品网页检查通过，未检查正式站或部署。此前预期未获认可：用户指出改成普通区域仍有相同解谜思路；机械必要性不足以证明楼梯价值。[参考回放](REhttps://ghostmaze.novic.cc/?map=AWN4wMDA2MjIwMDA4qDDwMDI0ACEICDEyLCAASjH2NwMkuVwYGWoYWBuiGFoLGAByTMyzGhUEAErdWAqAAA)。
+唯一最优19，原图所有通关都需要上层操作后下层重开；全部最优无重合、去终点仍安全，指定真正入场一致。九项产品网页检查通过，未检查正式站或部署。此前预期未获认可：用户指出改成普通区域仍有相同解谜思路；机械必要性不足以证明楼梯价值。[参考回放](https://ghostmaze.novic.cc/?map=AWN4wMDA2MjIwMDA4qDDwMDI0ACEICDEyLCAASjH2NwMkuVwYGWoYWBuiGFoLGAByTMyzGhUEAErdWAqAAA&replay=NuJdNPCoRJb52YA)。
 
 </details>
 
