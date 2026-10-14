@@ -1,3 +1,4 @@
+import { galleryMarkup } from './maps/galleryScreen.js';
 import {
     GhostMazeGame
 } from './main.js';
@@ -32,7 +33,7 @@ class Application {
         this.records=new Map();
         this.sequence=0;
         this.navigationSuspended=false;
-        document.body.insertAdjacentHTML('beforeend',editorMarkup()+`<section id="maps-screen" hidden class="gallery-container"><div class="panel-header"><h1 class="panel-title">地图集</h1><nav class="header-controls"><a href="./" class="home-btn" title="返回游玩">⌂</a><a href="help.html" class="help-btn" title="帮助">?</a><button class="theme-toggle-btn" data-theme-action title="切换主题">◐</button></nav></div><p class="gallery-intro">选一张地图开始解谜。</p><div class="gallery-section-heading"><h2>AI 生成地图</h2><span id="gallery-count"></span></div><div id="ai-map-grid" class="map-grid"></div></section><section id="help-screen" hidden>${helpContent}</section>`);
+        document.body.insertAdjacentHTML('beforeend',editorMarkup()+galleryMarkup+`<section id="help-screen" hidden>${helpContent}</section>`);
         window.app=this;
         this.game=window.game=new GhostMazeGame();
         this.editor=window.editorApp=new EditorApp(this);
