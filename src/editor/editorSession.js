@@ -1,7 +1,7 @@
 import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../core/constants.js';
 import * as Editor from './editor.js';
 import { createNewLayer, cleanupStairsOnLayerRemove } from '../layerManager.js';
-import { normalizeMapData, validateMapData } from '../core/mapDataUtils.js';
+import { normalizeMapData, validateMapData, isInteriorWall } from '../core/mapDataUtils.js';
 
 /**
  * EditorDocument - 编辑器会话的唯一数据源（纯逻辑，零 DOM）
@@ -293,6 +293,7 @@ export class EditorDocument {
 
     /** 切换墙类型（原地改 type，保留 keys/direction；按钮只依附 SOLID，被替换时清除） */
     toggleWall(wall, targetType = WALL_TYPES.SOLID) {
+        if (!isInteriorWall(wall, this.width, this.height, this.activeCells)) return;
         const { x, y, type } = wall;
         if (type === 'h' && y >= 0 && y <= this.height && x >= 0 && x < this.width) {
             const currentWallObj = this.hWalls[y][x];
@@ -332,6 +333,7 @@ export class EditorDocument {
      * 对应 inputHandler.handleCanvasMouseMove 拖拽分支的 `= { type }` 直接赋值（不翻转、不清按钮）。
      */
     setWall(wall, type) {
+        if (!isInteriorWall(wall, this.width, this.height, this.activeCells)) return;
         if (wall.type === 'h' && wall.y >= 0 && wall.y <= this.height && wall.x >= 0 && wall.x < this.width) {
             this.hWalls[wall.y][wall.x] = { type };
         } else if (wall.type === 'v' && wall.x >= 0 && wall.x <= this.width && wall.y >= 0 && wall.y < this.height) {
@@ -341,6 +343,7 @@ export class EditorDocument {
 
     /** 放置/取消门（DOOR 工具点击：SOLID 墙先清依附按钮，DOOR↔EMPTY 切换） */
     toggleDoor(wall) {
+        if (!isInteriorWall(wall, this.width, this.height, this.activeCells)) return;
         const wallRef = this._wallRef(wall);
         if (wallRef.type === WALL_TYPES.SOLID) this.eraseButtonsOnWall(wall);
         wallRef.type = wallRef.type === WALL_TYPES.DOOR ? WALL_TYPES.EMPTY : WALL_TYPES.DOOR;
@@ -348,6 +351,7 @@ export class EditorDocument {
 
     /** 放置数字门（LOCK 工具点击；keys 由调用方 prompt+校验后传入；SOLID 墙先清按钮） */
     setLocked(wall, keys) {
+        if (!isInteriorWall(wall, this.width, this.height, this.activeCells)) return;
         const wallRef = this._wallRef(wall);
         if (wallRef.type === WALL_TYPES.SOLID) this.eraseButtonsOnWall(wall);
         const newWall = { type: WALL_TYPES.LOCKED, keys };
@@ -359,6 +363,7 @@ export class EditorDocument {
      * 已是字母门 → 翻转 initialState；否则用 letter（调用方 prompt+校验后传入）建新门并清 SOLID 按钮。
      */
     toggleLetterDoor(wall, letter) {
+        if (!isInteriorWall(wall, this.width, this.height, this.activeCells)) return;
         const wallRef = this._wallRef(wall);
         if (wallRef.type === WALL_TYPES.LETTER_DOOR) {
             wallRef.initialState = wallRef.initialState === 'open' ? 'closed' : 'open';
@@ -375,6 +380,7 @@ export class EditorDocument {
      * 同时覆盖 inputHandler mouseDown 放置与 mouseMove 拖拽改向两种语义。
      */
     setOneWay(wall, direction) {
+        if (!isInteriorWall(wall, this.width, this.height, this.activeCells)) return;
         const wallRef = this._wallRef(wall);
         if (wallRef.type === WALL_TYPES.SOLID) this.eraseButtonsOnWall(wall);
         if (wallRef.type === WALL_TYPES.ONE_WAY) {

@@ -18,8 +18,8 @@ export const aiMaps = [
     },
     {
         "title": "归途",
-        "mapCode": "AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA",
-        "replayCode": "CHbIXDkIJ9WgsPqXoz4I",
+        "mapCode": "AADAwEDg4ODg4AED4CFcARAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA",
+        "replayCode": "CN9_vk0IJ9WgM-pboz4I",
         "cells": 18,
         "ghosts": 2,
         "keys": 1
@@ -66,25 +66,25 @@ export const aiMaps = [
     },
     {
         "title": "后路",
-        "mapCode": "AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA",
-        "replayCode": "CCe-0I-PJm9VxgD6r6PMlfnYAog",
-        "cells": 23,
+        "mapCode": "AADA8PDw8DAwMDELIDB8CcecBZAfhSgXAQBcgpwAAAOZAoLNiBzHIBAjMBICxAVASAQAYYABhhAI",
+        "replayCode": "CM7ofIaPJm9VxgD6r6PMlfnYAow",
+        "cells": 24,
         "ghosts": 2,
         "keys": 3
     },
     {
         "title": "暂驻",
-        "mapCode": "AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA",
-        "replayCode": "CL4EDXnUQDZX_AKl28CM",
+        "mapCode": "AADAEPj4-Pj4AAEC4C3KASgBBVyAAQFwAZFVAAABAghKoIoVEIIAAAABAA",
+        "replayCode": "GNgj2INRANlf8AqXbwIA",
         "cells": 26,
         "ghosts": 2,
         "keys": 0
     },
     {
         "title": "再借",
-        "mapCode": "AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA",
-        "replayCode": "APJU70bDyl3eIDK1Wg8M1w",
-        "cells": 21,
+        "mapCode": "AADAAHhobHh4AAFR4DAyACAABVAQCQJAAqgAAAAQglQMVyFOQBAAAAAI",
+        "replayCode": "CIxe4NrJ3erAnDNc",
+        "cells": 19,
         "ghosts": 2,
         "keys": 0
     },

@@ -1,3 +1,4 @@
+import { isInteriorWall } from '../core/mapDataUtils.js';
 import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../core/constants.js';
 
 /**
@@ -45,7 +46,7 @@ export function isPosInStartRoom(cellX, cellY, height) {
  * @returns {boolean}
  */
 export function isWallEditable(wall, editorMode, width, height, activeCells = null) {
-    if (!wall) return false;
+    if (!isInteriorWall(wall, width, height, activeCells)) return false;
     const { x, y, type } = wall;
     const roomY = getStartRoomY(height);
     

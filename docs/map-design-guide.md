@@ -4,6 +4,8 @@
 
 “关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《周转》《同行》的新评述及五图优化见[本轮记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-adjustments-20261014.md)。
 
+本轮四份获准维护、《回位》《同行》取消稿与边界修正见[反馈及反思](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-maintenance-review-20261014.md)。
+
 《错位》《接力》《再借》的关键也依据你[本次明确总结](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/recruited-return-review-20261013.md#本次重整的设计方向)。
 
 “不错”不等于已达到精妙目标。基本数量来自当前地图集；《借影》为获准维护版，不把维护当新作品。
@@ -18,9 +20,9 @@
 | 6 | [《回位》](#6-回位) | 2026-10-10 | 16 / 2 / 0 | A/B 字母门，四个操作站位 |
 | 7 | [《换边》](#7-换边) | 2026-10-12 | 11 / 1 / 1 | A 字母门、普通门、钥匙门 |
 | 8 | [《换岗》](#8-换岗) | 2026-10-12 | 22 / 2 / 2 | A/B 字母门、普通门、钥匙门 |
-| 9 | [《后路》](#9-后路) | 2026-10-12 | 23 / 2 / 3 | A/B 字母门、普通门、钥匙门、0 门 |
+| 9 | [《后路》](#9-后路) | 2026-10-12 | 24 / 2 / 3 | A/B 字母门、普通门、钥匙门、0 门 |
 | 10 | [《暂驻》](#10-暂驻) | 2026-10-13 | 26 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇 0 门 |
-| 11 | [《再借》](#11-再借) | 2026-10-13 | 21 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇普通门 |
+| 11 | [《再借》](#11-再借) | 2026-10-13 | 19 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇普通门 |
 | 12 | [《周转》](#12-周转) | 2026-10-14 | 15 / 2 / 0 | A/B字母门、普通门；用户优化版 |
 | 13 | [《同行》](#13-同行) | 2026-10-14 | 19 / 3 / 0 | A/B字母门、普通门、单向门；追者互相占位 |
 
@@ -56,7 +58,9 @@
 
 **你的简评：** ‘不错的图’，想出解法不难；单向门的用途过于明显。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/permanent-return-review-20261009.md)。
 
-[试玩](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcAXAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA&replay=CHbIXDkIJ9WgsPqXoz4I)
+**本轮维护：** 钥匙移到相邻必经格，清除与鬼的初始叠放，全部三条最优动作保持；按本轮“其余改稿”授权采用，没有单独新增质量评价。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcARAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcARAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA&replay=CN9_vk0IJ9WgM-pboz4I)
 
 ## 4. 借影
 
@@ -120,7 +124,9 @@
 
 **你的简评：** ‘不错，比上一张有进步’，不久就想到；仍期待新意与再次眼前一亮。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/deferred-key-cold-entry-review-20261012.md)。
 
-[试玩](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA) · [参考解法](https://ghostmaze.novic.cc/?map=AADBsPDg8DAwMDEC4C90CaeUBXAdhpQlwEQLkFOAAABzIFCzWIHMcgECMwEgLEBUBIBABhgAGGEAgA&replay=CCe-0I-PJm9VxgD6r6PMlfnYAog)
+**本轮维护：** 终点及3钥匙门搬入左上，右侧轮廓补齐；用户评价“改得不错”。原稿遗留边界门已改为墙，四条最优仍59步，钥匙次序与0门关系保留。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMDELIDB8CcecBZAfhSgXAQBcgpwAAAOZAoLNiBzHIBAjMBICxAVASAQAYYABhhAI) · [参考解法](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMDELIDB8CcecBZAfhSgXAQBcgpwAAAOZAoLNiBzHIBAjMBICxAVASAQAYYABhhAI&replay=CM7ofIaPJm9VxgD6r6PMlfnYAow)
 
 ## 10. 暂驻
 
@@ -130,7 +136,9 @@
 
 **你的简评：** ‘是好图’，设计很简洁，也有一定挑战性；明确要求加入地图集。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/temporary-stay-review-20261013.md)。
 
-[试玩](https://ghostmaze.novic.cc/?map=AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAGPjZ-Lj4AAEK4C7KASgBQq5AgiCXAIyKqAAACQghKokUKiEEAAAAAgA&replay=CL4EDXnUQDZX_AKl28CM)
+**本轮维护：** 采用轮廓版，用户评价“不错，美观了很多”；出生与终点内移，中央两处虚空融入外形。全部最优省去首尾两步，核心安置关系保持。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAEPj4-Pj4AAEC4C3KASgBBVyAAQFwAZFVAAABAghKoIoVEIIAAAABAA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAEPj4-Pj4AAEC4C3KASgBBVyAAQFwAZFVAAABAghKoIoVEIIAAAABAA&replay=GNgj2INRANlf8AqXbwIA)
 
 ## 11. 再借
 
@@ -140,7 +148,9 @@
 
 **你的简评：** ‘妙！’‘这图非常棒，很有新意’，明确要求上架。没有实际操作录制，提示或参考使用情况未报告。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/recruited-return-review-20261013.md)。
 
-[试玩](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA&replay=APJU70bDyl3eIDK1Wg8M1w)
+**本轮维护：** 左环缩窄为两列，21→19格、44→27步，删去外围门态准备，仍必须招回先前安置鬼阻挡守卫。用户评价“改得很好”，认可保留核心的大胆简化。原图好评与本轮改稿肯定分开记录。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAHhobHh4AAFR4DAyACAABVAQCQJAAqgAAAAQglQMVyFOQBAAAAAI) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAHhobHh4AAFR4DAyACAABVAQCQJAAqgAAAAQglQMVyFOQBAAAAAI&replay=CIxe4NrJ3erAnDNc)
 
 ## 12. 周转
 

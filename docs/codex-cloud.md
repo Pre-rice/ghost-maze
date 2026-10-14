@@ -9,7 +9,7 @@
 3. Node.js22.21.1、Python3；本体不安装依赖，AI仓npm ci。运行npm run cloud:check，必须通过本体、AI、内容锁、原种子与11HTTP／代理检查，不写真人反馈。
 4. 本地联调从AI仓npm run cloud:serve -- 4206，入口/game/、/game/editor.html。需要实际公网预览时由本次环境取得地址，设置GHOST_MAZE_HOST=0.0.0.0和GHOST_MAZE_ORIGIN为真实协议＋主机后重启；localhost不冒充可访问链接。
 
-当前共同规则锁为 `sha256:9a26362752ae9747499e6265c7de656ff7adb634fdaec1f5f0f7c14e399669f9`；只有真实规则修改才更新锁并重验相关证书。原seed、历史地图、反馈与录制保持原件，不能为通过检查覆盖不同资料。
+当前共同规则锁为 `sha256:045d5a8353422b89980b2d2f0e2a1bf4bebdada54436f8d37792fc42bc675441`；只有真实规则修改才更新锁并重验相关证书。原seed、历史地图、反馈与录制保持原件，不能为通过检查覆盖不同资料。
 
 ## 产品入口与发布
 

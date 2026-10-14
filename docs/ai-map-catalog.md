@@ -1,5 +1,17 @@
 # AI 地图总目录
 
+## 2026-10-14 本轮获准维护
+
+《回位》《同行》取消改稿，地图集保留原码；《暂驻》选择轮廓版，另一备选未获负评价。《归途》《后路》《暂驻》《再借》现行码如下，旧条目保留追溯；《后路》原候选边界门非法，不再作有效试玩。详情见[处理与反思](map-adjustments-20261014.md)。
+
+| 地图 | 现行试玩 | 参考回放（答案） | 真实改稿简评 |
+| --- | --- | --- | --- |
+| 归途 | [试玩](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcARAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA) | [回放](https://ghostmaze.novic.cc/?map=AADAwEDg4ODg4AED4CFcARAhwEwS4FAQC5AcgOAacAAVAAJAKAtZgXEC5yBECIAACAGBQCEGGA&replay=CN9_vk0IJ9WgM-pboz4I) | 按“其余改稿”授权更新，未另作质量评价 |
+| 后路 | [试玩](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMDELIDB8CcecBZAfhSgXAQBcgpwAAAOZAoLNiBzHIBAjMBICxAVASAQAYYABhhAI) | [回放](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMDELIDB8CcecBZAfhSgXAQBcgpwAAAOZAoLNiBzHIBAjMBICxAVASAQAYYABhhAI&replay=CM7ofIaPJm9VxgD6r6PMlfnYAow) | 改得不错；要求修正非法边界门 |
+| 暂驻 | [试玩](https://ghostmaze.novic.cc/?map=AADAEPj4-Pj4AAEC4C3KASgBBVyAAQFwAZFVAAABAghKoIoVEIIAAAABAA) | [回放](https://ghostmaze.novic.cc/?map=AADAEPj4-Pj4AAEC4C3KASgBBVyAAQFwAZFVAAABAghKoIoVEIIAAAABAA&replay=GNgj2INRANlf8AqXbwIA) | 不错，美观了很多 |
+| 再借 | [试玩](https://ghostmaze.novic.cc/?map=AADAAHhobHh4AAFR4DAyACAABVAQCQJAAqgAAAAQglQMVyFOQBAAAAAI) | [回放](https://ghostmaze.novic.cc/?map=AADAAHhobHh4AAFR4DAyACAABVAQCQJAAqgAAAAQglQMVyFOQBAAAAAI&replay=CIxe4NrJ3erAnDNc) | 改得很好；保留核心的大胆简化是好示范 |
+
+
 [地图集设计小册](map-design-guide.md)简要解释当前十一图的设计思想与尤里卡时刻；[文档索引](README.md)区分现行约定和历史档案。本目录仍统一保存所有历史地图、参考与真实简评，按需查证。公开源码与反馈摘要使用GitHub入口；runs及私人录制链接只用于已恢复资料的本地资料库，不代表公开下载。
 
 2026-10-14 本轮更新前地图集11张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》。楼梯修正规则保持，原十一张单层图全部最优路线不变；《楼间》完成规则修补后按用户最新决定撤出；原图、修补版和先前入门评述留存。《留客》旧稿退役。下列2026-10-13／10-12段为历史快照。

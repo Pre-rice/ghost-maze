@@ -537,8 +537,8 @@ export function drawGame(ctx, view) {
             if (!isActiveRow && !isBoundary) continue;
             const isVisible = isBoundary || view.debugVision || (y < view.height && view.activeCells[y][x] && view.seenCells[y][x]) || (y > 0 && view.activeCells[y - 1][x] && view.seenCells[y - 1][x]);
             if (isVisible) {
-                if (view.hWalls[y][x].type !== WALL_TYPES.EMPTY) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, view.hWalls[y][x], cs, view.colors, view.state);
-                else if (isBoundary) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, { type: WALL_TYPES.SOLID }, cs, view.colors, view.state);
+                if (isBoundary) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, { type: WALL_TYPES.SOLID }, cs, view.colors, view.state);
+                else if (view.hWalls[y][x].type !== WALL_TYPES.EMPTY) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, view.hWalls[y][x], cs, view.colors, view.state);
             }
         }
     }
@@ -549,8 +549,8 @@ export function drawGame(ctx, view) {
             if (!isActiveCol && !isBoundary) continue;
             const isVisible = isBoundary || view.debugVision || (x < view.width && view.activeCells[y][x] && view.seenCells[y][x]) || (x > 0 && view.activeCells[y][x - 1] && view.seenCells[y][x - 1]);
             if (isVisible) {
-                if (view.vWalls[y][x].type !== WALL_TYPES.EMPTY) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, view.vWalls[y][x], cs, view.colors, view.state);
-                else if (isBoundary) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, { type: WALL_TYPES.SOLID }, cs, view.colors, view.state);
+                if (isBoundary) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, { type: WALL_TYPES.SOLID }, cs, view.colors, view.state);
+                else if (view.vWalls[y][x].type !== WALL_TYPES.EMPTY) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, view.vWalls[y][x], cs, view.colors, view.state);
             }
         }
     }
@@ -605,16 +605,16 @@ export function drawEditor(ctx, view) {
         for (let x = 0; x < view.width; x++) {
             const isActiveRow = (y < view.height && view.activeCells[y][x]) || (y > 0 && view.activeCells[y - 1][x]);
             if (!isActiveRow) continue;
-            if (view.hWalls[y][x].type !== WALL_TYPES.EMPTY) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, view.hWalls[y][x], cs, view.colors, view.state);
-            else if (view.editor.mode === 'free' && shouldDrawBoundary(x, y, true, view.activeCells, view.width, view.height)) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, { type: WALL_TYPES.SOLID }, cs, view.colors, view.state);
+            if (shouldDrawBoundary(x, y, true, view.activeCells, view.width, view.height)) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, { type: WALL_TYPES.SOLID }, cs, view.colors, view.state);
+            else if (view.hWalls[y][x].type !== WALL_TYPES.EMPTY) drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, view.hWalls[y][x], cs, view.colors, view.state);
         }
     }
     for (let y = 0; y < view.height; y++) {
         for (let x = 0; x <= view.width; x++) {
             const isActiveCol = (x < view.width && view.activeCells[y][x]) || (x > 0 && view.activeCells[y][x - 1]);
             if (!isActiveCol) continue;
-            if (view.vWalls[y][x].type !== WALL_TYPES.EMPTY) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, view.vWalls[y][x], cs, view.colors, view.state);
-            else if (view.editor.mode === 'free' && shouldDrawBoundary(x, y, false, view.activeCells, view.width, view.height)) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, { type: WALL_TYPES.SOLID }, cs, view.colors, view.state);
+            if (shouldDrawBoundary(x, y, false, view.activeCells, view.width, view.height)) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, { type: WALL_TYPES.SOLID }, cs, view.colors, view.state);
+            else if (view.vWalls[y][x].type !== WALL_TYPES.EMPTY) drawWallOrDoor(ctx, x * cs, y * cs, x * cs, (y + 1) * cs, view.vWalls[y][x], cs, view.colors, view.state);
         }
     }
     ctx.stroke();
@@ -631,7 +631,7 @@ export function drawEditor(ctx, view) {
             case EDITOR_TOOLS.LOCK: wallType = 3; break; case EDITOR_TOOLS.ONE_WAY: wallType = 4; break;
             case EDITOR_TOOLS.LETTER_DOOR: wallType = 6; break; default: wallType = 1;
         }
-        const isValidWall = (type === 'h') ? (y > 0 && view.activeCells[y - 1][x]) || (y < view.height && view.activeCells[y][x]) : (x > 0 && view.activeCells[y][x - 1]) || (x < view.width && view.activeCells[y][x]);
+        const isValidWall = (type === 'h') ? (y > 0 && y < view.height && view.activeCells[y - 1][x] && view.activeCells[y][x]) : (x > 0 && x < view.width && view.activeCells[y][x - 1] && view.activeCells[y][x]);
         if (isValidWall) {
             ctx.beginPath(); const wallObject = { type: wallType, keys: '?', direction: direction };
             if (type === 'h') drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, wallObject, cs, view.colors, view.state, true);

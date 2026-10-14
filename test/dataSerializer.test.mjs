@@ -26,14 +26,14 @@ for (const [name, entry] of Object.entries(golden)) test(name + '：新码、唯
     assertEq(result.decoded.data.mapData.hWalls, undefined);
 });
 const full = makeMap({ initialHealth: 256 });
-full.hWalls[0][0] = { type: 1 }; full.hWalls[0][1] = { type: 2 }; full.hWalls[0][2] = { type: 3, keys: 0xffffffff };
+full.hWalls[0][0] = { type: 1 }; full.hWalls[2][1] = { type: 2 }; full.hWalls[2][2] = { type: 3, keys: 0xffffffff };
 full.hWalls[1][0] = { type: 4, direction: { dx: 0, dy: -1 } }; full.hWalls[1][1] = { type: 5 };
 full.hWalls[1][2] = { type: 6, letter: 'Z', initialState: 'open' };
 full.buttons = [{ x: 0, y: 0, direction: { dx: 0, dy: -1 }, letter: 'Z' }];
 full.initialGhosts = [{ x: 2, y: 0 }, { x: 1, y: 2 }]; full.items = [{ x: 1, y: 0, type: 'key' }];
 test('全部墙类型、UINT32门槛、生命256、鬼顺序往返', () => {
     const map = roundTrip(full).decoded.data.mapData;
-    assertEq(map.layers[0].hWalls[0][2].keys, 0xffffffff); assertEq(map.initialHealth, 256);
+    assertEq(map.layers[0].hWalls[2][2].keys, 0xffffffff); assertEq(map.initialHealth, 256);
     assertDeepEq(map.layers[0].ghosts.map(g => [g.x,g.y]), [[2,0],[1,2]]);
     assertEq(map.layers[0].hWalls[1][2].initialState, 'open');
 });

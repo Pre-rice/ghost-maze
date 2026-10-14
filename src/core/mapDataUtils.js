@@ -15,6 +15,15 @@ function isActiveAt(activeCells, x, y, width, height) {
     return activeCells ? activeCells[y]?.[x] === true : true;
 }
 
+/** 门、玻璃和可编辑墙段必须连接两个活动格；外圈与虚空边界不可改成通路。 */
+export function isInteriorWall(wall, width, height, activeCells = null) {
+    if (!wall || !Number.isInteger(wall.x) || !Number.isInteger(wall.y)) return false;
+    const { x, y, type } = wall;
+    if (type === 'h') return isActiveAt(activeCells, x, y - 1, width, height) && isActiveAt(activeCells, x, y, width, height);
+    if (type === 'v') return isActiveAt(activeCells, x - 1, y, width, height) && isActiveAt(activeCells, x, y, width, height);
+    return false;
+}
+
 function normalizeLayerVoidWalls(layer, width, height) {
     if (!layer || !hasWallGrid(layer, width, height)) return layer;
     const { activeCells } = layer;
@@ -115,8 +124,13 @@ export function normalizeMapData(source) {
     const layerCount = data.layerCount ?? (data.layers?.length || 1);
     const layers = Array.from({ length: layerCount }, (_, index) => {
         const layer = data.layers?.[index] || (index === 0 ? { ...data, ghosts: data.initialGhosts } : {});
-        const cleanWall = wall => {
+        const cleanWall = (wall, axis, x, y) => {
             if (!wall || !Number.isInteger(wall.type) || wall.type < 0 || wall.type > WALL_TYPES.LETTER_DOOR) throw new RangeError('墙类型无效');
+            if (wall.type > WALL_TYPES.SOLID && !isInteriorWall({ type: axis, x, y }, width, height, layer.activeCells)) {
+                const adjacent = isActiveAt(layer.activeCells, x, y, width, height) ||
+                    isActiveAt(layer.activeCells, axis === 'v' ? x - 1 : x, axis === 'h' ? y - 1 : y, width, height);
+                return { type: adjacent ? WALL_TYPES.SOLID : WALL_TYPES.EMPTY, keys: 0 };
+            }
             const result = { type: wall.type, keys: wall.type === WALL_TYPES.LOCKED ? (wall.keys ?? 0) : 0 };
             if (wall.type === WALL_TYPES.ONE_WAY) result.direction = copy(wall.direction);
             if (wall.type === WALL_TYPES.LETTER_DOOR) {
@@ -126,8 +140,8 @@ export function normalizeMapData(source) {
             return result;
         };
         return {
-            hWalls: layer.hWalls?.map(row => row.map(cleanWall)) || [],
-            vWalls: layer.vWalls?.map(row => row.map(cleanWall)) || [],
+            hWalls: layer.hWalls?.map((row, y) => row.map((wall, x) => cleanWall(wall, 'h', x, y))) || [],
+            vWalls: layer.vWalls?.map((row, y) => row.map((wall, x) => cleanWall(wall, 'v', x, y))) || [],
             activeCells: copy(layer.activeCells || Array.from({ length: height }, () => Array(width).fill(true))),
             ghosts: (layer.ghosts || []).map((g, id) => ({ ...point(g), id })),
             items: (layer.items || []).map(item => ({ ...point(item), type: item.type ?? 'key' })),
@@ -159,7 +173,7 @@ export function validateMapData(source, { requireEnd = true } = {}) {
         require(source.initialHealth == null || (uint(source.initialHealth) && source.initialHealth > 0), '初始生命必须为 1 到 4294967295 的整数');
         require(Array.isArray(source.stairs ?? []), '楼梯数据无效');
         // 先检查原始墙参数，不能让虚空规范化掩盖坏数据。
-        const rawLayers = source.layers?.length ? source.layers : [source];
+        const rawLayers = source.layers?.length ? [...(source.hWalls ? [source] : []), ...source.layers] : [source];
         for (const layer of rawLayers) {
             require(layer && hasWallGrid(layer, source.width, source.height), '墙数组尺寸无效');
             for (const wall of [...layer.hWalls.flat(), ...layer.vWalls.flat()]) {
@@ -168,6 +182,10 @@ export function validateMapData(source, { requireEnd = true } = {}) {
                 if (wall.type === WALL_TYPES.ONE_WAY) require(directionIndex(wall.direction) >= 0, '单向门方向无效');
                 if (wall.type === WALL_TYPES.LETTER_DOOR) require(/^[A-Z]$/.test(wall.letter ?? '') && ['open', 'closed'].includes(wall.initialState ?? 'closed'), '字母门参数无效');
             }
+            for (const axis of ['h', 'v']) layer[axis + 'Walls'].forEach((row, y) => row.forEach((wall, x) => {
+                require(wall.type <= WALL_TYPES.SOLID || isInteriorWall({ type: axis, x, y }, source.width, source.height, layer.activeCells),
+                    '门和玻璃只能位于两个活动格之间，地图边界必须是墙');
+            }));
             for (const name of ['ghosts', 'initialGhosts', 'items', 'buttons']) require(layer[name] == null || Array.isArray(layer[name]), '实体列表无效');
         }
         source.layers?.forEach((layer, li) => {
