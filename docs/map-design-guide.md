@@ -1,6 +1,6 @@
 # 地图集设计小册
 
-更新：2026-10-13。这里按首次交付／发现记录的顺序，简要总结目前上架的十二张图。**正文包含解谜关键；准备首次试玩时请直接访问[无图地图集](https://ghostmaze.novic.cc/maps.html)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
+更新：2026-10-14。这里按首次交付／发现记录的顺序，简要总结目前上架的十一张图。**正文包含解谜关键；准备首次试玩时请直接访问[无图地图集](https://ghostmaze.novic.cc/maps.html)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
 
 “关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《错位》《接力》《再借》的关键也依据你[本次明确总结](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/recruited-return-review-20261013.md#本次重整的设计方向)。
 
@@ -19,7 +19,6 @@
 | 9 | [《后路》](#9-后路) | 2026-10-12 | 23 / 2 / 3 | A/B 字母门、普通门、钥匙门、0 门 |
 | 10 | [《暂驻》](#10-暂驻) | 2026-10-13 | 26 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇 0 门 |
 | 11 | [《再借》](#11-再借) | 2026-10-13 | 21 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇普通门 |
-| 12 | [《楼间》](#12-楼间) | 2026-10-13 | 11 / 1 / 0 | 两层、两对楼梯、两个同相 A 门、一个 A 按钮（10-14 修补） |
 
 ## 1. 错位
 
@@ -131,19 +130,7 @@
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAHho7Lj4AAFZ4DIyACAABVAQRISQgKqAAAABCCVCYrkVOQggAAAAEA&replay=APJU70bDyl3eIDK1Wg8M1w)
 
-## 12. 楼间
-
-**当前状态：** 2026-10-14 完成楼梯规则修补，保留两层11格及原入门位置，最短19且唯一。原版地图与证据另存，原26步参考不能用于新规则。修补版未收到新的真人评价。
-
-**设计思想：** 开A同时释放上层鬼，直接前往目标会被追到。先下楼绕到另一处楼梯，从另一端重新引近鬼，再下楼把它带走；沿下层返回原楼梯，转向上层目标。鬼当步正常行动，每回合只走一格，没有上楼停顿。
-
-**关键发现：** 预期是利用不同楼梯改变接近鬼的方向与它的楼层；所有通关都需让鬼跨层至少两次。你将原版定位为基础多层入门关，未确认强顿悟或高挑战；该评价不扩大为修补版已被重新认可。
-
-**原版简评：** “基础的多层谜题”，适合作为简单起始作品，让玩家了解楼梯基本机制；明确要求上架。后续希望最精妙部分依赖楼梯实现。[原评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/stair-relocation-review-20261013.md)。
-
-**修补依据：** 移动初始鬼后必须同时关上目标门，否则四步直达；普通门去除仍保持19步与原最优动作，已删去。不改原版评述，不新增质量样本。[原件与修补说明](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/stair-relocation-repair-20261014/README.md)。
-
-[试玩](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA) · [参考解法](https://ghostmaze.novic.cc/?map=AWN4wMDAwOR8gIGBiYGBgcVhgQcDGDCt4nAAMzjkQKQLkwILkG7Y6agBkWdllGmAsBQcAA&replay=NnxkDKcpsteXxcA)
+《楼间》已按用户2026-10-14决定撤出：每步几乎只有一种选择，没有思考难度。原入门定位、地图与修补历史留在[总目录](ai-map-catalog.md)及[反馈复盘](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/multilayer-rejection-20261014.md)，不改写此前评价。
 
 ## 怎样继续使用这份小册
 
