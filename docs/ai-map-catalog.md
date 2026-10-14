@@ -4,6 +4,21 @@
 
 2026-10-14 当前地图集11张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》。楼梯修正规则保持，原十一张单层图全部最优路线不变；《楼间》完成规则修补后按用户最新决定撤出；原图、修补版和先前入门评述留存。《留客》旧稿退役。下列2026-10-13／10-12段为历史快照。
 
+## 2026-10-14 新候选：《周转》
+
+单层17格、两鬼、A/B各一个按钮、五字母门与两普通门，无钥匙／玻璃／楼梯；中性开局。尚无真人评述，默认未入集。[作品与来源](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/parking-turnover-20261014/README.md)。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAGBgfHh4AAFCYCM6AggEggBQEAcqHCgOBVAAAAAkBICOchCCwxAAAAQIYAY)
+
+<details>
+<summary>设计思想与参考（含答案）</summary>
+
+前段安置要给后段操作留位：先将第一鬼暂留左门外，再迁入右停位、借B恢复保护后操作A；入口鬼随后归左停位，A保护最后B操作。直接左门内停车、开A再恢复目标，可安全完成18步前缀，却穷尽续解无解；停车与开A本身仍可补救，不写成已不可逆失败。
+
+最优40，共12条。原图右停位→操作A→左停位的有序关系、临时门外停位和右侧B保护均为通关必要；全部最优无重合、实际入场／码往返与八项网页检查通过。与《接力》有亲缘，不用证明代替真人趣味评价。[参考回放](https://ghostmaze.novic.cc/?map=AADAAGBgfHh4AAFCYCM6AggEggBQEAcqHCgOBVAAAAAkBICOchCCwxAAAAQIYAY&replay=AEsueZknYL3YKjK1Zwr_)。
+
+</details>
+
 ## 2026-10-14 新候选：《相让》
 
 单层16格、两鬼、一个A按钮、两反相A门、一普通门，无钥匙／玻璃／楼梯；初态可以观察，目标可见。原26格大环被短解否定，删去重复按钮与未用环路。用户认为复杂性太低、随手即解，主要只需考虑第2步后左或下；未入集。[原话及复盘](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/reciprocal-braking-review-20261014.md)。[作品与来源](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/reciprocal-braking-20261014/README.md)。
