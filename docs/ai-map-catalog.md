@@ -4,6 +4,21 @@
 
 2026-10-14 当前地图集11张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》。楼梯修正规则保持，原十一张单层图全部最优路线不变；《楼间》完成规则修补后按用户最新决定撤出；原图、修补版和先前入门评述留存。《留客》旧稿退役。下列2026-10-13／10-12段为历史快照。
 
+## 2026-10-14 新候选：《相让》
+
+单层16格、两鬼、一个A按钮、两反相A门、一普通门，无钥匙／玻璃／楼梯；初态可以观察，目标可见。原26格大环被短解否定，删去重复按钮与未用环路。未获真人评述，未入集。[作品与来源](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/reciprocal-braking-20261014/README.md)。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAICg4eGAwMAEkgISgHIBACAuBACgkAAUAAUAqgRBCC5AJAWIAAAE)
+
+<details>
+<summary>设计思想与参考（含答案）</summary>
+
+同一对鬼互换帮忙与受挡：先右鬼阻北鬼，再北鬼阻右鬼，分别准备两个停位；最后从普通门的一侧到按钮，使跟随鬼留在另一侧，安全切门。先向下脱身与直接到按钮的安全前缀分别穷尽续解无解。预期新认识未获用户确认，不自评精妙或高难。
+
+最优17，共三种上方收尾；全部最优无重合、去终点仍安全、指定实际入场与码往返一致。十项产品网页检查通过，未检查正式站或部署。[参考回放](REhttps://ghostmaze.novic.cc/?map=AADAICg4eGAwMAEkgISgHIBACAuBACgkAAUAAUAqgRBCC5AJAWIAAAE)，网站求解可查看全部最优入口。
+
+</details>
+
 ## 2026-10-14 多层反馈与撤图
 
 《隔岸》明确不入集：楼梯未承担关键作用，两层往返与两个普通区域往返没有区别，切层增加操作复杂度且不便观察。《楼间》按新决定撤出：每步几乎只有一种选择，毫无思考难度。保留先前认可入门用途及后来的修补，不把上架历史改写为从未获选；原十一张单层图及顺序保持。[完整评述与设计复盘](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/multilayer-rejection-20261014.md)。
