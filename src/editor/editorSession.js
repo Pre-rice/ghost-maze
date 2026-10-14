@@ -81,7 +81,7 @@ export class EditorDocument {
         const layer = {
             hWalls: this.hWalls, vWalls: this.vWalls, activeCells: this.activeCells,
             ghosts: this.ghosts, items: this.items, buttons: this.buttons,
-            endPos: this.endPos, customStartPos: this.customStartPos ?? (this.mode === 'regular' ? this.startPos : null)
+            endPos: this.endPos, customStartPos: this.mode === 'regular' ? this.startPos : this.customStartPos
         };
         return normalizeMapData({
             width: this.width, height: this.height, editorMode: this.mode,
