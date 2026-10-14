@@ -1,9 +1,8 @@
 import { aiMaps } from './ai-gallery.js';
-import { initThemeManager } from '../themeManager.js';
 import { mapURL } from '../shareLinks.js';
 
 // 展示列表仅由明确上架决定维护，不按生成数量或机器评分自动扩充。
-const grid = document.getElementById('ai-map-grid');
+export function populateGallery(grid) {
 const element = (tag, className, text) => {
     const node = document.createElement(tag);
     if (className) node.className = className;
@@ -12,7 +11,7 @@ const element = (tag, className, text) => {
 };
 const link = (className, text, href) => {
     const node = element('a', className, text);
-    node.href = href; node.target = '_blank'; node.rel = 'noopener';
+    node.href = href; node.rel = 'noopener';
     return node;
 };
 for (const map of aiMaps) {
@@ -25,4 +24,4 @@ for (const map of aiMaps) {
     body.append(actions); article.append(body); grid.append(article);
 }
 document.getElementById('gallery-count').textContent = aiMaps.length + ' 张';
-initThemeManager();
+}

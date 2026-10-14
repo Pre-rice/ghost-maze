@@ -1,6 +1,7 @@
 import { mapURL } from '../shareLinks.js';
 
-const CACHE_KEY = 'ghostmaze-optimal-solutions';
+const CACHE_KEY = 'ghostmaze-optimal-solutions-ghost-timing-v1';
+const resultCache = new Map();
 export class SolutionDialog {
     constructor({ onReplay, onOpen = () => {}, onClose = () => {} }) {
         this.onReplay = onReplay; this.onOpen = onOpen; this.onClose = onClose;
@@ -15,7 +16,7 @@ export class SolutionDialog {
         this.continueButton = this.element.querySelector('#solver-continue-btn');
         this.element.querySelector('#solver-close-btn').onclick = () => this.element.close();
         this.element.addEventListener('close', () => {
-            if (this.busy) { this.worker?.terminate(); this.worker = null; this.busy = false;
+            if (this.busy) { this.worker?.postMessage({ type: 'pause' }); this.busy = false;
                 this.status.textContent = '求解已取消'; this.continueButton.hidden = false; }
             this.onClose();
         });
@@ -32,6 +33,8 @@ export class SolutionDialog {
     get open() { return this.element.open; }
     reset(mapCode) {
         if (this.mapCode === mapCode) return;
+        if (this.complete) resultCache.set(this.mapCode, { steps: this.steps, count: this.count, codes: this.codes.slice(), complete: true });
+        if (resultCache.size > 8) resultCache.delete(resultCache.keys().next().value);
         this.worker?.terminate(); this.worker = null; this.busy = false;
         if (this.open) this.element.close();
         this.mapCode = mapCode; this.mapData = null; this.codes = []; this.steps = null; this.count = null;
@@ -41,7 +44,10 @@ export class SolutionDialog {
     show(mapData, mapCode) {
         this.reset(mapCode); this.mapData = mapData;
         if (!this.open) this.element.showModal(); this.onOpen();
-        if (this.steps !== null || this.busy || this.worker) return;
+        if (this.count !== null || this.busy) return;
+        if (this.worker) { this.busy = true; this.worker.postMessage({ type: 'continue' }); return; }
+        const cached = resultCache.get(mapCode);
+        if (cached) { this.receive({ type: 'solved', ...cached }); this.receive({ type: 'routes', ...cached }); return; }
         this.status.textContent = '正在求解…'; this.startWorker();
     }
     startWorker(skip = this.codes.length) {
@@ -55,9 +61,11 @@ export class SolutionDialog {
         } catch (error) { this.receive({ type: 'error', message: error.message }); }
     }
     receive(data) {
-        if (data.type === 'solved') {
-            this.busy = false; this.steps = data.steps; this.count = data.count;
-            this.status.textContent = `最优解 ${this.steps} 步，共 ${this.count} 条`;
+        if (data.type === 'proved') {
+            this.steps = data.steps; this.status.textContent = `最优解 ${this.steps} 步，正在整理不同鬼轨迹…`;
+        } else if (data.type === 'solved') {
+            this.busy = false; this.steps = data.steps ?? this.steps; this.count = data.count;
+            this.status.textContent = `最优解 ${this.steps} 步，共 ${this.count} 种`;
             this.continueButton.hidden = true;
         } else if (data.type === 'routes') {
             for (const code of data.codes) {
@@ -71,7 +79,7 @@ export class SolutionDialog {
                 };
                 this.list.append(link);
             }
-            this.complete = data.complete || BigInt(this.codes.length) === BigInt(this.count);
+            this.complete = data.complete || (this.count !== null && BigInt(this.codes.length) === BigInt(this.count));
             this.more.hidden = this.complete; this.more.disabled = false;
             this.more.textContent = `继续显示（已列 ${this.codes.length} 条）`;
             if (this.complete) { this.worker?.terminate(); this.worker = null; }
@@ -79,7 +87,7 @@ export class SolutionDialog {
         } else {
             this.busy = false; this.more.hidden = true;
             if (data.type === 'unknown') {
-                this.status.textContent = '尚未完成最优解证明，可继续求解。'; this.continueButton.hidden = false;
+                this.status.textContent = data.grouping ? `最优解 ${this.steps} 步，轨迹整理未完成，可继续。` : '尚未完成最优解证明，可继续求解。'; this.continueButton.hidden = false;
             } else {
                 this.worker?.terminate(); this.worker = null;
                 this.status.textContent = data.type === 'unsat' ? '此地图没有无伤、无复活的通关解。' : data.message;

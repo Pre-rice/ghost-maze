@@ -2,172 +2,81 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>鬼迷宫 · 编辑器</title><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="stylesheet" href="styles.css">
+    <title>鬼迷宫</title><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="main-container"><div class="canvas-wrapper">
+<div id="play-screen" class="main-container"><div class="canvas-wrapper">
     <canvas id="game-canvas" width="600" height="600" aria-label="迷宫地图"></canvas>
     <div id="layer-panel" class="layer-panel" style="display:none">
         <div id="layer-buttons-container"></div>
-        <div id="layer-edit-controls" style="display:none"><button id="layer-add-btn" class="layer-control-btn">+</button><button id="layer-remove-btn" class="layer-control-btn">−</button></div>
+        <div id="layer-edit-controls" style="display:none"></div>
     </div>
-</div><div class="controls-panel"><div id="editor-controls" >
-                    <div class="control-group">
-                        <!-- 编辑器模式下的右上角操作按钮 -->
-                        <div class="panel-header">
-                            <h1 class="panel-title">地图编辑器</h1>
-                            <nav class="header-controls" aria-label="页面导航">
-            <a href="maps.html" class="home-btn gallery-link" title="地图集" aria-label="地图集" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5 8 4v15l-4 1.5zm6-1.5 4 1.5v15L10 19zm6 1.5 4-1.5v15l-4 1.5z"/></svg></a>
+</div><div class="controls-panel"><div id="game-controls">
+    <div class="control-group">
+        <div class="panel-header">
+        <h1 id="mode-display" class="panel-title">尚未开始</h1>
+        <nav class="header-controls" aria-label="页面导航">
+            <a href="maps.html" class="home-btn gallery-link" title="地图集" aria-label="地图集"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5 8 4v15l-4 1.5zm6-1.5 4 1.5v15L10 19zm6 1.5 4-1.5v15l-4 1.5z"/></svg></a>
 
-                            <!-- Home 按钮 -->
-                            <a href="./" id="editor-home-btn" class="home-btn" title="回到首页" aria-label="回到首页"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></a>
-                            <!-- 帮助按钮 -->
-                            <a href="help.html" class="help-btn" title="查看帮助" aria-label="查看帮助" target="_blank" rel="noopener">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
-                                </svg>
-                            </a>
-                            <!-- 主题切换按钮 -->
-                            <div class="theme-toggle" id="editor-theme-toggle">
-                                <button type="button" class="theme-toggle-btn" id="editor-theme-toggle-btn" aria-label="切换主题">
-                                    <svg id="editor-theme-icon" viewBox="0 0 24 24"></svg>
-                                </button>
-                            </div>
-                        </nav>
-                        </div>
-                        <div class="editor-toolbar">
-                            <button id="tool-wall" class="tool-btn icon-btn active" title="墙壁">
-                                <svg viewBox="0 0 24 24" width="24" height="24"><line x1="2" y1="12" x2="22" y2="12" stroke="var(--wall-color)" stroke-width="3"/></svg>
-                            </button>
-                            <button id="tool-glass" class="tool-btn icon-btn" title="玻璃">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <line x1="5" y1="15" x2="9" y2="9" stroke="var(--wall-color)" stroke-width="2"/>
-                                    <line x1="10" y1="15" x2="14" y2="9" stroke="var(--wall-color)" stroke-width="2"/>
-                                    <line x1="15" y1="15" x2="19" y2="9" stroke="var(--wall-color)" stroke-width="2"/>
-                                </svg>
-                            </button>
-                            <button id="tool-door" class="tool-btn icon-btn" title="门">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <line x1="3" y1="12" x2="10" y2="12" stroke="var(--wall-color)" stroke-width="3"/>
-                                    <line x1="14" y1="12" x2="21" y2="12" stroke="var(--wall-color)" stroke-width="3"/>
-                                </svg>
-                            </button>
-                            <button id="tool-oneway" class="tool-btn icon-btn" title="单向门">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <line x1="2" y1="12" x2="22" y2="12" stroke="var(--wall-color)" stroke-width="3"/>
-                                    <text x="12" y="20" font-size="16" fill="var(--key-color)" text-anchor="middle" font-weight="bold" stroke="var(--wall-color)" stroke-width="0.5">^</text>
-                                </svg>
-                            </button>
-                            <button id="tool-lock" class="tool-btn icon-btn" title="数字门">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <line x1="2" y1="12" x2="22" y2="12" stroke="var(--wall-color)" stroke-width="3"/>
-                                    <text x="12" y="16" font-size="12" fill="var(--key-color)" text-anchor="middle" font-weight="bold" stroke="var(--wall-color)" stroke-width="0.5">1</text>
-                                </svg>
-                            </button>
-                            <button id="tool-letter" class="tool-btn icon-btn" title="字母门">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <line x1="2" y1="12" x2="22" y2="12" stroke="var(--wall-color)" stroke-width="3"/>
-                                    <text x="12" y="16" font-size="12" fill="var(--key-color)" text-anchor="middle" font-weight="bold" stroke="var(--wall-color)" stroke-width="0.5">A</text>
-                                </svg>
-                            </button>
-                            <button id="tool-button" class="tool-btn icon-btn" title="按钮">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <path d="M6 4 L6 12 L18 12 L18 4" fill="none" stroke="var(--wall-color)" stroke-width="2"/>
-                                    <text x="12" y="10" font-size="10" fill="var(--key-color)" text-anchor="middle" font-weight="bold">A</text>
-                                </svg>
-                            </button>
-                            <button id="tool-ghost" class="tool-btn icon-btn" title="鬼">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <circle cx="12" cy="12" r="7" fill="var(--ghost-color)"/>
-                                </svg>
-                            </button>
-                            <button id="tool-key" class="tool-btn icon-btn" title="钥匙">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <polygon points="12,4 20,12 12,20 4,12" fill="var(--key-color)"/>
-                                </svg>
-                            </button>
-                            <!-- 新增起点工具 (自由模式显示) -->
-                            <button id="tool-start" class="tool-btn icon-btn" style="display:none;" title="起点">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <circle cx="12" cy="13" r="7" fill="var(--player-color)"/>
-                                </svg>
-                            </button>
-                            <button id="tool-end" class="tool-btn icon-btn" title="终点">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <circle cx="12" cy="12" r="7" fill="var(--end-point-color)"/>
-                                </svg>
-                            </button>
-                            <!-- 橡皮擦工具 -->
-                            <button id="tool-eraser" class="tool-btn icon-btn" title="橡皮擦">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <rect x="5" y="8" width="14" height="12" rx="2" fill="#aaaaaa"/>
-                                    <rect x="7" y="5" width="10" height="5" fill="#dddddd"/>
-                                </svg>
-                            </button>
-                            <!-- 新增楼梯工具 (仅多层地图模式显示) -->
-                            <button id="tool-stair" class="tool-btn icon-btn" style="display:none;" title="楼梯">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <path d="M4 20 L4 14 L10 14 L10 8 L16 8 L16 2 L22 2 L22 20 Z" fill="none" stroke="var(--wall-color)" stroke-width="2"/>
-                                </svg>
-                            </button>
-                            <!-- 新增地图方格工具 (自由模式显示) -->
-                            <button id="tool-grid" class="tool-btn icon-btn" style="display:none;" title="地图方格">
-                                <svg viewBox="0 0 24 24" width="24" height="24">
-                                    <line x1="4" y1="4" x2="8" y2="4" stroke="var(--wall-color)" stroke-width="2"/>
-                                    <line x1="12" y1="4" x2="20" y2="4" stroke="var(--wall-color)" stroke-width="2"/>
-                                    <line x1="20" y1="4" x2="20" y2="8" stroke="var(--wall-color)" stroke-width="2"/>
-                                    <line x1="20" y1="12" x2="20" y2="20" stroke="var(--wall-color)" stroke-width="2"/>
-                                    <line x1="20" y1="20" x2="16" y2="20" stroke="var(--wall-color)" stroke-width="2"/>
-                                    <line x1="12" y1="20" x2="4" y2="20" stroke="var(--wall-color)" stroke-width="2"/>
-                                    <line x1="4" y1="20" x2="4" y2="16" stroke="var(--wall-color)" stroke-width="2"/>
-                                    <line x1="4" y1="12" x2="4" y2="4" stroke="var(--wall-color)" stroke-width="2"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <!-- 新增：编辑器模式切换 -->
-                        <label class="label">编辑类型</label>
-                        <div class="mode-selector" style="margin-bottom: 10px;">
-                            <button id="edit-type-regular-btn" class="mode-btn active">常规模式</button>
-                            <button id="edit-type-free-btn" class="mode-btn">自由编辑</button>
-                        </div>
-                        <div class="map-actions"><button id="play-edited-map-btn">试玩</button><button id="solve-edited-map-btn" class="secondary">求解</button></div>
-                        <button id="clear-map-btn" class="danger">清空地图</button>
-                    </div>
-                    <div class="control-group">
-                        <label class="label">游戏模式</label>
-                        <div class="mode-selector">
-                            <button id="editor-mode-exploration-btn"
-                                class="mode-btn active">探索模式</button>
-                            <button id="editor-mode-death-loop-btn"
-                                class="mode-btn">死亡循环</button>
-                        </div>
-                        <!-- 新增：地图层数选择（仅自由编辑模式显示） -->
-                        <div id="layer-mode-container" style="display: none;">
-                            <label class="label">地图层数</label>
-                            <div class="mode-selector">
-                                <button id="layer-mode-single-btn"
-                                    class="mode-btn active">单层地图</button>
-                                <button id="layer-mode-multi-btn"
-                                    class="mode-btn">多层地图</button>
-                            </div>
-                        </div>
-                        <div class="inline-control-group">
-                            <label for="editor-map-size-input">地图大小
-                                (8-20):</label>
-                            <input type="number" id="editor-map-size-input"
-                                value="10" min="8" max="20">
-                        </div>
-                        <div id="initial-health-container"
-                            class="inline-control-group">
-                            <label for="editor-initial-health">初始生命:</label>
-                            <input type="number" id="editor-initial-health"
-                                value="5" min="1" max="4294967295">
-                        </div>
-                    </div>
-                </div>
-</div></div>        <!-- Custom Confirm Overlay -->
+            <a href="editor.html" id="edit-map-btn" class="home-btn" title="进入编辑器" aria-label="进入编辑器"><svg viewBox="0 0 24 24"><path d="m3 17 4 4L21 7l-4-4L3 17zm0 0v4h4"/></svg></a>
+            <a href="help.html" class="help-btn" title="查看帮助" aria-label="查看帮助"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 17h-2v-2h2zm2-7-1 1c-1 1-1 1-1 2h-2v-1c0-1 1-2 2-3l1-1a2 2 0 1 0-4-1H8a4 4 0 1 1 7 3z"/></svg></a>
+            <div class="theme-toggle" id="theme-toggle"><button class="theme-toggle-btn" id="theme-toggle-btn" title="切换主题" aria-label="切换主题"><svg id="theme-icon" viewBox="0 0 24 24"></svg></button></div>
+        </nav>
+        </div>
+        <div id="status-bar" class="status-bar">
+            <div id="player-health-display" class="label">生命: —</div>
+            <div id="player-steps-display" class="label">步数: 0</div>
+            <div id="player-keys-display" class="label">钥匙: 0</div>
+            <div id="ghost-proximity-display" class="label">周围鬼数: 0</div>
+        </div>
+    </div>
+    <div id="play-options-controls" class="control-group">
+        <div id="play-history-controls" class="share-buttons-container">
+            <button id="undo-btn" class="secondary">撤回</button><button id="save-btn" class="secondary">存档</button><button id="rewind-btn" class="secondary">回溯</button>
+        </div>
+        <div id="view-options-controls" class="toggle-controls-wrapper">
+            <div id="full-vision-control" class="toggle-switch"><span class="label">全图视野</span><input type="checkbox" id="full-vision-toggle"><label for="full-vision-toggle">全图视野</label></div>
+            <div id="dpad-toggle-control" class="toggle-switch"><span class="label">方向按键</span><input type="checkbox" id="dpad-toggle" checked><label for="dpad-toggle">方向按键</label></div>
+        </div>
+        <div id="map-actions" class="map-actions"><button id="reset-map-btn" class="secondary">重置</button><button id="watch-replay-btn" class="secondary">回放</button><button id="solve-map-btn" class="secondary">求解</button></div>
+        <button id="generate-map-btn">随机生成新地图</button>
+    </div>
+    <div id="replay-controls" class="control-group" hidden>
+        <div class="share-buttons-container"><button id="replay-prev-btn" class="secondary">上一步</button><button id="replay-play-btn">播放</button><button id="replay-next-btn" class="secondary">下一步</button></div>
+        <div class="inline-control-group">
+            <label for="replay-speed">播放速度</label>
+            <select id="replay-speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+        </div>
+        <div class="inline-control-group">
+            <label for="replay-step-input">步数</label><input id="replay-step-input" type="number" min="0" value="0"><span id="replay-total"></span>
+        </div>
+        <input type="range" id="replay-step-range" min="0" value="0" aria-label="选择回放步数">
+        <button id="replay-load-btn">加载该步</button><button id="replay-close-btn" class="secondary">返回游玩</button>
+    </div>
+</div></div></div><div id="death-overlay" class="overlay"><div class="overlay-content">
+    <h2 id="death-message">你死了</h2><div class="buttons"><button id="death-undo-btn">撤回该步</button><button id="revive-btn" class="secondary">复活</button><button id="death-rewind-btn" class="secondary">回到上一个存档点</button><button id="death-reset-btn" class="secondary">重置地图</button></div>
+</div></div>
+<div id="game-over-overlay" class="overlay"><div class="overlay-content">
+    <h2>生命耗尽</h2><div class="buttons"><button id="game-over-undo-btn">撤回该步</button><button id="game-over-rewind-btn" class="secondary">回到上一个存档点</button><button id="game-over-replay-btn" class="secondary">重置地图</button></div>
+</div></div>
+<div id="win-overlay" class="overlay"><div class="overlay-content">
+    <h2>你赢了！</h2><p id="win-stats"></p><div class="buttons"><button id="win-watch-replay-btn">回放</button><button id="win-replay-btn" class="secondary">重置地图</button></div>
+</div></div>
+<div id="new-map-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="new-map-title">
+    <form id="new-map-form" class="overlay-content">
+        <h2 id="new-map-title">随机生成新地图</h2>
+        <div class="new-map-options">
+            <label for="new-map-size">地图大小（8–20）</label>
+            <input id="new-map-size" type="number" min="8" max="20" value="10" required>
+            <div id="new-map-health-control">
+                <label for="new-map-health">初始生命</label>
+                <input id="new-map-health" type="number" min="1" max="4294967295" value="5" required>
+            </div>
+        </div>
+        <div class="buttons"><button type="submit">生成地图</button><button id="new-map-cancel-btn" type="button" class="secondary">取消</button></div>
+    </form>
+</div>
+        <!-- Custom Confirm Overlay -->
         <div id="confirm-overlay" class="overlay">
             <div class="overlay-content">
                 <p id="confirm-message">你确定吗？</p>
@@ -178,19 +87,6 @@
             </div>
         </div>
 
-        <!-- 清空地图的三选项确认浮窗 -->
-        <div id="clear-map-confirm-overlay" class="overlay">
-            <div class="overlay-content">
-                <p>你希望？</p>
-                <div class="buttons">
-                    <button id="confirm-clear-entities-btn">清空元件</button>
-                    <button id="confirm-reset-grids-btn" class="danger">重置方格</button>
-                    <button id="confirm-clear-grids-btn" class="danger">清空方格</button>
-                    <button id="confirm-clear-cancel-btn" class="secondary">取消</button>
-                </div>
-            </div>
-        </div>
-
-<div id="toast-notification" class="toast" role="status"></div>
-<script src="src/vendor/pako.js"></script><script type="module" src="src/editorMain.js"></script>
+<div id="dpad-controls" class="hidden"><div id="dpad-up" class="dpad-btn">▲</div><div id="dpad-left" class="dpad-btn">◀</div><div id="dpad-center" class="dpad-btn dpad-center">●</div><div id="dpad-right" class="dpad-btn">▶</div><div id="dpad-down" class="dpad-btn">▼</div></div><div id="toast-notification" class="toast" role="status"></div>
+<script src="src/vendor/pako.js"></script><script type="module" src="src/app.js"></script>
 </body></html>

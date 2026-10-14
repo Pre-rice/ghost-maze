@@ -5,7 +5,7 @@
     <title>鬼迷宫</title><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="main-container"><div class="canvas-wrapper">
+<div id="play-screen" class="main-container"><div class="canvas-wrapper">
     <canvas id="game-canvas" width="600" height="600" aria-label="迷宫地图"></canvas>
     <div id="layer-panel" class="layer-panel" style="display:none">
         <div id="layer-buttons-container"></div>
@@ -16,10 +16,10 @@
         <div class="panel-header">
         <h1 id="mode-display" class="panel-title">尚未开始</h1>
         <nav class="header-controls" aria-label="页面导航">
-            <a href="maps.html" class="home-btn gallery-link" title="地图集" aria-label="地图集" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5 8 4v15l-4 1.5zm6-1.5 4 1.5v15L10 19zm6 1.5 4-1.5v15l-4 1.5z"/></svg></a>
+            <a href="maps.html" class="home-btn gallery-link" title="地图集" aria-label="地图集"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5 8 4v15l-4 1.5zm6-1.5 4 1.5v15L10 19zm6 1.5 4-1.5v15l-4 1.5z"/></svg></a>
 
-            <a href="editor.html" id="edit-map-btn" class="home-btn" title="进入编辑器" aria-label="进入编辑器" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="m3 17 4 4L21 7l-4-4L3 17zm0 0v4h4"/></svg></a>
-            <a href="help.html" class="help-btn" title="查看帮助" aria-label="查看帮助" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 17h-2v-2h2zm2-7-1 1c-1 1-1 1-1 2h-2v-1c0-1 1-2 2-3l1-1a2 2 0 1 0-4-1H8a4 4 0 1 1 7 3z"/></svg></a>
+            <a href="editor.html" id="edit-map-btn" class="home-btn" title="进入编辑器" aria-label="进入编辑器"><svg viewBox="0 0 24 24"><path d="m3 17 4 4L21 7l-4-4L3 17zm0 0v4h4"/></svg></a>
+            <a href="help.html" class="help-btn" title="查看帮助" aria-label="查看帮助"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 17h-2v-2h2zm2-7-1 1c-1 1-1 1-1 2h-2v-1c0-1 1-2 2-3l1-1a2 2 0 1 0-4-1H8a4 4 0 1 1 7 3z"/></svg></a>
             <div class="theme-toggle" id="theme-toggle"><button class="theme-toggle-btn" id="theme-toggle-btn" title="切换主题" aria-label="切换主题"><svg id="theme-icon" viewBox="0 0 24 24"></svg></button></div>
         </nav>
         </div>
@@ -68,8 +68,6 @@
         <div class="new-map-options">
             <label for="new-map-size">地图大小（8–20）</label>
             <input id="new-map-size" type="number" min="8" max="20" value="10" required>
-            <label for="new-map-mode">游戏模式</label>
-            <select id="new-map-mode"><option value="exploration">探索模式</option><option value="death-loop">死亡循环</option></select>
             <div id="new-map-health-control">
                 <label for="new-map-health">初始生命</label>
                 <input id="new-map-health" type="number" min="1" max="4294967295" value="5" required>
@@ -90,5 +88,5 @@
         </div>
 
 <div id="dpad-controls" class="hidden"><div id="dpad-up" class="dpad-btn">▲</div><div id="dpad-left" class="dpad-btn">◀</div><div id="dpad-center" class="dpad-btn dpad-center">●</div><div id="dpad-right" class="dpad-btn">▶</div><div id="dpad-down" class="dpad-btn">▼</div></div><div id="toast-notification" class="toast" role="status"></div>
-<script src="src/vendor/pako.js"></script><script type="module" src="src/main.js"></script>
+<script src="src/vendor/pako.js"></script><script type="module" src="src/app.js"></script>
 </body></html>

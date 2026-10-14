@@ -592,12 +592,18 @@ export function drawGame(ctx, view) {
 export function drawEditor(ctx, view) {
     const cs = view.cellSize;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.save(); ctx.translate(view.padding, view.padding);
-    ctx.drawImage(view.staticLayerCanvas, 0, 0);
+    ctx.save(); ctx.translate(view.offsetX ?? view.padding, view.offsetY ?? view.padding);
+    if (view.workspaceFrame) {
+        for (let y = 0; y < view.height; y++) for (let x = 0; x < view.width; x++) if (view.activeCells[y][x]) {
+            ctx.fillStyle = view.colors.ground; ctx.fillRect(x * cs, y * cs, cs, cs);
+            ctx.strokeStyle = view.colors.gridLine; ctx.lineWidth = 1; ctx.strokeRect(x * cs, y * cs, cs, cs);
+        }
+    } else ctx.drawImage(view.staticLayerCanvas, 0, 0);
     if (view.editor.mode === 'free') {
         ctx.beginPath(); ctx.strokeStyle = view.colors.voidGrid; ctx.lineWidth = 1; ctx.setLineDash([5, 5]);
-        for (let y = 0; y < view.height; y++) { for (let x = 0; x < view.width; x++) { if (!view.activeCells[y][x]) { ctx.strokeRect(x * cs, y * cs, cs, cs); } } }
-        ctx.strokeRect(0, 0, view.width * cs, view.height * cs); ctx.setLineDash([]);
+        const frame = view.workspaceFrame ?? { x: 0, y: 0, width: view.width, height: view.height };
+        for (let y = frame.y; y < frame.y + frame.height; y++) { for (let x = frame.x; x < frame.x + frame.width; x++) { if (!view.activeCells[y]?.[x]) { ctx.strokeRect(x * cs, y * cs, cs, cs); } } }
+        if (!view.workspaceFrame) ctx.strokeRect(0, 0, view.width * cs, view.height * cs); ctx.setLineDash([]);
     }
     if (view.editor.mode === 'regular') { ctx.fillStyle = view.colors.startRoomHighlight; ctx.fillRect(0, getStartRoomY(view.height) * cs, START_ROOM_SIZE * cs, START_ROOM_SIZE * cs); }
     ctx.beginPath();
@@ -645,10 +651,10 @@ export function drawEditor(ctx, view) {
     }
     view.stairs.filter(s => s.layer === view.currentLayer).forEach(s => drawStair(ctx, s, cs, view.colors));
     if (view.editor.tool === EDITOR_TOOLS.STAIR && view.editor.stairPlacement) { drawStair(ctx, view.editor.stairPlacement, cs, view.colors, !view.editor.isDragging); }
-    view.items.forEach(item => drawItem(ctx, item, cs, view.colors));
     if (view.endPos) drawCircle(ctx, view.endPos.x, view.endPos.y, cs, view.colors.endPoint);
     if (view.customStartPos) drawCircle(ctx, view.customStartPos.x, view.customStartPos.y, cs, view.colors.player);
     view.ghosts.forEach(g => drawCircle(ctx, g.x, g.y, cs, view.colors.ghost));
+    view.items.forEach(item => drawItem(ctx, item, cs, view.colors));
     view.buttons.forEach(b => drawButton(ctx, b, cs, view.colors));
     if (view.editor.mode === 'regular') drawCircle(ctx, view.startPos.x, view.startPos.y, cs, view.colors.player);
     if (view.editor.hoveredButtonHotspot) {

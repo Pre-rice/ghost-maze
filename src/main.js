@@ -14,7 +14,7 @@ import * as InputHandler from './inputHandler.js';
 import * as UI from './ui.js';
 import * as LayerManager from './layerManager.js';
 
-class GhostMazeGame extends CanvasApp {
+export class GhostMazeGame extends CanvasApp {
     constructor() {
         super();
         this.state = GAME_STATES.MENU; this.editor = { active: false };
@@ -33,6 +33,7 @@ class GhostMazeGame extends CanvasApp {
             onOpen: () => { this.stopAutoMove(); this.pauseReplay(); this.updateDpadVisibility(); },
             onClose: () => this.updateDpadVisibility(),
             onReplay: ({ code, mapCode }) => {
+                if (window.app) { window.app.openSolution({ code, mapCode }); return; }
                 const route = ReplaySerializer.loadFromShareCode(this.controller.mapData, code);
                 if (!route.success) { this.showToast(route.error, 4000, 'error'); return; }
                 this.openReplay(this.controller.mapData, route.actions, mapCode, code);
@@ -61,11 +62,6 @@ class GhostMazeGame extends CanvasApp {
         const on = (id, fn, event = 'click') => document.getElementById(id).addEventListener(event, fn);
         on('generate-map-btn', () => this.showNewMapOptions());
         on('new-map-cancel-btn', () => this.closeNewMapOptions());
-        on('new-map-mode', event => {
-            const exploration = event.target.value === 'exploration';
-            document.getElementById('new-map-health-control').hidden = !exploration;
-            document.getElementById('new-map-health').disabled = !exploration;
-        }, 'change');
         on('new-map-form', event => { event.preventDefault(); this.generateNewRandomMap(); }, 'submit');
         on('reset-map-btn', () => this.resetCurrentMap());
         on('full-vision-toggle', event => { this.debugVision = event.target.checked; this.draw(); }, 'change');
@@ -91,9 +87,9 @@ class GhostMazeGame extends CanvasApp {
             const replay = this.replay, step = replay.currentStep;
             this.showConfirm('是否加载第 ' + step + ' 步到当前局面？这会替换你当前的游玩状态，并清除当前存档。', () => this.loadReplayStep(replay, step));
         });
-        on('replay-close-btn', () => this.closeReplay());
+        on('replay-close-btn', () => { if (window.app) window.app.closeReplay(); else this.closeReplay(); });
         window.addEventListener('keydown', event => {
-            if (this.solverDialog.open) return;
+            if ((window.app && window.app.view !== 'play') || this.solverDialog.open) return;
             if (document.getElementById('new-map-overlay').style.display === 'flex') {
                 if (event.key === 'Escape') this.closeNewMapOptions();
                 return;
@@ -117,7 +113,7 @@ class GhostMazeGame extends CanvasApp {
     }
     generateNewRandomMap() {
         const size = Number(document.getElementById('new-map-size').value);
-        const gameMode = document.getElementById('new-map-mode').value;
+        const gameMode = 'exploration';
         const initialHealth = gameMode === 'exploration' ? Number(document.getElementById('new-map-health').value) : 5;
         if (!Number.isInteger(size) || size < MAP_SIZE_MIN || size > MAP_SIZE_MAX) return;
         if (!Number.isInteger(initialHealth) || initialHealth < 1 || initialHealth > 4294967295) return;
@@ -251,7 +247,8 @@ class GhostMazeGame extends CanvasApp {
             editorActive: false, hasStartPoint: true, onLayerClick: index => this.switchToLayer(index) });
     }
     updateURLWithShareCode(code, replayCode = null) {
-        history.replaceState({}, '', mapURL(code, { replay: replayCode }));
+        if (window.app) window.app.mapURL(code, replayCode);
+        else history.replaceState({}, '', mapURL(code, { replay: replayCode }));
     }
     updateEditorLink() {
         const result = this.generateShareCode();
@@ -272,9 +269,11 @@ class GhostMazeGame extends CanvasApp {
         const result = this.replayCodes();
         if (!result.success) { this.showToast(result.error, 3000, 'error'); return; }
         const actions = this.replay ? this.replay.history.actions : this.controller.actions;
-        this.openReplay(this.activeController.mapData, actions, result.map, result.replay);
+        if (window.app) window.app.watchReplay(this.activeController.mapData, actions, result.map, result.replay);
+        else this.openReplay(this.activeController.mapData, actions, result.map, result.replay);
     }
     openReplay(mapData, actions, mapCode, replayCode) {
+        document.getElementById('replay-close-btn').textContent = '返回游玩';
         this.returnToSolutions = false;
         this.pauseReplay(); this.seekAbort?.abort(); this.stopAutoMove(); this.stopAnimationLoop(); this.hideAllOverlays();
         if (!this.replay) this.playVision = this.debugVision;
@@ -357,11 +356,12 @@ class GhostMazeGame extends CanvasApp {
     }
     loadReplayStep(replay, step) {
         if (this.replay !== replay) return;
+        window.app?.prepareReplayLoad();
         this.closeReplay(false);
         this.mapCode = replay.mapCode;
         this.controller.loadReplayStep(replay, step);
         this.updateURLWithShareCode(this.mapCode); this.updateEditorLink();
+        window.app?.finishReplayLoad();
         this.showToast('已加载第 ' + step + ' 步', 2000, 'success');
     }
 }
-document.addEventListener('DOMContentLoaded', () => { window.game = new GhostMazeGame(); });

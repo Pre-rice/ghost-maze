@@ -1,9 +1,9 @@
 /** 从原参考求解器抽出的 BFS；同一搜索供网站和研究使用，物理行为由传入环境负责。 */
-export function createBreadthFirstSearch(env, { allOptimal = false, monitor } = {}) {
+export function createBreadthFirstSearch(env, { allOptimal = false, monitor, classifyState } = {}) {
     const progress = monitor?.initial() ?? [];
     const keyOf = (state, p) => `${env.stateKey(state)}|monitor:${p.join(',')}`;
     const first = env.initialState();
-    const entries = [{ state: first, progress, depth: 0, parents: [] }];
+    const entries = [{ state: first, progress, depth: 0, parents: [], label: classifyState?.(first) }];
     const visited = new Map([[keyOf(first, progress), 0]]);
     const goals = first.isWon ? [0] : [];
     let head = 0, actionIndex = 0, expanded = 0, transitions = 0, entered = false;
@@ -41,7 +41,7 @@ export function createBreadthFirstSearch(env, { allOptimal = false, monitor } = 
                     if (entries.length >= stateBudget) { reason = 'state_budget'; return snapshot(); }
                     const index = entries.length;
                     visited.set(key, index);
-                    entries.push({ state: next, progress: p, depth, parents: [[head, action]] });
+                    entries.push({ state: next, progress: p, depth, parents: [[head, action]], label: classifyState?.(next) });
                     actionIndex++;
                     if (next.isWon) {
                         goalDepth = depth; goals.push(index);
@@ -52,6 +52,10 @@ export function createBreadthFirstSearch(env, { allOptimal = false, monitor } = 
                 head++; actionIndex = 0; entered = false;
             }
             return goals.length ? finish('solved', 'goal_reached') : finish('proven_unsat', 'frontier_exhausted');
+        },
+        optimalGraph() {
+            if (status !== 'solved') throw new Error('最优搜索尚未完成');
+            return { entries, goals };
         },
         firstActions() {
             if (status !== 'solved') return null;
