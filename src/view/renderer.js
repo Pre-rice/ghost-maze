@@ -406,7 +406,7 @@ export function showInitialMessage(ctx, config) {
     ctx.fillStyle = colors.text;
     ctx.font = '20px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('点击 "随机生成新地图" 或加载分享码开始游戏', canvasWidth / 2, canvasHeight / 2);
+    ctx.fillText('加载地图以开始', canvasWidth / 2, canvasHeight / 2);
 }
 
 /**

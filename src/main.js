@@ -1,367 +1,149 @@
-import { CanvasApp } from './canvasApp.js';
-import { GAME_STATES, MAP_SIZE_MIN, MAP_SIZE_MAX, DEFAULT_GHOST_COUNT } from './core/constants.js';
-import { GameController } from './core/gameController.js';
 import { DataSerializer } from './core/dataSerializer.js';
-import { ReplaySerializer } from './core/replaySerializer.js';
+import { GAME_STATES } from './core/constants.js';
+import { GameController } from './core/gameController.js';
 import { MapDefinition } from './core/mapDefinition.js';
 import { ActionHistory } from './core/actionHistory.js';
-import { validateMapData } from './core/mapDataUtils.js';
-import { generateFullMaze } from './core/mazeGenerator.js';
-import { computeGameView, pruneTrails } from './view/viewSlice.js';
-import { mapURL } from './shareLinks.js';
-import { SolutionDialog } from './solver/solutionDialog.js';
-import * as InputHandler from './inputHandler.js';
+import { ReplaySerializer } from './core/replaySerializer.js';
+import { computeGameView,pruneTrails } from './view/viewSlice.js';
+import * as Renderer from './view/renderer.js';
+import { getColorsFromCSS } from './themeManager.js';
+import * as Input from './inputHandler.js';
 import * as UI from './ui.js';
-import * as LayerManager from './layerManager.js';
 
-export class GhostMazeGame extends CanvasApp {
-    constructor() {
-        super();
-        this.state = GAME_STATES.MENU; this.editor = { active: false };
-        this.debugVision = false; this.replay = null; this.replayTimer = null; this.replaySpeed = 1;
-        this.animationFrameId = null; this.autoMoveInterval = null; this.dpadInterval = null;
-        this.seekAbort = null; this.mapCode = null;
-        this.controller = new GameController({
-            onSync: () => this.syncGame(),
-            onWin: stats => { if (!this.replay) this.showOutcome('win', stats.text); },
-            onDeath: stats => { if (!this.replay) this.showOutcome(stats.overlay, stats.message); },
-            onHistoryChange: () => this.updateHistoryButtons()
-        });
-        this.dpad = { element: document.getElementById('dpad-controls'), grip: document.getElementById('dpad-center'),
-            isDragging: false, isResizing: false, startX: 0, startY: 0, initialLeft: 0, initialTop: 0, initialDist: 0, currentScale: 1 };
-        this.solverDialog = new SolutionDialog({
-            onOpen: () => { this.stopAutoMove(); this.pauseReplay(); this.updateDpadVisibility(); },
-            onClose: () => this.updateDpadVisibility(),
-            onReplay: ({ code, mapCode }) => {
-                if (window.app) { window.app.openSolution({ code, mapCode }); return; }
-                const route = ReplaySerializer.loadFromShareCode(this.controller.mapData, code);
-                if (!route.success) { this.showToast(route.error, 4000, 'error'); return; }
-                this.openReplay(this.controller.mapData, route.actions, mapCode, code);
-                this.returnToSolutions = true;
-            }
-        });
-        this.bindUI(); this.showInitialMessage(); this.updateHistoryButtons(); this.updateDpadVisibility();
-        const params = new URLSearchParams(location.search), code = params.get('map'), replayCode = params.get('replay');
-        if (replayCode && !code) this.showToast('加载回放需要链接中包含地图码。', 5000, 'error');
-        else if (code) {
-            this.loadFromShareCode(code, replayCode);
-            if (params.get('solve') === '1' && this.replay) {
-                this.solverDialog.restore(this.controller.mapData, code); this.returnToSolutions = true;
-            }
-        }
+export class GhostMazeGame {
+    constructor(app) {
+        this.app=app;
+        this.canvas=document.getElementById('game-canvas');this.ctx=this.canvas.getContext('2d');
+        this.staticLayerCanvas=document.createElement('canvas');this.padding=24;
+        this.cellSize=0;this.drawOffset={x:0,y:0};this.colors=getColorsFromCSS();
+        this.state=GAME_STATES.MENU;this.editor={active:false};this.debugVision=false;
+        this.replay=null;this.replaySpeed=1;this.replayPlaying=false;this.replayRun=0;
+        this.controller=this.makeController();
+        this.dpad={element:document.getElementById('dpad-controls'),grip:document.getElementById('dpad-center'),isDragging:false,isResizing:false,currentScale:1};
+        this.stopDpad=Input.bindDpadControls(this);UI.initializeDpadTouchControls(this.dpad);
+        this.canvas.addEventListener('click',e=>{if(app.view==='play'&&!this.controller.pendingDeath&&!app.dialogOpen)Input.handleCanvasClick(this,e);});
+        window.addEventListener('blur',()=>{this.stopAutoMove();this.pauseReplay();});
+        window.matchMedia('(max-width:768px)').addEventListener('change',()=>this.sync());
+        this.bind();this.resize();
     }
-    get activeController() { return this.replay || this.controller; }
-    getGameView() {
-        const active = this.activeController;
-        return computeGameView({ mapDef: active.mapDefinition, gameState: active.currentGameState, viewLayer: active.viewLayer },
-            { canvas: this.canvas, staticLayerCanvas: this.staticLayerCanvas, state: this.state,
-                cellSize: this.cellSize, colors: this.colors, drawOffset: this.drawOffset, debugVision: this.debugVision });
+    makeController(){return new GameController({onSync:()=>this.sync(),onHistoryChange:()=>this.syncButtons()});}
+    install(controller,code){this.stopAutoMove();this.pauseReplay();this.controller=controller;controller.ui={onSync:()=>this.sync(),onHistoryChange:()=>this.syncButtons()};this.mapCode=code;this.replay=null;this.sync();window.dispatchEvent(new CustomEvent('ghostmaze:map-installed'));}
+    generateShareCode(){return this.controller.mapData?this.mapCode?{success:true,code:this.mapCode}:DataSerializer.generateShareCode(this.controller.mapData):{success:false,error:'请先加载地图'};}
+    clear(){this.stopAutoMove();this.pauseReplay();this.controller=this.makeController();this.mapCode=null;this.replay=null;this.sync();}
+    get activeController(){return this.app.view==='replay'&&this.replay?this.replay:this.controller;}
+    getGameView(){const a=this.activeController;return computeGameView({mapDef:a.mapDefinition,gameState:a.currentGameState,viewLayer:a.viewLayer},{canvas:this.canvas,staticLayerCanvas:this.staticLayerCanvas,state:this.app.view==='replay'?GAME_STATES.REPLAY:this.state,cellSize:this.cellSize,colors:this.colors,drawOffset:this.drawOffset,debugVision:this.app.view==='replay'?this.replayVision:this.debugVision});}
+    bind(){
+        const on=(id,fn,event='click')=>document.getElementById(id).addEventListener(event,fn);
+        on('undo-btn',()=>this.handleUndo());on('redo-btn',()=>this.handleRedo());on('reset-map-btn',()=>this.resetCurrentMap());
+        on('revive-btn',()=>this.revivePlayer());
+        on('full-vision-toggle',e=>{this.debugVision=e.target.checked;this.draw();},'change');
+        on('dpad-toggle',()=>this.updateDpadVisibility(),'change');
+        on('replay-full-vision',e=>{this.replayVision=e.target.checked;this.draw();},'change');
+        on('replay-play-btn',()=>this.replayPlaying?this.pauseReplay():this.playReplay());
+        on('replay-prev-btn',()=>this.seekReplay(this.replay.currentStep-1));on('replay-next-btn',()=>this.seekReplay(this.replay.currentStep+1));
+        on('replay-step-input',e=>this.seekReplay(Number(e.target.value)),'change');on('replay-step-range',e=>this.seekReplay(Number(e.target.value)),'input');
+        on('replay-speed',e=>this.setSpeed(Number(e.target.value)),'change');
+        on('replay-load-btn',()=>this.app.loadReplayStep());on('replay-return-btn',()=>this.app.returnFromSolution());
     }
-    getView() { return this.getGameView(); }
-    bindUI() {
-        const on = (id, fn, event = 'click') => document.getElementById(id).addEventListener(event, fn);
-        on('generate-map-btn', () => this.showNewMapOptions());
-        on('new-map-cancel-btn', () => this.closeNewMapOptions());
-        on('new-map-form', event => { event.preventDefault(); this.generateNewRandomMap(); }, 'submit');
-        on('reset-map-btn', () => this.resetCurrentMap());
-        on('full-vision-toggle', event => { this.debugVision = event.target.checked; this.draw(); }, 'change');
-        on('dpad-toggle', () => this.updateDpadVisibility(), 'change');
-        for (const id of ['undo-btn', 'death-undo-btn', 'game-over-undo-btn']) on(id, () => this.handleUndo()); on('save-btn', () => this.handleSave()); on('rewind-btn', () => this.handleRewind());
-        for (const id of ['death-rewind-btn', 'game-over-rewind-btn']) on(id, () => this.handleRewind());
-        for (const id of ['death-reset-btn', 'game-over-replay-btn', 'win-replay-btn']) on(id, () => this.resetCurrentMap());
-        on('revive-btn', () => this.revivePlayer());
-        on('watch-replay-btn', () => this.watchReplay());
-        on('solve-map-btn', () => this.solveMap());
-        on('win-watch-replay-btn', () => this.watchReplay());
-        on('replay-play-btn', () => this.replayPlaying ? this.pauseReplay() : this.playReplay());
-        on('replay-prev-btn', () => this.seekReplay(this.replay.currentStep - 1));
-        on('replay-next-btn', () => this.seekReplay(this.replay.currentStep + 1));
-        on('replay-step-input', event => this.seekReplay(Number(event.target.value)), 'change');
-        on('replay-step-range', event => this.seekReplay(Number(event.target.value)), 'input');
-        on('replay-speed', event => {
-            this.replaySpeed = Number(event.target.value);
-            if (this.replayPlaying) { this.pauseReplay(); this.playReplay(); }
-        }, 'change');
-        on('replay-load-btn', () => {
-            this.pauseReplay();
-            const replay = this.replay, step = replay.currentStep;
-            this.showConfirm('是否加载第 ' + step + ' 步到当前局面？这会替换你当前的游玩状态，并清除当前存档。', () => this.loadReplayStep(replay, step));
-        });
-        on('replay-close-btn', () => { if (window.app) window.app.closeReplay(); else this.closeReplay(); });
-        window.addEventListener('keydown', event => {
-            if ((window.app && window.app.view !== 'play') || this.solverDialog.open) return;
-            if (document.getElementById('new-map-overlay').style.display === 'flex') {
-                if (event.key === 'Escape') this.closeNewMapOptions();
-                return;
-            }
-            InputHandler.handleKeyPress(this, event);
-        });
-        this.canvas.addEventListener('click', event => InputHandler.handleCanvasClick(this, event));
-        this.stopDpad = InputHandler.bindDpadControls(this);
-        UI.initializeDpadTouchControls(this.dpad);
-        window.matchMedia('(max-width: 768px)').addEventListener('change', () => this.updateDpadVisibility());
-        window.addEventListener('blur', () => { this.stopAutoMove(); this.pauseReplay(); });
+    resize(){
+        const r=this.canvas.getBoundingClientRect(),ratio=Math.min(2,devicePixelRatio||1);
+        if(r.width>0&&r.height>0){const oldWidth=this.canvas.width,oldHeight=this.canvas.height;this.canvas.width=Math.round(r.width*ratio);this.canvas.height=Math.round(r.height*ratio);if(this.app.editor?.loaded&&oldWidth&&oldHeight){const v=this.app.editor.view,scale=Math.min(this.canvas.width/oldWidth,this.canvas.height/oldHeight);v.x=this.canvas.width/2-(oldWidth/2-v.x)*scale;v.y=this.canvas.height/2-(oldHeight/2-v.y)*scale;v.scale*=scale;}}
+        this.colors=getColorsFromCSS();this.configureCanvas();this.app.renderMap();
     }
-    showNewMapOptions() {
-        this.stopAutoMove(); this.pauseReplay();
-        document.getElementById('new-map-overlay').style.display = 'flex';
-        this.updateDpadVisibility(); document.getElementById('new-map-size').focus();
+    configureCanvas(){
+        const md=this.activeController.mapDefinition;if(!md)return;
+        let minX=md.width,minY=md.height,maxX=-1,maxY=-1;
+        for(const l of md.layers)l.activeCells.forEach((row,y)=>row.forEach((a,x)=>{if(a){minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);}}));
+        this.cellSize=Math.min((this.canvas.width-48)/Math.max(1,maxX-minX+1),(this.canvas.height-48)/Math.max(1,maxY-minY+1),180*(devicePixelRatio||1));
+        this.drawOffset={x:(this.canvas.width-(maxX-minX+1)*this.cellSize)/2-minX*this.cellSize,y:(this.canvas.height-(maxY-minY+1)*this.cellSize)/2-minY*this.cellSize};
     }
-    closeNewMapOptions() {
-        document.getElementById('new-map-overlay').style.display = 'none';
-        this.updateDpadVisibility(); document.getElementById('generate-map-btn').focus();
+    draw(){
+        if(!this.activeController.currentGameState||this.app.view==='editor'||this.app.draftVisible)return;
+        this.colors=getColorsFromCSS();this.configureCanvas();const v=this.getGameView();
+        Renderer.renderStaticLayer(this.canvas,this.staticLayerCanvas,v);Renderer.drawGame(this.ctx,v);
     }
-    generateNewRandomMap() {
-        const size = Number(document.getElementById('new-map-size').value);
-        const gameMode = 'exploration';
-        const initialHealth = gameMode === 'exploration' ? Number(document.getElementById('new-map-health').value) : 5;
-        if (!Number.isInteger(size) || size < MAP_SIZE_MIN || size > MAP_SIZE_MAX) return;
-        if (!Number.isInteger(initialHealth) || initialHealth < 1 || initialHealth > 4294967295) return;
-        const mapData = { ...generateFullMaze(size, size, DEFAULT_GHOST_COUNT), gameMode, initialHealth };
-        if (this.startGame(mapData)) this.closeNewMapOptions();
+    sync(){
+        const c=this.controller,s=c.currentGameState;
+        this.state=!s?GAME_STATES.MENU:s.isWon?GAME_STATES.WON:s.isDead||c.pendingDeath?GAME_STATES.DEAD:GAME_STATES.PLAYING;
+        const mode=c.gameMode,explore=mode==='exploration',mobile=matchMedia('(max-width:768px)').matches;
+        document.getElementById('mode-display').textContent=s?(explore?'探索模式':'死亡循环'):'加载地图以开始';
+        for(const [id,text] of [['player-health-display',s?(explore?'生命: '+s.player.hp:'循环: '+s.loopCount):''],['player-steps-display',s?'步数: '+s.player.steps:''],['player-keys-display',s?'钥匙: '+s.player.keys:'']])document.getElementById(id).textContent=text;
+        const proximity=document.getElementById('ghost-proximity-display');proximity.hidden=!s||!explore;
+        if(s)proximity.textContent='周围鬼数: '+s.layerStates[s.player.layer].ghosts.filter(g=>Math.abs(g.x-s.player.x)<=1&&Math.abs(g.y-s.player.y)<=1).length;
+        document.getElementById('dpad-control').hidden=!mobile||!s;
+        document.getElementById('full-vision-control').hidden=!explore||!s;
+        document.getElementById('view-options-controls').hidden=!s||(!mobile&&!explore);
+        const notice=document.getElementById('death-notice');notice.hidden=!s||(!c.pendingDeath&&!s.isDead);
+        document.getElementById('death-message').textContent=s?c._deathStats().message:'';
+        document.getElementById('revive-btn').disabled=!c.canRevive;
+        document.getElementById('win-notice').hidden=!s?.isWon;
+        document.getElementById('win-notice').textContent=s?.isWon?c._winStats().text:'';
+        this.syncButtons();this.updateDpadVisibility();this.app.renderMap();
     }
-    syncGame() {
-        if (this.replay) return;
-        const current = this.controller.currentGameState;
-        this.state = current.isWon ? GAME_STATES.WON : current.isDead ? GAME_STATES.DEAD : GAME_STATES.PLAYING;
-        this.hideAllOverlays(); this.configureCanvas();
-        this._renderStaticLayer(); this.draw(); this.updateUIDisplays(); this.updateHistoryButtons(); this.updateLayerPanel(); this.updateDpadVisibility();
-        if (this.state === GAME_STATES.PLAYING) this.startAnimationLoop(); else { this.stopAutoMove(); this.stopAnimationLoop(); }
+    syncButtons(){
+        const c=this.controller;document.getElementById('undo-btn').disabled=!c.canUndo;document.getElementById('redo-btn').disabled=!c.canRedo;
+        for(const id of ['reset-map-btn','save-btn','save-map-local','solve-map-btn','save-menu-btn'])document.getElementById(id).disabled=!c.mapData;
     }
-    configureCanvas() {
-        const md = this.activeController.mapDefinition;
-        this.cellSize = (this.canvas.width - 2 * this.padding) / Math.max(md.width, md.height);
-        let minX = md.width, minY = md.height, maxX = 0, maxY = 0;
-        for (const layer of md.layers) layer.activeCells.forEach((row, y) => row.forEach((active, x) => {
-            if (active) { minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y); }
-        }));
-        this.drawOffset = { x: (this.canvas.width - (maxX - minX + 1) * this.cellSize) / 2 - minX * this.cellSize,
-            y: (this.canvas.height - (maxY - minY + 1) * this.cellSize) / 2 - minY * this.cellSize };
+    processAction(action){
+        if(this.app.view!=='play'||this.state!==GAME_STATES.PLAYING||this.app.dialogOpen||this.app.loading)return null;
+        const next=this.controller.processAction(action);
+        if(next){this.app.gameChanged();this.animateTrails();}return next;
     }
-    startGame(mapData, code = null) {
-        const checked = validateMapData(mapData);
-        if (!checked.valid) { this.showToast(checked.error, 4000, 'error'); return false; }
-        this.closeReplay(false); this.stopAutoMove();
-        this.solverDialog.reset(code);
-        const result = this.controller.startGame(checked.mapData);
-        if (!result.success) { this.showToast(result.error, 4000, 'error'); return false; }
-        const encoded = code ? { success: true, code } : this.generateShareCode();
-        if (encoded.success) { this.mapCode = encoded.code; this.updateURLWithShareCode(encoded.code); this.updateEditorLink(); }
-        return true;
+    movePlayer(dx,dy){return this.processAction({type:'MOVE',payload:{dx,dy}});}
+    useStair(){return this.processAction({type:'USE_STAIR'});}
+    handleUndo(){this.stopAutoMove();if(this.controller.undo().ok)this.app.gameChanged();}
+    handleRedo(){this.stopAutoMove();if(this.controller.redo().ok)this.app.gameChanged();}
+    resetCurrentMap(){this.stopAutoMove();if(this.controller.reset().ok)this.app.gameChanged();}
+    revivePlayer(){this.controller.revive();this.sync();}
+    updateDpadVisibility(){UI.updateDpadVisibility(this.app.view!=='play'||this.state!==GAME_STATES.PLAYING||this.app.dialogOpen);}
+    stopAutoMove(){clearInterval(this.autoMoveInterval);this.autoMoveInterval=null;clearInterval(this.dpadInterval);this.dpadInterval=null;this.stopDpad?.();}
+    animateTrails(){
+        cancelAnimationFrame(this.animationFrameId);const until=Date.now()+550;
+        const frame=()=>{if(this.app.view!=='play'||Date.now()>until)return;pruneTrails(this.controller.currentGameState,this.controller.viewLayer,Date.now());this.draw();this.animationFrameId=requestAnimationFrame(frame);};
+        this.animationFrameId=requestAnimationFrame(frame);
     }
-    generateShareCode() {
-        const source = this.activeController.mapData;
-        return source ? DataSerializer.generateShareCode(source) : { success: false, error: '请先加载地图' };
+    switchToLayer(index){const a=this.activeController;if(!a.mapDefinition||index<0||index>=a.mapDefinition.layerCount)return;a.viewLayer=index;this.draw();this.app.renderLayers();}
+    showToast(message,duration=2500,type='info'){this.app.notify(message,type);}
+    showConfirm(message,fn){this.app.confirm(message,fn);}
+    startGame(map,code){return this.app.loadMap(map,code);}
+    openReplay(mapData,actions,mapCode){
+        this.pauseReplay();const def=new MapDefinition(mapData),history=new ActionHistory(def,actions);
+        this.replay={mapData,mapDefinition:def,history,mapCode,currentStep:0,currentGameState:history.stateAt(0),viewLayer:def.playerStart.layer};
+        this.replayVision=true;document.getElementById('replay-full-vision').checked=true;this.syncReplay();
     }
-    loadFromShareCode(code, replayCode = null) {
-        const result = DataSerializer.loadFromShareCode(code);
-        if (!result.success) { this.showToast(result.error, 4000, 'error'); return false; }
-        if (replayCode) {
-            const route = ReplaySerializer.loadFromShareCode(result.data.mapData, replayCode);
-            if (!route.success) { this.showToast(route.error, 5000, 'error'); return false; }
-            // 已有游玩局保留；首次打开则同时建立该图的初始游玩局。
-            if (!this.controller.mapData) this.startGame(result.data.mapData, code);
-            this.openReplay(result.data.mapData, route.actions, code, replayCode); return true;
-        }
-        return this.startGame(result.data.mapData, code);
+    async seekReplay(step,pause=true){
+        if(!this.replay)return;
+        if(pause)this.pauseReplay();const r=this.replay;step=Math.max(0,Math.min(r.history.actions.length,Math.floor(step||0)));
+        this.seekAbort?.abort();this.seekAbort=new AbortController();const signal=this.seekAbort.signal;
+        try {const state=await r.history.stateAtAsync(step,{signal});if(signal.aborted||this.replay!==r)return;r.currentStep=step;r.currentGameState=state;r.viewLayer=state.player.layer;this.syncReplay();}
+        catch(e){if(e.name!=='AbortError')this.showToast(e.message,3000,'error');}
     }
-    processAction(action) { return this.state === GAME_STATES.PLAYING && !this.solverDialog.open ? this.controller.processAction(action) : null; }
-    movePlayer(dx, dy) { return this.processAction({ type: 'MOVE', payload: { dx, dy } }); }
-    useStair() { return this.processAction({ type: 'USE_STAIR' }); }
-    revivePlayer() { this.controller.revive(); }
-    resetCurrentMap() {
-        if (!this.controller.mapData) { this.showToast('请先加载地图', 3000, 'error'); return; }
-        this.startGame(this.controller.mapData, this.mapCode);
+    syncReplay(){
+        const r=this.replay;document.getElementById('replay-empty').hidden=!!r;document.getElementById('replay-controls').hidden=!r;if(!r)return;
+        const s=r.currentGameState,explore=r.mapDefinition.gameMode==='exploration';
+        document.getElementById('replay-mode-display').textContent='回放 · '+(explore?'探索模式':'死亡循环');
+        document.getElementById('replay-health-display').textContent=explore?'生命: '+s.player.hp:'循环: '+s.loopCount;
+        document.getElementById('replay-keys-display').textContent='钥匙: '+s.player.keys;
+        document.getElementById('replay-proximity-display').hidden=!explore;
+        document.getElementById('replay-proximity-display').textContent='周围鬼数: '+s.layerStates[s.player.layer].ghosts.filter(g=>Math.abs(g.x-s.player.x)<=1&&Math.abs(g.y-s.player.y)<=1).length;
+        document.getElementById('replay-vision-control').hidden=!explore;
+        for(const id of ['replay-step-input','replay-step-range']){const e=document.getElementById(id);e.max=r.history.actions.length;e.value=r.currentStep;}
+        document.getElementById('replay-total').textContent=r.history.actions.length;
+        document.getElementById('replay-prev-btn').disabled=r.currentStep===0;document.getElementById('replay-next-btn').disabled=r.currentStep===r.history.actions.length;
+        document.getElementById('replay-play-btn').disabled=r.history.actions.length===0;
+        document.getElementById('replay-return-btn').hidden=!this.app.solutionOrigin;
+        document.getElementById('replay-return-btn').textContent=this.app.solutionOrigin?.view==='editor'?'返回编辑':'返回游玩';
+        this.app.renderMap();
     }
-    hideAllOverlays() { UI.hideAllOverlays(); }
-    showOutcome(kind, message) {
-        document.getElementById('revive-btn').disabled = !this.controller.canRevive;
-        if (kind === 'win') { document.getElementById('win-stats').textContent = message; document.getElementById('win-overlay').style.display = 'flex'; }
-        else {
-            document.getElementById('death-message').textContent = message;
-            document.getElementById(kind === 'game-over' ? 'game-over-overlay' : 'death-overlay').style.display = 'flex';
-        }
-        this.updateHistoryButtons();
+    playReplay(){
+        if(!this.replay||this.replayPlaying||!this.replay.history.actions.length)return;
+        if(this.replay.currentStep>=this.replay.history.actions.length){this.seekReplay(0).then(()=>this.playReplay());return;}
+        this.replayPlaying=true;const generation=++this.replayRun;document.getElementById('replay-play-btn').textContent='暂停';
+        const next=async()=>{if(!this.replayPlaying||generation!==this.replayRun||this.app.view!=='replay')return;await this.seekReplay(this.replay.currentStep+1,false);if(generation!==this.replayRun)return;if(this.replay.currentStep<this.replay.history.actions.length)this.replayTimer=setTimeout(next,400/this.replaySpeed);else this.pauseReplay();};
+        this.replayTimer=setTimeout(next,400/this.replaySpeed);
     }
-    updateUIDisplays() {
-        if (!this.activeController.currentGameState) return;
-        const current = this.activeController.currentGameState, mode = this.activeController.mapDefinition.gameMode;
-        UI.updateUIDisplays({ gameMode: mode, player: current.player, loopCount: current.loopCount,
-            healthDisplay: document.getElementById('player-health-display'), stepsDisplay: document.getElementById('player-steps-display'),
-            keysDisplay: document.getElementById('player-keys-display') });
-        const displayedPlayer = this.getGameView().player;
-        UI.updateProximityWarning({ ghosts: current.layerStates[displayedPlayer.layer].ghosts, player: displayedPlayer,
-            ghostProximityDisplay: document.getElementById('ghost-proximity-display') });
-        document.getElementById('mode-display').textContent = (this.replay ? '回放 · ' : '') + (mode === 'exploration' ? '探索模式' : '死亡循环');
-    }
-    updateHistoryButtons() {
-        const disabled = !!this.replay || !this.controller.currentGameState;
-        for (const id of ['undo-btn', 'death-undo-btn', 'game-over-undo-btn']) document.getElementById(id).disabled = disabled || !this.controller.canUndo;
-        document.getElementById('save-btn').disabled = disabled || this.state !== GAME_STATES.PLAYING || this.controller.currentStep <= (this.controller.checkpoints.at(-1) ?? -1);
-        for (const id of ['rewind-btn', 'death-rewind-btn', 'game-over-rewind-btn']) document.getElementById(id).disabled = disabled || !this.controller.canRewind;
-        const replayButton = document.getElementById('watch-replay-btn');
-        replayButton.disabled = !this.controller.mapData;
-        replayButton.hidden = !!this.replay;
-        document.getElementById('solve-map-btn').disabled = !this.controller.mapData;
-    }
-    handleUndo() { this.stopAutoMove(); const result = this.controller.undo(); if (!result.ok && result.error) this.showToast(result.error, 2000, 'error'); }
-    handleSave() { const result = this.controller.save(); this.showToast(result.ok ? '已在第 ' + result.step + ' 步存档' : result.error, 2000, result.ok ? 'success' : 'error'); }
-    handleRewind() { this.stopAutoMove(); const result = this.controller.rewind(); if (!result.ok) this.showToast(result.error, 2000, 'error'); }
-    updateDpadVisibility() {
-        const exploration = this.activeController.mapDefinition?.gameMode !== 'death-loop';
-        const mobile = window.matchMedia('(max-width: 768px)').matches;
-        document.getElementById('full-vision-control').hidden = !exploration;
-        document.getElementById('ghost-proximity-display').hidden = !exploration;
-        const viewOptions = document.getElementById('view-options-controls');
-        viewOptions.hidden = !exploration && !mobile;
-        viewOptions.classList.toggle('single-toggle', !exploration);
-        document.getElementById('map-actions').hidden = !!this.replay;
-        document.getElementById('generate-map-btn').hidden = !!this.replay;
-        document.getElementById('play-options-controls').hidden = !!this.replay && !exploration && !mobile;
-        UI.updateDpadVisibility(this.state !== GAME_STATES.PLAYING || document.getElementById('new-map-overlay').style.display === 'flex' || this.solverDialog.open);
-    }
-    stopAutoMove() {
-        clearInterval(this.autoMoveInterval); this.autoMoveInterval = null;
-        clearInterval(this.dpadInterval); this.dpadInterval = null; this.stopDpad?.();
-    }
-    startAnimationLoop() {
-        if (this.animationFrameId) return;
-        const loop = () => {
-            this.animationFrameId = null;
-            if (this.state !== GAME_STATES.PLAYING) return;
-            pruneTrails(this.controller.currentGameState, this.controller.viewLayer, Date.now());
-            this.draw(); this.animationFrameId = requestAnimationFrame(loop);
-        };
-        this.animationFrameId = requestAnimationFrame(loop);
-    }
-    stopAnimationLoop() { cancelAnimationFrame(this.animationFrameId); this.animationFrameId = null; }
-    switchToLayer(index) {
-        const active = this.activeController;
-        if (!active.mapDefinition || index < 0 || index >= active.mapDefinition.layerCount) return;
-        active.viewLayer = index; this._renderStaticLayer(); this.draw(); this.updateLayerPanel();
-    }
-    updateLayerPanel() {
-        const active = this.activeController, md = active.mapDefinition;
-        LayerManager.updateLayerPanelUI({ multiLayerMode: md.multiLayerMode, layerCount: md.layerCount,
-            currentLayer: active.viewLayer, playerLayer: this.getGameView().playerLayer,
-            editorActive: false, hasStartPoint: true, onLayerClick: index => this.switchToLayer(index) });
-    }
-    updateURLWithShareCode(code, replayCode = null) {
-        if (window.app) window.app.mapURL(code, replayCode);
-        else history.replaceState({}, '', mapURL(code, { replay: replayCode }));
-    }
-    updateEditorLink() {
-        const result = this.generateShareCode();
-        document.getElementById('edit-map-btn').href = result.success ? mapURL(result.code, { editor: true }) : 'editor.html';
-    }
-    replayCodes() {
-        const map = this.generateShareCode();
-        if (!map.success) return map;
-        const active = this.activeController;
-        const route = ReplaySerializer.generateShareCode(active.mapData, this.replay ? active.history.actions : this.controller.actions);
-        return route.success ? { success: true, map: map.code, replay: route.code } : route;
-    }
-    solveMap() {
-        if (this.replay || !this.controller.mapData) return;
-        this.solverDialog.show(this.controller.mapData, this.mapCode);
-    }
-    watchReplay() {
-        const result = this.replayCodes();
-        if (!result.success) { this.showToast(result.error, 3000, 'error'); return; }
-        const actions = this.replay ? this.replay.history.actions : this.controller.actions;
-        if (window.app) window.app.watchReplay(this.activeController.mapData, actions, result.map, result.replay);
-        else this.openReplay(this.activeController.mapData, actions, result.map, result.replay);
-    }
-    openReplay(mapData, actions, mapCode, replayCode) {
-        document.getElementById('replay-close-btn').textContent = '返回游玩';
-        this.returnToSolutions = false;
-        this.pauseReplay(); this.seekAbort?.abort(); this.stopAutoMove(); this.stopAnimationLoop(); this.hideAllOverlays();
-        if (!this.replay) this.playVision = this.debugVision;
-        const mapDefinition = new MapDefinition(mapData), timeline = new ActionHistory(mapDefinition, actions);
-        this.replay = { mapData, mapDefinition, history: timeline, currentGameState: timeline.stateAt(0), currentStep: 0, viewLayer: mapDefinition.playerStart.layer, mapCode };
-        this.debugVision = true; document.getElementById('full-vision-toggle').checked = true;
-        this.state = GAME_STATES.REPLAY;
-        document.getElementById('replay-controls').hidden = false;
-        document.getElementById('play-history-controls').hidden = true;
-        this.configureCanvas(); this.syncReplay(); this.updateEditorLink();
-        this.updateURLWithShareCode(mapCode, replayCode);
-    }
-    syncReplay() {
-        if (!this.replay) return;
-        this._renderStaticLayer(); this.draw(); this.updateUIDisplays(); this.updateLayerPanel(); this.updateHistoryButtons(); this.updateDpadVisibility();
-        const step = this.replay.currentStep, total = this.replay.history.actions.length;
-        const range = document.getElementById('replay-step-range'), input = document.getElementById('replay-step-input');
-        range.max = input.max = total; range.value = input.value = step;
-        document.getElementById('replay-total').textContent = '/ ' + total;
-        document.getElementById('replay-prev-btn').disabled = step === 0;
-        document.getElementById('replay-next-btn').disabled = step === total;
-    }
-    async seekReplay(step, pause = true) {
-        if (!this.replay) return;
-        if (pause) this.pauseReplay();
-        const replay = this.replay;
-        step = Math.max(0, Math.min(replay.history.actions.length, Math.trunc(step)));
-        if (!Number.isFinite(step)) return;
-        this.seekAbort?.abort(); this.seekAbort = new AbortController();
-        const signal = this.seekAbort.signal;
-        document.getElementById('replay-load-btn').disabled = true;
-        try {
-            const current = await replay.history.stateAtAsync(step, { signal });
-            if (this.replay !== replay || signal.aborted) return;
-            replay.currentGameState = current; replay.currentStep = step;
-            replay.viewLayer = current.isDead ? replay.mapDefinition.playerStart.layer : current.player.layer;
-            this.syncReplay();
-        } catch (error) {
-            if (error.name !== 'AbortError') { this.pauseReplay(); this.showToast(error.message, 5000, 'error'); }
-        } finally {
-            if (this.replay === replay && this.seekAbort?.signal === signal) document.getElementById('replay-load-btn').disabled = false;
-        }
-    }
-    playReplay() {
-        if (!this.replay || this.replayPlaying) return;
-        if (this.replay.currentStep >= this.replay.history.actions.length) return;
-        this.replayPlaying = true;
-        const run = this.replayRun;
-        document.getElementById('replay-play-btn').textContent = '暂停';
-        const next = async () => {
-            this.replayTimer = null;
-            if (!this.replayPlaying || this.replayRun !== run || !this.replay) return;
-            await this.seekReplay(this.replay.currentStep + 1, false);
-            if (this.replayRun !== run) return;
-            if (this.replayPlaying && this.replay && this.replay.currentStep < this.replay.history.actions.length) this.replayTimer = setTimeout(next, 400 / this.replaySpeed);
-            else this.pauseReplay();
-        };
-        this.replayTimer = setTimeout(next, 400 / this.replaySpeed);
-    }
-    pauseReplay() {
-        this.replayPlaying = false;
-        this.replayRun = (this.replayRun || 0) + 1;
-        this.seekAbort?.abort();
-        clearTimeout(this.replayTimer); this.replayTimer = null;
-        document.getElementById('replay-play-btn').textContent = '播放';
-    }
-    closeReplay(sync = true) {
-        if (!this.replay) return;
-        const returnToSolutions = this.returnToSolutions; this.returnToSolutions = false;
-        this.pauseReplay(); this.seekAbort?.abort(); this.replay = null;
-        this.debugVision = this.playVision; document.getElementById('full-vision-toggle').checked = this.debugVision;
-        document.getElementById('replay-controls').hidden = true; document.getElementById('play-history-controls').hidden = false;
-        if (sync && this.controller.mapData) {
-            this.syncGame();
-            if (this.controller.currentGameState.isWon) this.showOutcome('win', this.controller._winStats().text);
-            else if (this.controller.currentGameState.isDead) { const stats = this.controller._deathStats(); this.showOutcome(stats.overlay, stats.message); }
-            this.updateURLWithShareCode(this.mapCode); this.updateEditorLink();
-            if (returnToSolutions) this.solveMap();
-        }
-    }
-    loadReplayStep(replay, step) {
-        if (this.replay !== replay) return;
-        window.app?.prepareReplayLoad();
-        this.closeReplay(false);
-        this.mapCode = replay.mapCode;
-        this.controller.loadReplayStep(replay, step);
-        this.updateURLWithShareCode(this.mapCode); this.updateEditorLink();
-        window.app?.finishReplayLoad();
-        this.showToast('已加载第 ' + step + ' 步', 2000, 'success');
-    }
+    pauseReplay(){this.replayPlaying=false;this.replayRun++;clearTimeout(this.replayTimer);this.seekAbort?.abort();const b=document.getElementById('replay-play-btn');if(b)b.textContent='播放';}
+    setSpeed(speed){if(![.25,.5,1,2,4].includes(speed))return;const was=this.replayPlaying;this.pauseReplay();this.replaySpeed=speed;document.getElementById('replay-speed').value=speed;if(was)this.playReplay();}
+    changeSpeed(delta){const speeds=[.25,.5,1,2,4],index=speeds.indexOf(this.replaySpeed);this.setSpeed(speeds[Math.max(0,Math.min(4,index+delta))]);}
+    handleKey(event){Input.handleKeyPress(this,event);}
 }

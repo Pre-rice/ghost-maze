@@ -7,7 +7,7 @@
 - [地图集设计小册](map-design-guide.md)：十三图的基本信息、设计思想、尤里卡时刻和真实简评；含解谜关键。
 - [本轮地图调整](map-adjustments-20261014.md)：本轮四图获准维护、两稿取消、边界修正与反思。
 - [地图总目录](ai-map-catalog.md)：所有已保存地图及对照、参考、反馈来源；这是资料库，按需查证，不是日常必读日志。
-- [集中站点优化交付](archive/delivery/site-optimization-20261014.md)：单页、新编辑器、逐步鬼轨迹归并与兼容验收。
+- [四栏目重整交付](archive/delivery/four-column-workspace-20261015.md)：当前预览、跨死亡和重置撤销、URL存档／草稿、原图形编辑与渐进加载。此前[集中优化记录](archive/delivery/site-optimization-20261014.md)是历史方案，不能替代当前约定。
 - [持续设计方法](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/methodology.md)：如何依据反馈改进下一张设计。
 
 ## 按任务查阅

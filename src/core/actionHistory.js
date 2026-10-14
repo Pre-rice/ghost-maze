@@ -1,3 +1,4 @@
+import { finishStep } from './stepOutcome.js';
 import { GameLogic } from './gameLogic.js';
 import { actionFromName } from './actions.js';
 
@@ -6,12 +7,13 @@ export function mergeSeen(first, second) {
 }
 
 /** 每个有效操作恰好对应一个步号；探索模式的复活由下一操作推导。 */
-export function replayStep(state, name, mapDef, step) {
+export function replayStep(state, name, mapDef, step, onDeath = () => {}) {
     let base = state;
     if (base.isDead && mapDef.gameMode === 'exploration' && base.player.hp > 0) base = GameLogic.handleRevive(base, mapDef);
     const next = GameLogic.calculateNextState(base, actionFromName(name), mapDef, { trails: false });
     if (next === base) throw new RangeError('第 ' + step + ' 步无法执行，请检查回放路线');
-    return next;
+    if (next.isDead) onDeath(step);
+    return finishStep(next, mapDef);
 }
 
 /** 按实际共用引用估算缓存占用，释放引用时回收计数。 */
@@ -78,7 +80,7 @@ export class ActionHistory {
         const nearest = this.nearest(step); this.target = step;
         let state = nearest.state;
         for (let index = nearest.from; index < step; index++) {
-            state = replayStep(state, this.actions[index], this.mapDef, index + 1);
+            state = replayStep(state, this.actions[index], this.mapDef, index + 1, death => this.deathSteps.add(death));
             this.remember(index + 1, state, index + 1 === step);
         }
         return state;
@@ -88,7 +90,7 @@ export class ActionHistory {
         let state = nearest.state, started = performance.now();
         for (let index = nearest.from; index < step; index++) {
             if (signal?.aborted) throw new DOMException('已取消跳步', 'AbortError');
-            state = replayStep(state, this.actions[index], this.mapDef, index + 1);
+            state = replayStep(state, this.actions[index], this.mapDef, index + 1, death => this.deathSteps.add(death));
             this.remember(index + 1, state, index + 1 === step);
             if (performance.now() - started >= 8 && index + 1 < step) {
                 await new Promise(resolve => setTimeout(resolve, 0)); started = performance.now();

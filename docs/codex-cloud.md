@@ -1,21 +1,21 @@
 # 云端接手、验收与资料保存
 
-更新：2026-10-14。当前云端多仓库环境已运行，两个main的写入凭据已通过实际推送验证；此前“待创建环境”“缺写凭据”是历史状态，见[旧迁移全文](archive/worklogs/codex-cloud-before-reorganization-20261013.md)。
+更新：2026-10-15。当前云端多仓库环境已运行，两个main的写入凭据已通过实际推送验证；此前“待创建环境”“缺写凭据”是历史状态，见[旧迁移全文](archive/worklogs/codex-cloud-before-reorganization-20261013.md)。
 
 ## 接手当前任务
 
 1. 保持同级ghost-maze与ghost-maze-ai，阅读两个AGENTS、本体[文档索引](README.md)和AI[当前状态](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/status.md)。设计前必读[方法](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/methodology.md)与[设计小册](map-design-guide.md)；按任务读[架构](architecture.md)。
 2. 核对两个main、未提交修改、AI引擎内容锁与私人资料，不回退已有工作。默认main，隔离分支先说明原因。
-3. Node.js22.21.1、Python3；本体不安装依赖，AI仓npm ci。运行npm run cloud:check，必须通过本体、AI、内容锁、原种子与11HTTP／代理检查，不写真人反馈。
-4. 本地联调从AI仓npm run cloud:serve -- 4206，入口/game/、/game/editor.html。需要实际公网预览时由本次环境取得地址，设置GHOST_MAZE_HOST=0.0.0.0和GHOST_MAZE_ORIGIN为真实协议＋主机后重启；localhost不冒充可访问链接。
+3. Node.js22.21.1、Python3；本体不安装依赖，AI仓npm ci。运行npm run cloud:check，必须通过本体、AI、内容锁、原种子与22HTTP资产／旧独立页404／代理检查，不写真人反馈。
+4. 本地联调从AI仓npm run cloud:serve -- 4206，入口/game/，四栏目在此同页切换；旧独立页404。需要实际公网预览时由本次环境取得地址，设置GHOST_MAZE_HOST=0.0.0.0和GHOST_MAZE_ORIGIN为真实协议＋主机后重启；localhost不冒充可访问链接。
 
-当前共同规则锁为 `sha256:bbe45fc86133d3ddb11cf07f355473a0e905fe6871e89584356dc614c1cdb9f1`；只有真实规则修改才更新锁并重验相关证书。原seed、历史地图、反馈与录制保持原件，不能为通过检查覆盖不同资料。
+当前共同规则锁为 `sha256:5861b72bee934007e2679b60f38e3820ad1e2302a6d0a309bb7a59793eefb109`；core内容实际改变才更新锁并重验相关证据；本轮历史／致死步结束态更新，物理模块逐字节相同，原种子保持。原seed、历史地图、反馈与录制保持原件，不能为通过检查覆盖不同资料。
 
 ## 产品入口与发布
 
-地图与参考回放用https://ghostmaze.novic.cc/，地图集/maps.html，不打开用户侧边页。Sites仅用于站点改动预览，用户明确验收通过后才把网站改动推送到 main。实施授权不等于发布授权，历史直接推送许可不沿用到新一轮。GitHub main推送触发Vercel部署，替代Netlify，域名未变；只核验实际推送，不检查正式站或部署。
+地图与参考回放用https://ghostmaze.novic.cc/，新版地图集／编辑／回放为首页四栏目，帮助为弹窗，不打开用户侧边页。正式恢复版的旧入口不是新版兼容协议。Sites仅用于站点改动预览，用户明确验收通过后才把网站改动推送到 main。实施授权不等于发布授权，历史直接推送许可不沿用到新一轮。GitHub main推送触发Vercel部署，替代Netlify，域名未变；只核验实际推送，不检查正式站或部署。
 
-目前无需API Key、训练服务或生产部署凭据。新地图按已授权任务设计与验证，只有用户明确选入才上架。当前获准恢复集中优化前的正式站；新版完整保存在 preview/site-optimization-20261014 分支，只部署到独立预览。用户逐项提出界面改进，获认可后再发布；地图设计和模型训练均暂停。
+目前无需API Key、训练服务或生产部署凭据。新地图按已授权任务设计与验证，只有用户明确选入才上架。当前获准恢复集中优化前的正式站；新版完整保存在 preview/site-optimization-20261014 分支，只部署到独立预览。用户已批准四栏目重整实施，完成所有修改和验收后更新独立预览，再由用户审阅；未经认可不推送正式main。地图设计和模型训练均暂停。
 
 ## 私人资料与新任务
 

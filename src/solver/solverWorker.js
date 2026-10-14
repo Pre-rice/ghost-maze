@@ -14,7 +14,7 @@ import {
 globalThis.window = {
     pako: globalThis.pako
 };
-let search, grouping, env, mapData, routes, running = false, allowance, increment, skip = 0;
+let search, grouping, env, mapData, routes, running = false, allowance, increment, skip = 0, background = false, deadline = Infinity;
 const reportError = error => {
     running = false;
     postMessage({
@@ -48,15 +48,16 @@ function emitRoutes(){
     }
 } function advance(){
     if(!running)return;
+    if(background && performance.now()>deadline){running=false;postMessage({type:'unknown',reason:'background_budget'});return;}
     try{
         const result=grouping?grouping.run({
-            stateBudget:allowance*4,budgetMs:150
+            stateBudget:allowance*4,budgetMs:background?15:40
         }):search.run({
-            nodeBudget:allowance,stateBudget:allowance,budgetMs:150
+            nodeBudget:allowance,stateBudget:allowance,budgetMs:background?15:40
         });
         if(result.status==='unknown'){
             if(result.reason==='time_budget'){
-                setTimeout(advance,0);
+                setTimeout(advance,background?10:0);
                 return;
             }running=false;
             postMessage({
@@ -74,7 +75,7 @@ function emitRoutes(){
                 type:'proved',steps:result.totalActions
             });
             grouping=createTrajectoryGroups(search.optimalGraph());
-            setTimeout(advance,0);
+            setTimeout(advance,background?10:0);
             return;
         }     running=false;
         postMessage({
@@ -91,6 +92,7 @@ function emitRoutes(){
 })=>{
     try{
         if(data.type==='start'){
+            background=!!data.background;deadline=background?performance.now()+1000:Infinity;
             mapData=data.mapData;
             env=createSearchEnvironment(mapData);
             increment=Math.max(1000,Math.min(100000,Math.floor(96*1024*1024/(env.stateKey(env.initialState()).length*2+4096))));
@@ -104,7 +106,9 @@ function emitRoutes(){
             running=true;
             advance();
         }     else if(data.type==='pause')running=false;
+        else if(data.type==='foreground'){background=false;deadline=Infinity;}
         else if(data.type==='continue'&&!routes){
+            background=false;deadline=Infinity;
             allowance+=increment;
             running=true;
             advance();

@@ -1,289 +1,184 @@
-import { galleryMarkup } from './maps/galleryScreen.js';
-import {
-    GhostMazeGame
-} from './main.js';
-import {
-    EditorApp
-} from './editorMain.js';
-import {
-    editorMarkup
-} from './editor/panel.js';
-import {
-    populateGallery
-} from './maps/gallery.js';
-import {
-    helpContent
-} from './helpContent.js';
-import {
-    GameController
-} from './core/gameController.js';
-import {
-    ReplaySerializer
-} from './core/replaySerializer.js';
-import {
-    mapURL
-} from './shareLinks.js';
-import {
-    safeGet,safeSet
-} from './storage.js';
-class Application {
+import { initThemeManager } from './themeManager.js';
+import { safeGet,safeSet } from './storage.js';
+import { aiMaps } from './maps/ai-gallery.js';
+import { LocalLibrary,readRoute,routeURL } from './site/localLibrary.js';
+import { CardViews } from './site/cards.js';
+
+const AUTO='ghostmaze-editor-draft-v3';
+const byId=id=>document.getElementById(id);
+const idle=fn=>window.requestIdleCallback?requestIdleCallback(fn,{timeout:1800}):setTimeout(fn,180);
+export class Application {
     constructor(){
-        const path=location.pathname,view=path.endsWith('maps.html')?'maps':path.endsWith('help.html')?'help':path.endsWith('editor.html')?'editor':history.state?.view??'play';
-        this.view='play';
-        this.records=new Map();
-        this.sequence=0;
-        this.navigationSuspended=false;
-        document.body.insertAdjacentHTML('beforeend',editorMarkup()+galleryMarkup+`<section id="help-screen" hidden>${helpContent}</section>`);
-        window.app=this;
-        this.game=window.game=new GhostMazeGame();
-        this.editor=window.editorApp=new EditorApp(this);
-        populateGallery(document.getElementById('ai-map-grid'));
-        document.getElementById('edit-map-btn').onclick=e=>{
-            e.preventDefault();
-            this.enterEditor();
-        };
-        document.addEventListener('click',e=>{
-            if(e.defaultPrevented)return;const theme=e.target.closest('[data-theme-action]');if(theme){
-                document.getElementById('theme-toggle-btn').click();this.editor.draw();return;
-            }const a=e.target.closest('a');if(!a||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||e.button!==0||a.closest('#solver-dialog'))return;const url=new URL(a.href);if(url.origin!==location.origin)return;const dest=url.pathname.endsWith('maps.html')?'maps':url.pathname.endsWith('help.html')?'help':url.pathname.endsWith('editor.html')?'editor':url.pathname===new URL('./',location.href).pathname?'play':null;if(!dest)return;e.preventDefault();if(dest==='editor'){
-                this.enterEditor();return;
-            }if(dest==='play'&&url.searchParams.get('map')&&url.searchParams.get('map')!==this.game.mapCode){
-                this.capture();this.navigationSuspended=true;this.view='play';this.game.controller=this.newController();this.game.loadFromShareCode(url.searchParams.get('map'),url.searchParams.get('replay'));this.editor.loaded=false;this.replayOrigin=null;this.playOrigin=null;this.editorReturn=null;this.navigationSuspended=false;this.navigate('play',url.href,true,false);
-            }else this.navigate(dest,dest==='play'&&this.game.mapCode?mapURL(this.game.mapCode):url.href);
-        });
-        window.addEventListener('popstate',()=>this.restoreHistory());
-        window.addEventListener('pagehide',()=>{
-            try{
-                sessionStorage.setItem('ghostmaze-session-view',JSON.stringify({
-                    view:this.view,map:location.search,editor:this.editor.workspace.snapshot()
-                }));
-            }catch{
+        this.view='maps';this.playPanel=null;this.scrolls={};this.loadToken=0;this.hasLoadedMap=false;this.recoverAllowed=!location.search;this.replaySource='current';this.replayDirty=true;
+        this.library=new LocalLibrary();this.cards=new CardViews(this);this.mapCode=null;this.draftVisible=false;window.app=this;
+        initThemeManager();this.bind();this.renderLibraries();performance.mark('ghostmaze-shell-ready');try{const route=readRoute(location.href);this.showColumn(route.draft?'editor':route.replay?'replay':route.map?'play':'maps');}catch{}this.boot();
+    }
+    get dialogOpen(){return !!document.querySelector('dialog[open]');}
+    notify(message,type='info'){const el=byId('toast-notification');clearTimeout(this.toastTimer);el.textContent=message;el.className='toast show '+(type==='info'?'':type);this.toastTimer=setTimeout(()=>el.classList.remove('show'),3500);}
+    confirm(message,fn){const dialog=byId('confirm-dialog');byId('confirm-message').textContent=message;byId('confirm-yes-btn').onclick=()=>{dialog.close();fn();};byId('confirm-no-btn').onclick=()=>dialog.close();this.game?.stopAutoMove();dialog.showModal();}
+    bind(){
+        document.querySelectorAll('[data-column]').forEach(b=>b.onclick=()=>this.switchColumn(b.dataset.column));
+        document.querySelectorAll('[data-close-dialog]').forEach(b=>b.onclick=()=>byId(b.dataset.closeDialog).close());
+        for(const d of document.querySelectorAll('dialog'))d.addEventListener('close',()=>this.game?.updateDpadVisibility());
+        byId('help-btn').onclick=async()=>{this.game?.stopAutoMove();this.game?.pauseReplay();byId('help-dialog').showModal();this.game?.updateDpadVisibility();try{const m=await this.helpModule();byId('help-body').innerHTML=m.helpContent;}catch{byId('help-body').textContent='帮助加载失败，请关闭后重试。';}};
+        byId('theme-toggle').addEventListener('click',()=>requestAnimationFrame(()=>{this.game?.resize();if(this.view==='editor'||this.draftVisible)this.editor?.draw();this.cards.refreshVisible();}));
+        byId('generate-map-btn').onclick=()=>{this.game?.stopAutoMove();byId('new-map-dialog').showModal();byId('new-map-health').focus();this.game?.updateDpadVisibility();};
+        byId('new-map-form').onsubmit=async e=>{e.preventDefault();const size=Number(byId('new-map-size').value),health=Number(byId('new-map-health').value);if(!Number.isInteger(size)||size<8||size>20||!Number.isInteger(health)||health<1||health>0xffffffff)return;await this.ensureRuntime();const {generateFullMaze}=await import('./core/mazeGenerator.js');const {DEFAULT_GHOST_COUNT}=await import('./core/constants.js');const map={...generateFullMaze(size,size,DEFAULT_GHOST_COUNT),gameMode:'exploration',initialHealth:health};if(await this.loadMap(map)){byId('new-map-dialog').close();}};
+        byId('load-link-btn').onclick=()=>{const raw=byId('load-link-input').value.trim();if(!raw)return;this.loadURL(/^[A-Za-z0-9_-]+$/.test(raw)?routeURL({map:raw}):raw);};
+        byId('load-link-input').addEventListener('keydown',e=>{if(e.key==='Enter')byId('load-link-btn').click();});
+        for(const [id,panel] of [['save-menu-btn','save'],['solve-map-btn','solve']])for(const event of ['mouseenter','focus','click'])byId(id).addEventListener(event,()=>this.openPlayPanel(panel));
+        byId('save-btn').onclick=()=>{const result=this.game.controller.save();if(result.ok){this.renderPoints();this.notify('已在第 '+result.step+' 步建立存档点');}else this.notify(result.error,'error');};
+        byId('save-map-local').onclick=()=>this.saveLocal('map',routeURL({map:this.mapCode}));
+        byId('solver-continue-btn').onclick=()=>this.solver?.continue();byId('solver-more-btn').onclick=()=>this.solver?.more();
+        this.library.subscribe(()=>this.renderLibraries());
+        for(const [id,key] of [['local-section','locals'],['premium-section','premium'],['draft-section','drafts']]){const value=safeGet('ghostmaze-fold-'+key);if(value!==null)byId(id).open=value==='open';byId(id).addEventListener('toggle',()=>safeSet('ghostmaze-fold-'+key,byId(id).open?'open':'closed'));}
+        window.addEventListener('keydown',e=>this.key(e));window.addEventListener('popstate',()=>this.loadURL(location.href,{replace:true}));
+        document.addEventListener('visibilitychange',()=>{if(document.hidden){this.game?.pauseReplay();this.game?.stopAutoMove();this.solver?.pauseBackground();}});
+        new ResizeObserver(()=>this.game?.resize()).observe(document.querySelector('.canvas-host'));
+    }
+    async boot(){
+        let route;try{route=readRoute(location.href);}catch(error){this.notify(error.message,'error');}
+        if(route?.map||route?.draft)await this.loadURL(location.href,{replace:true,initial:true});else await this.ensureRuntime();
+        performance.mark('ghostmaze-current-ready');
+        idle(()=>{this.ensureEditor().catch(()=>{});this.helpModule().catch(()=>{});this.getSolver().catch(()=>{});});
+    }
+    async ensureRuntime(){
+        if(!this.runtimePromise)this.runtimePromise=(async()=>{
+            const [main,codec,controller,replay,history]=await Promise.all([import('./main.js'),import('./core/dataSerializer.js'),import('./core/gameController.js'),import('./core/replaySerializer.js'),import('./core/actionHistory.js'),import('./vendor/pako.js')]);
+            this.runtime={...codec,...controller,...replay,...history};this.game=window.game=new main.GhostMazeGame(this);window.dispatchEvent(new CustomEvent('ghostmaze:runtime-ready'));return this.runtime;
+        })();return this.runtimePromise;
+    }
+    async ensureEditor(){if(!this.editorPromise)this.editorPromise=(async()=>{await this.ensureRuntime();const {EditorApp}=await import('./editorMain.js');this.editor=window.editorApp=new EditorApp(this);performance.mark('ghostmaze-editor-ready');return this.editor;})();return this.editorPromise;}
+    async getSolver(){if(!this.solverPromise)this.solverPromise=(async()=>{const {SolveService}=await import('./solver/solveService.js');this.solver=new SolveService(this);if(this.mapCode&&this.game?.controller.mapData)this.solver.prepare(this.game.controller.mapData,this.mapCode,true);return this.solver;})();return this.solverPromise;}
+    helpModule(){return this.helpPromise??=import('./helpContent.js');}
+    async thumbnailModule(){await this.ensureRuntime();return this.thumbnailsPromise??=import('./site/thumbnails.js');}
+    setURL(route,{push=false}={}){const url=routeURL(route);if(push&&url!==location.href)history.pushState({},'',url);else if(url!==location.href)history.replaceState({},'',url);}
+    async loadMap(map,code=null){await this.ensureRuntime();const encoded=code?{success:true,code}:this.runtime.DataSerializer.generateShareCode(map);if(!encoded.success){this.notify(encoded.error,'error');return false;}return this.loadURL(routeURL({map:encoded.code}));}
+    async loadURL(input,{replace=false,initial=false}={}){
+        const token=++this.loadToken;this.loading=true;byId('map-loading').hidden=false;this.game?.stopAutoMove();this.game?.pauseReplay();
+        try{
+            const route=readRoute(input);await this.ensureRuntime();
+            if(route.draft){const [{decodeDraft},editor]=await Promise.all([import('./editor/draftCodec.js'),this.ensureEditor()]);const result=decodeDraft(route.draft);if(!result.success)throw new Error(result.error);if(token!==this.loadToken)return false;
+                this.game.clear();this.mapCode=null;this.draftVisible=true;editor.loaded=false;editor.enter(null,null,result.snapshot);this.hasLoadedMap=true;this.recoverAllowed=false;safeSet(AUTO,'');this.solutionOrigin=null;this.replaySource='current';this.setURL(route,{push:!replace});this.showColumn('editor');editor.fit();this.renderLibraries();return true;
             }
-        });
-        this.entry=Number.isSafeInteger(history.state?.entry)?history.state.entry:++this.sequence;
-        this.sequence=Math.max(this.sequence,this.entry);
+            if(!route.map){if(token!==this.loadToken)return false;this.game.clear();this.editor&&(this.editor.loaded=false);this.mapCode=null;this.draftVisible=false;this.hasLoadedMap=false;this.recoverAllowed=true;this.solutionOrigin=null;this.setURL({}, {push:!replace});this.showColumn('maps');return true;}
+            const decoded=this.runtime.DataSerializer.loadFromShareCode(route.map);if(!decoded.success)throw new Error(decoded.error);
+            const candidate=new this.runtime.GameController();const started=candidate.startGame(decoded.data.mapData);if(!started.success)throw new Error(started.error);
+            let actions=null;if(route.save||route.replay){const replay=this.runtime.ReplaySerializer.loadFromShareCode(candidate.mapData,route.save||route.replay);if(!replay.success)throw new Error(replay.error);actions=replay.actions;if(route.save)await candidate.loadActionsAsync(candidate.mapData,actions);}
+            if(token!==this.loadToken)return false;
+            this.mapCode=route.map;this.draftVisible=false;this.game.install(candidate,route.map);this.editor&&(this.editor.loaded=false);this.hasLoadedMap=true;this.recoverAllowed=false;safeSet(AUTO,'');this.solutionOrigin=null;this.replayDirty=true;clearTimeout(this.editorSolveTimer);this.solver?.invalidate();
+            this.setURL(route,{push:!replace});
+            if(route.replay){this.replaySource='external';this.game.openReplay(candidate.mapData,actions,route.map);this.showColumn('replay');}
+            else {this.replaySource='current';this.showColumn('play');}
+            this.playPanel=null;this.syncPlayPanel();this.renderPoints();idle(()=>{if(token===this.loadToken)this.getSolver().then(s=>{if(token===this.loadToken)s.prepare(candidate.mapData,route.map,true);});});return true;
+        }catch(error){if(token===this.loadToken)this.notify(error.message,'error');return false;}
+        finally{if(token===this.loadToken){this.loading=false;byId('map-loading').hidden=true;this.renderMap();this.game?.updateDpadVisibility();}}
+    }
+    async switchColumn(view){
+        if(this.loading)return;await this.ensureRuntime();this.game.stopAutoMove();this.game.pauseReplay();
+        if(this.editor?.loaded&&(this.view==='editor'||this.draftVisible)){this.editor.cancelGesture();if(view==='play'||view==='replay'){const valid=this.editor.code();if(!valid.success){this.notify('草稿尚未完成：'+valid.error,'error');return;}if(!this.game.controller.mapData){const c=new this.runtime.GameController();c.startGame(this.editor.editorDoc.toMapData());this.mapCode=valid.code;this.game.install(c,valid.code);}}}
         if(view==='editor'){
-            this.editor.enter(this.game.controller.mapData,this.game.mapCode);
-            this.editorCode=this.game.mapCode;
-            try{
-                const saved=JSON.parse(sessionStorage.getItem('ghostmaze-session-view'));
-                if(saved?.view==='editor'&&saved.map===location.search)this.editor.workspace.restore(saved.editor);
-            }catch{
-            }this.view='editor';
-            this.render();
-            history.replaceState({
-                view:'editor',entry:this.entry
-            },'',this.editorCode?mapURL(this.editorCode):new URL('./',location.href));
-        }         else {
-            this.view=view;
-            this.render();
-            history.replaceState({
-                view,entry:this.entry
-            },'',location.href);
-        }         this.capture();
-    }
-    capture(){
-        if(!this.game)return;
-        this.records.set(this.entry,{
-            view:this.view,controller:this.game.controller,mapCode:this.game.mapCode,replay:this.game.replay,workspace:this.editor?.workspace,sourceCode:this.editor?.sourceCode,editorLoaded:this.editor?.loaded,replayOrigin:this.replayOrigin,playOrigin:this.playOrigin,debugVision:this.game.debugVision,playVision:this.game.playVision,editorReturn:this.editorReturn
-        });
-    }
-    navigate(view,url=null,push=true,save=true){
-        if(save)this.capture();
-        this.view=view;
-        this.render();
-        if(push){
-            this.entry=++this.sequence;
-            history.pushState({
-                view,entry:this.entry
-            },'',url??(view==='maps'||view==='help'?new URL(view+'.html',location.href):location.href));
-        }else history.replaceState({
-            view,entry:this.entry
-        },'',url??location.href);
-        this.capture();
-    }
-    render(){
-        this.game.stopAutoMove();
-        this.game.pauseReplay();
-        this.game.stopAnimationLoop();
-        this.game.hideAllOverlays();
-        for(const name of ['play','editor','maps','help'])document.getElementById(name+'-screen').hidden=this.view!==name;
-        document.title=this.view==='editor'?'鬼迷宫 · 地图编辑器':this.view==='maps'?'鬼迷宫 · 地图集':this.view==='help'?'鬼迷宫 · 帮助':'鬼迷宫';
-        if(this.view==='play'&&this.game.activeController.currentGameState){
-            if(this.game.replay){
-                this.game.state='replay';
-                this.game.configureCanvas();
-                this.game.syncReplay();
-                document.getElementById('replay-close-btn').textContent=this.replayOrigin?.view==='editor'?'返回编辑':'返回游玩';
-            }else {this.game.syncGame();const current=this.game.controller.currentGameState;if(current.isWon)this.game.showOutcome('win',this.game.controller._winStats().text);else if(current.isDead){const stats=this.game.controller._deathStats();this.game.showOutcome(stats.overlay,stats.message);}}
-        }else this.game.state='menu';
-        if(this.view==='editor')this.editor.sync();
-        this.game.updateDpadVisibility();
-    }
-    mapURL(code,replay){
-        if(this.navigationSuspended||this.view!=='play')return;
-        history.replaceState({
-            view:this.view,entry:this.entry
-        },'',mapURL(code,{
-            replay
-        }));
-    }
-    editorURL(code){
-        if(this.view==='editor')history.replaceState({
-            view:'editor',entry:this.entry
-        },'',mapURL(code));
-    }
-    enterEditor(){
-        if(!this.playOrigin)this.editorReturn={
-            controller:this.game.controller,mapCode:this.game.mapCode,replay:this.game.replay,replayOrigin:this.replayOrigin,debugVision:this.game.debugVision,playVision:this.game.playVision,href:location.href
-        };
-        const source=this.game.replay?this.game.replay.mapData:this.game.controller.mapData,code=this.game.replay?this.game.replay.mapCode:this.game.mapCode;
-        if(!this.editor.loaded||(this.editor.code().code!==code&&this.editor.sourceCode!==code))this.editor.enter(source,code);
-        this.editorCode=this.editor.code().code;
-        this.navigate('editor',this.editorCode?mapURL(this.editorCode):new URL('./',location.href));
-    }
-    leaveEditor(){
-        const origin=this.playOrigin??this.editorReturn;
-        if(origin){
-            this.game.controller=origin.controller;
-            this.game.mapCode=origin.mapCode;
-            this.game.replay=origin.replay??null;
-            this.replayOrigin=origin.replayOrigin;
-            this.game.debugVision=origin.debugVision??false;
-            this.game.playVision=origin.playVision;
-            document.getElementById('full-vision-toggle').checked=this.game.debugVision;
-        }this.playOrigin=null;
-        this.editorReturn=null;
-        this.navigate('play',origin?.href??(this.game.mapCode?mapURL(this.game.mapCode):new URL('./',location.href)));
-    }
-    tryEditor(){
-        const encoded=this.editor.code();
-        if(!encoded.success){
-            this.editor.notify(encoded.error);
-            return;
-        }this.capture();
-        this.playOrigin??=this.editorReturn??{
-            controller:this.game.controller,mapCode:this.game.mapCode,href:location.href,debugVision:this.game.debugVision
-        };
-        this.game.controller=this.newController();
-        this.navigationSuspended=true;
-        this.view='play';
-        this.game.startGame(this.editor.editorDoc.toMapData(),encoded.code);
-        this.game.hideAllOverlays();
-        this.navigationSuspended=false;
-        this.navigate('play',mapURL(encoded.code),true,false);
-    }
-    newController(){
-        return new GameController({
-            onSync:()=>this.game.syncGame(),onWin:s=>{
-                if(!this.game.replay)this.game.showOutcome('win',s.text);
-            },onDeath:s=>{
-                if(!this.game.replay)this.game.showOutcome(s.overlay,s.message);
-            },onHistoryChange:()=>this.game.updateHistoryButtons()
-        });
-    }
-    solveEditor(){
-        const encoded=this.editor.code();
-        if(!encoded.success){
-            this.editor.notify(encoded.error);
-            return;
-        }this.game.solverDialog.show(this.editor.editorDoc.toMapData(),encoded.code);
-    }
-    watchReplay(map,actions,mapCode,code){
-        this.capture();
-        this.replayOrigin={
-            view:'play',map,mapCode,popup:false
-        };
-        this.navigationSuspended=true;
-        this.game.openReplay(map,actions,mapCode,code);
-        this.navigationSuspended=false;
-        this.navigate('play',mapURL(mapCode,{
-            replay:code
-        }),true,false);
-    }
-    prepareReplayLoad(){
-        this.capture();
-        if(this.replayOrigin?.view==='editor'){
-            this.playOrigin??=this.editorReturn??{
-                controller:this.game.controller,mapCode:this.game.mapCode,href:location.href,debugVision:this.game.debugVision
-            };
-            this.game.controller=this.newController();
-        }this.replayOrigin=null;
-        this.navigationSuspended=true;
-    }
-    finishReplayLoad(){
-        this.navigationSuspended=false;
-        this.navigate('play',mapURL(this.game.mapCode),true,false);
-    }     openSolution({
-        code,mapCode
-    }){
-        const map=this.game.solverDialog.mapData,route=ReplaySerializer.loadFromShareCode(map,code);
-        if(!route.success){
-            this.game.showToast(route.error,4000,'error');
-            return;
-        }this.capture();
-        this.replayOrigin={
-            view:this.view,workspace:this.editor.workspace,map,mapCode,popup:true
-        };
-        this.navigationSuspended=true;
-        this.view='play';
-        this.game.openReplay(map,route.actions,mapCode,code);
-        this.game.returnToSolutions=true;
-        this.navigationSuspended=false;
-        this.navigate('play',mapURL(mapCode,{
-            replay:code
-        }),true,false);
-        document.getElementById('replay-close-btn').textContent=this.replayOrigin.view==='editor'?'返回编辑':'返回游玩';
-    }
-    closeReplay(){
-        const origin=this.replayOrigin;
-        if(!origin){
-            this.game.closeReplay();
-            this.navigate('play',this.game.mapCode?mapURL(this.game.mapCode):new URL('./',location.href),false);
-            return;
-        }this.game.closeReplay(false);
-        this.replayOrigin=null;
-        let same=true;
-        if(origin.view==='editor'){
-            this.editor.workspace=origin.workspace;
-            const current=this.editor.code();
-            same=current.success&&current.code===origin.mapCode;
-            this.navigate('editor',current.success?mapURL(current.code):mapURL(origin.mapCode),false);
-        }else this.navigate('play',mapURL(this.game.mapCode),false);
-        if(origin.popup!==false&&same)this.game.solverDialog.show(origin.map,origin.mapCode);
-        else if(!same)this.game.solverDialog.reset(this.editor.code().code);
-    }
-    restoreHistory(){
-        const returning=this.game.replay&&this.replayOrigin;
-        const state=history.state,record=this.records.get(state?.entry);
-        this.entry=state?.entry??++this.sequence;
-        this.sequence=Math.max(this.sequence,this.entry);
-        if(record){
-            this.game.controller=record.controller;
-            this.game.mapCode=record.mapCode;
-            this.game.replay=record.replay;
-            this.replayOrigin=record.replayOrigin;
-            this.playOrigin=record.playOrigin;
-            this.editorReturn=record.editorReturn;
-            this.game.debugVision=record.debugVision;
-            this.game.playVision=record.playVision;
-            document.getElementById('full-vision-toggle').checked=!!record.debugVision;
-            if(record.workspace){
-                this.editor.workspace=record.workspace;
-                this.editor.sourceCode=record.sourceCode;this.editor.loaded=record.editorLoaded;
-            }this.view=record.view;
-            this.render();
-            if(returning&&returning.popup!==false&&this.view===returning.view)this.game.solverDialog.show(returning.map,returning.mapCode);
-        }else{
-            const p=new URLSearchParams(location.search);
-            this.view=state?.view??(location.pathname.endsWith('maps.html')?'maps':location.pathname.endsWith('help.html')?'help':'play');
-            if(this.view==='play'&&p.get('map')){
-                this.navigationSuspended=true;
-                this.game.loadFromShareCode(p.get('map'),p.get('replay'));
-                this.navigationSuspended=false;
-            }this.render();
+            const editor=await this.ensureEditor();if(!editor.loaded){let recovered=null;
+                if(this.recoverAllowed&&!this.hasLoadedMap){const code=safeGet(AUTO);if(code){const {decodeDraft}=await import('./editor/draftCodec.js');const decoded=decodeDraft(code);if(decoded.success){recovered=decoded.snapshot;this.draftVisible=true;this.setURL({draft:code});}}}
+                editor.enter(this.game.controller.mapData,this.mapCode,recovered);
+            }
+            this.showColumn(view);return;
         }
+        if(view==='play'&&!this.game.controller.mapData){this.notify('加载地图以开始');return;}
+        if(view==='replay'&&this.game.controller.mapData&&this.replaySource==='current')this.refreshCurrentReplay();
+        this.showColumn(view);
     }
-} document.addEventListener('DOMContentLoaded',()=>{
-    window.app=new Application();
-});
+    showColumn(view){
+        this.scrolls[this.view]=byId('panel-scroll').scrollTop;this.view=view;
+        for(const name of ['maps','play','replay','editor']){byId('pane-'+name).hidden=view!==name;byId('tab-'+name).setAttribute('aria-selected',String(view===name));}
+        byId('panel-scroll').scrollTop=this.scrolls[view]||0;
+        if(view==='editor')this.editor?.sync();else if(view==='replay')this.game?.syncReplay();else this.game?.sync();
+        this.game?.updateDpadVisibility();this.renderMap();
+    }
+    renderMap(){
+        if(!this.game)return;const editing=this.view==='editor'||this.draftVisible;
+        const loaded=editing?!!this.editor?.loaded:!!this.game.activeController.currentGameState;
+        byId('map-empty').hidden=loaded;
+        if(editing&&this.editor?.loaded)this.editor.draw();else if(loaded)this.game.draw();else this.game.ctx.clearRect(0,0,this.game.canvas.width,this.game.canvas.height);
+        this.renderLayers();
+    }
+    renderLayers(){
+        const bar=byId('layer-panel'),editing=this.view==='editor'||this.draftVisible,doc=editing?this.editor?.editorDoc:null,a=this.game?.activeController,count=doc?.layerCount||a?.mapDefinition?.layerCount||1,current=doc?.currentLayer??a?.viewLayer??0;
+        bar.hidden=count===1;bar.replaceChildren();if(count===1)return;
+        for(let i=0;i<count;i++){const b=document.createElement('button');b.textContent=(i+1)+'层';b.className=i===current?'':'secondary';b.onclick=()=>{if(doc){doc.switchLayer(i);this.editor.sync();if(!this.editor.visible)this.renderMap();}else this.game.switchToLayer(i);};bar.append(b);}
+    }
+    renderLibraries(){
+        const locals=this.library.list('play').map(e=>({...e,local:true})),drafts=this.library.list('draft').map(e=>({...e,local:true}));
+        byId('local-count').textContent=locals.length+' 个';byId('local-empty').hidden=!!locals.length;this.cards.fill(byId('local-map-grid'),locals);
+        byId('draft-count').textContent=drafts.length+' 个';byId('draft-empty').hidden=!!drafts.length;this.cards.fill(byId('draft-grid'),drafts);
+        byId('premium-count').textContent=aiMaps.length+' 张';this.cards.fill(byId('premium-map-grid'),aiMaps.map(m=>({...m,kind:'map',url:routeURL({map:m.mapCode})})));
+    }
+    renderPoints(){
+        const points=this.game?.controller.checkpoints||[];byId('checkpoint-empty').hidden=!!points.length;
+        byId('checkpoint-list').replaceChildren(...points.slice().reverse().map(p=>this.cards.make({...p,kind:'save',url:routeURL({map:this.mapCode,save:p.code})},{checkpoint:true})));
+    }
+    saveLocal(kind,url){try{this.library.save(kind,url);this.notify('已保存到本地');}catch(error){this.notify(error.message,'error');}}
+    async saveDraft(){
+        const {encodeDraft}=await import('./editor/draftCodec.js');const encoded=encodeDraft(this.editor.workspace.snapshot());
+        if(!encoded.success){this.notify(encoded.error,'error');return;}this.saveLocal('draft',routeURL({draft:encoded.code}));
+    }
+    editorChanged(editor){
+        const result=editor.code();this.solutionOrigin=null;this.replaySource='current';this.replayDirty=true;
+        if(result.success){const candidate=new this.runtime.GameController();const valid=candidate.startGame(editor.editorDoc.toMapData());if(valid.success){this.mapCode=result.code;this.draftVisible=false;this.game.install(candidate,result.code);this.setURL({map:result.code});}}
+        else {this.mapCode=null;this.draftVisible=true;this.game.clear();}
+        const token=this.loadToken,snapshot=editor.workspace.snapshot();
+        import('./editor/draftCodec.js').then(({encodeDraft})=>{if(token!==this.loadToken||!editor.loaded)return;const draft=encodeDraft(snapshot);if(draft.success){safeSet(AUTO,draft.code);if(!result.success)this.setURL({draft:draft.code});}});
+        this.game.replay=null;this.game.syncReplay();this.renderPoints();
+        clearTimeout(this.editorSolveTimer);this.solver?.invalidate();if(result.success)this.editorSolveTimer=setTimeout(()=>this.getSolver().then(s=>s.prepare(editor.editorDoc.toMapData(),result.code,true)),650);
+    }
+    gameChanged(){
+        this.setURL({map:this.mapCode});this.solutionOrigin=null;this.replaySource='current';this.replayDirty=true;this.solver?.pauseBackground();this.game.sync();
+    }
+    refreshCurrentReplay(){
+        const c=this.game.controller,actions=c.replayActions,signature=this.mapCode+':'+actions.join(',');
+        if(!this.game.replay||signature!==this.replaySignature||this.replayDirty){this.game.openReplay(c.mapData,actions,this.mapCode);this.replaySignature=signature;this.replayDirty=false;}
+    }
+    async openPlayPanel(panel){
+        if(!this.game?.controller.mapData)return;this.playPanel=panel;this.syncPlayPanel();
+        if(panel==='save')this.renderPoints();else {const solver=await this.getSolver();solver.prepare(this.game.controller.mapData,this.mapCode,false);solver.mount(byId('solve-pane'));solver.activate();}
+    }
+    syncPlayPanel(){
+        byId('play-menu-content').hidden=!this.playPanel;byId('save-pane').hidden=this.playPanel!=='save';byId('solve-pane').hidden=this.playPanel!=='solve';
+        byId('save-menu-btn').setAttribute('aria-expanded',String(this.playPanel==='save'));byId('solve-map-btn').setAttribute('aria-expanded',String(this.playPanel==='solve'));
+    }
+    async solveEditor(){
+        const code=this.editor.code();if(!code.success){this.notify('草稿尚未完成：'+code.error,'error');return;}
+        const solver=await this.getSolver();solver.prepare(this.editor.editorDoc.toMapData(),code.code,false);byId('editor-solve-results').hidden=false;solver.mount(byId('editor-solve-results'));solver.activate();
+    }
+    async openSolution(mapCode,code){
+        const parsed=this.runtime.DataSerializer.loadFromShareCode(mapCode),decoded=parsed.success&&this.runtime.ReplaySerializer.loadFromShareCode(parsed.data.mapData,code);
+        if(!parsed.success||!decoded.success){this.notify(parsed.error||decoded.error,'error');return;}
+        this.solutionOrigin={view:this.view,url:location.href,playPanel:this.playPanel};this.replaySource='external';
+        this.game.openReplay(parsed.data.mapData,decoded.actions,mapCode);this.setURL({map:mapCode,replay:code},{push:true});this.showColumn('replay');
+    }
+    returnFromSolution(){
+        const origin=this.solutionOrigin;if(!origin)return;this.game.pauseReplay();history.replaceState({},'',origin.url);this.showColumn(origin.view);
+        if(origin.view==='play'){this.playPanel='solve';this.syncPlayPanel();this.solver?.mount(byId('solve-pane'));}
+        else {byId('editor-solve-results').hidden=false;this.solver?.mount(byId('editor-solve-results'));}
+    }
+    async loadReplayStep(){
+        const r=this.game.replay;if(!r)return;this.game.pauseReplay();const actions=r.history.actions.slice(0,r.currentStep),encoded=this.runtime.ReplaySerializer.generateShareCode(r.mapData,actions);
+        if(!encoded.success){this.notify(encoded.error,'error');return;}await this.loadURL(routeURL({map:r.mapCode,save:encoded.code}));
+    }
+    key(e){
+        const target=e.target,k=e.key.toLowerCase(),typing=target?.isContentEditable||['SELECT','TEXTAREA'].includes(target?.tagName)||target?.tagName==='INPUT'&&!['checkbox','radio','range','button'].includes(target.type);
+        if(this.dialogOpen||typing||this.loading)return;if(k===' '&&target?.tagName==='INPUT'&&['checkbox','radio'].includes(target.type))return;
+        if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&['1','2','3','4'].includes(k)){e.preventDefault();this.switchColumn(['maps','play','replay','editor'][Number(k)-1]);return;}
+        const modifier=e.ctrlKey||e.metaKey;
+        if(modifier&&k==='z'){if(this.view==='play'){e.preventDefault();e.shiftKey?this.game.handleRedo():this.game.handleUndo();}else if(this.view==='editor'){e.preventDefault();e.shiftKey?this.editor.redo():this.editor.undo();}return;}
+        if(modifier&&k==='y'){if(this.view==='play'){e.preventDefault();this.game.handleRedo();}else if(this.view==='editor'){e.preventDefault();this.editor.redo();}return;}
+        if(modifier&&k==='s'){if(this.view==='play'){e.preventDefault();const point=this.game.controller.save();if(point.ok){this.renderPoints();this.notify('已建立存档点');}else this.notify(point.error,'error');}else if(this.view==='editor'){e.preventDefault();this.saveDraft();}return;}
+        if(modifier||e.altKey)return;
+        if(this.view==='replay'&&this.game?.replay){
+            if(k===' '){e.preventDefault();this.game.replayPlaying?this.game.pauseReplay():this.game.playReplay();}
+            else if(['arrowleft','a','arrowright','d'].includes(k)){e.preventDefault();this.game.seekReplay(this.game.replay.currentStep+(['a','arrowleft'].includes(k)?-1:1));}
+            else if(['arrowup','w','arrowdown','s'].includes(k)){e.preventDefault();this.game.changeSpeed(['w','arrowup'].includes(k)?1:-1);}
+        }else if(this.view==='editor')this.editor?.handleKey(e);else if(this.view==='play'){if(k===' '){e.preventDefault();this.game?.useStair();}else this.game?.handleKey(e);}
+    }
+}
+new Application();

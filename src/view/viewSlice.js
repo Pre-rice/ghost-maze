@@ -18,7 +18,7 @@ import { GAME_STATES } from '../core/constants.js';
 export function computeGameView({ mapDef, gameState, viewLayer }, renderParams) {
     const layerDef = mapDef.layers[viewLayer];
     const layerState = gameState.layerStates[viewLayer];
-    // 致死回放帧在出生点画玩家，不改变死亡局面、历史或加载该步的真实状态。
+    // 当步重生通常已由历史完成；无法继续的终止状态也显示在出生点。
     const player = renderParams.state === GAME_STATES.REPLAY && gameState.isDead
         ? { ...gameState.player, ...mapDef.playerStart, trail: [] } : gameState.player;
     return {
