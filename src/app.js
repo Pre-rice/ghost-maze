@@ -31,7 +31,7 @@ export class Application {
         byId('save-map-local').onclick=()=>this.saveLocal('map',routeURL({map:this.mapCode}));
         byId('solver-continue-btn').onclick=()=>this.solver?.continue();byId('solver-more-btn').onclick=()=>this.solver?.more();
         this.library.subscribe(()=>this.renderLibraries());
-        for(const [id,key] of [['local-section','locals'],['premium-section','premium'],['draft-section','drafts']]){const value=safeGet('ghostmaze-fold-'+key);if(value!==null)byId(id).open=value==='open';byId(id).addEventListener('toggle',()=>safeSet('ghostmaze-fold-'+key,byId(id).open?'open':'closed'));}
+        for(const [id,key] of [['local-section','locals'],['premium-section','premium'],['draft-section','drafts']]){const value=safeGet('ghostmaze-fold-'+key);if(id==='premium-section')byId(id).open=false;else if(value!==null)byId(id).open=value==='open';byId(id).addEventListener('toggle',()=>safeSet('ghostmaze-fold-'+key,byId(id).open?'open':'closed'));}
         window.addEventListener('keydown',e=>this.key(e));window.addEventListener('popstate',()=>this.loadURL(location.href,{replace:true}));
         document.addEventListener('visibilitychange',()=>{if(document.hidden){this.game?.pauseReplay();this.game?.stopAutoMove();this.solver?.pauseBackground();}});
         new ResizeObserver(()=>this.game?.resize()).observe(document.querySelector('.canvas-host'));
@@ -89,6 +89,7 @@ export class Application {
         this.showColumn(view);
     }
     showColumn(view){
+        if(view!=='editor')this.editor?.properties.hide();
         this.scrolls[this.view]=byId('panel-scroll').scrollTop;this.view=view;
         for(const name of ['maps','play','replay','editor']){byId('pane-'+name).hidden=view!==name;byId('tab-'+name).setAttribute('aria-selected',String(view===name));}
         byId('panel-scroll').scrollTop=this.scrolls[view]||0;
@@ -145,6 +146,7 @@ export class Application {
     syncPlayPanel(){
         byId('play-menu-content').hidden=!this.playPanel;byId('save-pane').hidden=this.playPanel!=='save';byId('solve-pane').hidden=this.playPanel!=='solve';
         byId('save-menu-btn').setAttribute('aria-expanded',String(this.playPanel==='save'));byId('solve-map-btn').setAttribute('aria-expanded',String(this.playPanel==='solve'));
+        for(const [id,panel] of [['save-menu-btn','save'],['solve-map-btn','solve']])byId(id).setAttribute('aria-pressed',String(this.playPanel===panel));
     }
     async solveEditor(){
         const code=this.editor.code();if(!code.success){this.notify('草稿尚未完成：'+code.error,'error');return;}

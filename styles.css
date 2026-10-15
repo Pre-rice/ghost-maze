@@ -857,3 +857,52 @@ body.site-app{padding:18px;min-height:0;display:block;box-sizing:border-box}
 @media(max-width:1100px){body.site-app{padding:12px}.site-layout{height:calc(100dvh - 24px);grid-template-columns:minmax(0,1fr) 390px;gap:14px}.site-header{gap:7px;padding:12px 10px}.column-tab{font-size:13px;gap:4px}.nav-icons{gap:5px}.panel-scroll{padding:14px}}
 @media(max-width:768px){body.site-app{padding:8px}.site-layout{height:calc(100dvh - 16px);display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(150px,42%) minmax(0,1fr);gap:10px}.site-header{padding:10px 8px;gap:5px}.column-tab{font-size:12px;padding:8px 2px;gap:3px}.column-tab svg{width:12px;height:12px}.nav-icons{gap:4px}.nav-icons .help-btn,.nav-icons .home-btn,.nav-icons .theme-toggle-btn,.nav-icons .theme-toggle{width:24px;height:24px}.nav-icons svg{width:16px;height:16px}.panel-scroll{padding:14px}.library-grid{gap:12px}.card-time{font-size:10px}.site-app .tool-palette{grid-template-columns:repeat(5,minmax(0,1fr))}.site-app .tool-palette button{max-height:55px;aspect-ratio:auto}.site-app .tool-palette svg{width:24px;height:24px}.help-dialog[open]{width:calc(100vw - 20px);height:calc(100dvh - 30px)}.dialog-header{padding:14px 16px}.dialog-scroll{padding:16px}.site-app .mode-label{font-size:14px}.map-layer-bar{padding-top:4px;gap:4px}.map-layer-bar button{padding:4px 8px}.delete-record{width:29px;height:29px}.card-preview .preview-enter{opacity:0}.card-preview:focus-visible .preview-enter{opacity:1}}
 @media(max-width:350px){.site-header{padding:8px 6px}.nav-icons{gap:3px}.column-tab{font-size:11px}.column-tab svg{width:11px;height:11px}.panel-scroll{padding:12px}.library-grid{grid-template-columns:minmax(0,1fr)}.button-row{gap:6px}.button-row>button{font-size:12px;padding:9px 6px}.replay-position{font-size:12px;gap:6px}}
+
+/* 四栏目验收后的紧凑控件与元件就地编辑。 */
+.site-app .button-row>button{font-size:14px}
+.site-app .segmented{gap:0;isolation:isolate}
+.site-app .segmented>button{border-radius:0;font-size:14px;position:relative}
+.site-app .segmented>button:first-child{border-radius:5px 0 0 5px}
+.site-app .segmented>button:last-child{border-radius:0 5px 5px 0;margin-left:-1px}
+.site-app .segmented>button[aria-pressed=true]{z-index:1}
+.site-app .editor-mode-tabs>button{font-size:14px;padding:10px 8px}
+.site-app .option-button{position:relative;justify-content:space-between;gap:12px}
+.site-app .option-button input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:1}
+.switch-track{width:32px;height:18px;flex:0 0 32px;border-radius:16px;background:#8888;position:relative;pointer-events:none;transition:background .15s}
+.switch-track:after{content:'';position:absolute;width:14px;height:14px;top:2px;left:2px;border-radius:50%;background:white;box-shadow:0 1px 2px #0003;transition:transform .15s}
+.option-button input:checked~.switch-track{background:var(--primary-color)}
+.option-button input:checked~.switch-track:after{transform:translateX(14px)}
+.option-button:has(input:focus-visible){outline:2px solid var(--primary-color);outline-offset:2px}
+.site-app .tool-palette button{display:flex;align-items:center;justify-content:center;line-height:1}
+.site-app .tool-palette svg{display:block;flex:none;transform:translateY(1px)}
+.layer-controls{display:flex;align-items:center;gap:10px;margin-top:14px}
+.layer-controls .layer-mode-tabs{flex:1;margin:0;min-width:0}
+.site-app .layer-mode-tabs>button{padding:9px 7px}
+.layer-stepper{display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:13px}
+.layer-stepper button{width:30px;height:32px;padding:0;font-size:19px}
+.layer-fill-actions>button{padding:10px 5px;font-size:13px}
+.element-popover{position:absolute;z-index:8;background:var(--container-bg);border:1px solid var(--border-color);border-radius:7px;box-shadow:0 3px 16px #0003;padding:8px;max-width:calc(100% - 12px)}
+.element-popover label{display:flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap}
+.site-app .element-popover input{width:68px;padding:6px;text-align:center}
+.element-popover input[aria-invalid=true]{border-color:#d44}
+.checkpoint-card{position:relative}
+@media(max-width:768px){
+    .site-app #dpad-controls{width:180px;height:180px;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);align-items:center;justify-items:center;gap:0}
+    .site-app #dpad-controls .dpad-button{box-sizing:border-box;width:52px;height:52px;margin:0;padding:0;border:1px solid #ffffff30;border-radius:50%;background:#555e;color:white;font:400 28px/1 sans-serif;display:flex;align-items:center;justify-content:center;aspect-ratio:1}
+    .site-app #dpad-controls #dpad-center{font-size:23px;background:#666e}
+    .site-app #dpad-controls .dpad-button:active{background:#777;transform:scale(.95)}
+    .site-app .tool-palette button{height:48px}
+    .layer-controls{gap:8px}.layer-stepper{gap:5px}.layer-stepper button{width:28px}
+}
+
+/* 缩小工具区，并给页面和面板留出呼吸空间。 */
+body.site-app{padding:22px}
+.site-layout{height:calc(100dvh - 44px)}
+.panel-scroll{padding:22px}
+.site-app .tool-palette{grid-template-columns:repeat(7,40px);gap:8px;justify-content:center;padding:6px 0}
+.site-app .tool-palette button{box-sizing:border-box;width:40px;height:40px;min-height:0;max-height:none;aspect-ratio:1;padding:6px}
+.site-app .tool-palette button.active{padding:5px}
+.site-app .tool-palette svg{width:22px;height:22px}
+@media(max-width:1100px){body.site-app{padding:16px}.site-layout{height:calc(100dvh - 32px)}.panel-scroll{padding:20px}}
+@media(max-width:768px){body.site-app{padding:12px}.site-layout{height:calc(100dvh - 24px);gap:14px}.panel-scroll{padding:18px}.site-app .tool-palette{grid-template-columns:repeat(7,38px);gap:7px}.site-app .tool-palette button{width:38px;height:38px}.site-app .tool-palette svg{width:21px;height:21px}}
+@media(max-width:350px){.site-app .tool-palette{grid-template-columns:repeat(6,38px);gap:6px}}

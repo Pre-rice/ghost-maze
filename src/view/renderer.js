@@ -445,6 +445,9 @@ export function renderStaticLayer(mainCanvas, staticCanvas, view) {
     const ctx = staticCanvas.getContext('2d');
     const cs = view.cellSize;
     ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+    // 地面缓存与墙和元件使用同一个视口，避免包络居中时边缘被裁掉。
+    ctx.save();
+    ctx.translate(view.drawOffset?.x || 0, view.drawOffset?.y || 0);
     for (let y = 0; y < view.height; y++) {
         for (let x = 0; x < view.width; x++) {
             if (view.activeCells[y] && view.activeCells[y][x]) {
@@ -456,6 +459,7 @@ export function renderStaticLayer(mainCanvas, staticCanvas, view) {
             }
         }
     }
+    ctx.restore();
 }
 
 /**
@@ -513,7 +517,7 @@ export function drawGame(ctx, view) {
     const cs = view.cellSize; const now = Date.now();
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.save(); ctx.translate(view.drawOffset.x, view.drawOffset.y);
-    ctx.drawImage(view.staticLayerCanvas, 0, 0);
+    ctx.drawImage(view.staticLayerCanvas, -view.drawOffset.x, -view.drawOffset.y);
     const drawTrail = (arr, color) => arr.forEach(p => {
         if (view.seenCells[p.y][p.x] || view.debugVision) {
             const age = now - p.timestamp; const alpha = 0.3 * (1 - age / 500);

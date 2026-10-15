@@ -121,7 +121,7 @@ export class GhostMazeGame {
     syncReplay(){
         const r=this.replay;document.getElementById('replay-empty').hidden=!!r;document.getElementById('replay-controls').hidden=!r;if(!r)return;
         const s=r.currentGameState,explore=r.mapDefinition.gameMode==='exploration';
-        document.getElementById('replay-mode-display').textContent='回放 · '+(explore?'探索模式':'死亡循环');
+        document.getElementById('replay-mode-display').textContent=(explore?'探索模式':'死亡循环');
         document.getElementById('replay-health-display').textContent=explore?'生命: '+s.player.hp:'循环: '+s.loopCount;
         document.getElementById('replay-keys-display').textContent='钥匙: '+s.player.keys;
         document.getElementById('replay-proximity-display').hidden=!explore;

@@ -16,7 +16,7 @@ export class CardViews {
         const info=node('div','card-info');if(record.title)info.append(node('h3','',record.title));
         const meta=node('p','card-meta',record.cells!==undefined?`${record.cells} 格 · ${record.ghosts} 只鬼`:record.kind==='save'&&record.step!==undefined?`第 ${record.step} 步`:'正在加载…');
         if(!checkpoint)info.append(meta);if(record.time&&!checkpoint)info.append(node('time','card-time',formatSavedTime(record.time)));if(!checkpoint)card.append(info);
-        if(record.local){const remove=node('button','delete-record');remove.type='button';remove.title=remove.ariaLabel='删除'+(record.kind==='draft'?'草稿':'本地存档');remove.innerHTML=bin;remove.onclick=e=>{e.stopPropagation();try{this.app.library.remove(record.id);this.app.notify('已删除');}catch(error){this.app.notify(error.message,'error');}};card.append(remove);}
+        if(record.local||checkpoint){const remove=node('button','delete-record');remove.type='button';remove.title=remove.ariaLabel=checkpoint?'删除临时存档':'删除'+(record.kind==='draft'?'草稿':'本地存档');remove.innerHTML=bin;remove.onclick=e=>{e.stopPropagation();try{if(checkpoint){const c=this.app.game.controller;c.checkpoints=c.checkpoints.filter(p=>p.code!==record.code);this.app.renderPoints();}else this.app.library.remove(record.id);this.app.notify('已删除');}catch(error){this.app.notify(error.message,'error');}};card.append(remove);}
         if(checkpoint){const row=node('div','button-row');const load=node('button','', '加载该存档'),save=node('button','secondary','保存到本地');load.onclick=()=>this.app.loadURL(record.url);save.onclick=()=>this.app.saveLocal('save',record.url);row.append(load,save);card.append(row);}
         preview.record=record;preview.metaElement=meta;this.observer.observe(preview);
         return card;
