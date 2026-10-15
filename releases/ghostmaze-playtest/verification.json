@@ -1,16 +1,20 @@
 {
-  "runtime": "chat-javascript",
-  "noNode": true,
-  "noDOM": true,
-  "noNetwork": true,
-  "normalRunWon": true,
-  "steps": 12,
-  "restoredAcrossCalls": true,
-  "shortestTargetOnly": {
-    "status": "solved",
-    "steps": 12
+  "role": "1.0.1_engine_binding_QA_not_new_blind_playtest",
+  "engine": "sha256:5861b72bee934007e2679b60f38e3820ad1e2302a6d0a309bb7a59793eefb109",
+  "version": "1.0.1",
+  "normalBundleStandaloneVm": true,
+  "restoreRoundtrip": true,
+  "referenceActions": 12,
+  "finalBoard": {
+    "steps": 12,
+    "keys": 1,
+    "loops": 0
   },
-  "shortestReplayMet": true,
-  "middleDistanceBlocked": true,
-  "ordinaryChatAccountInstallTested": false
+  "skillCases": 29,
+  "gameTestFiles": 26,
+  "cloudCheckPassed": true,
+  "ordinaryChatAccountInstallTested": false,
+  "previousActualChatPlayRecord": "1.0.0/javascript-play-record.json",
+  "referenceReplayWon": true,
+  "restoredStatus": "won"
 }

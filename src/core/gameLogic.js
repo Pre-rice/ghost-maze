@@ -6,6 +6,9 @@ import { directionIndex } from './mapDataUtils.js';
 //  GameLogic: 纯函数模块，处理所有游戏逻辑
 // ==================================================
 
+// 静态层与权威墙态作为弱引用键；不写入局面，不影响历史或编号。
+const ghostDistanceCache = new WeakMap();
+
 export const GameLogic = {
     /**
      * 从 MapDefinition 创建游戏初始状态
@@ -649,31 +652,43 @@ export const GameLogic = {
 
     _findShortestPath(start, end, layerDef, layerState) {
         const width = layerDef.activeCells[0].length, height = layerDef.activeCells.length;
-        const first = start.y * width + start.x, target = end.y * width + end.x;
-        const parents = new Int32Array(width * height).fill(-1);
-        const queue = new Int32Array(width * height);
-        let head = 0, tail = 1;
-        queue[0] = first; parents[first] = first;
+        const target = end.y * width + end.x;
+        let byWalls = ghostDistanceCache.get(layerDef);
+        if (!byWalls) { byWalls = new WeakMap(); ghostDistanceCache.set(layerDef, byWalls); }
+        let targets = byWalls.get(layerState.wallStates);
+        if (!targets) { targets = new Map(); byWalls.set(layerState.wallStates, targets); }
+        let distances = targets.get(target);
         const neighbors = [{ dx: 0, dy: -1 }, { dx: 1, dy: 0 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }];
-        while (head < tail) {
-            const cell = queue[head++], x = cell % width, y = Math.floor(cell / width);
-            if (cell === target) {
-                const path = [];
-                for (let at = target;; at = parents[at]) {
-                    path.push({ x: at % width, y: Math.floor(at / width) });
-                    if (at === first) return path.reverse();
+        const passable = (x, y, nx, ny, direction) => {
+            if (nx < 0 || ny < 0 || nx >= width || ny >= height || !layerDef.activeCells[ny][nx]) return false;
+            const wall = this._getWallBetween({ x, y }, { x: nx, y: ny }, layerState.wallStates, direction);
+            return !wall || wall.type === WALL_TYPES.EMPTY || (wall.type === WALL_TYPES.LETTER_DOOR && wall.currentState === 'open');
+        };
+        if (!distances) {
+            distances = new Int32Array(width * height).fill(-1);
+            const queue = new Int32Array(width * height); let head = 0, tail = 1;
+            queue[0] = target; distances[target] = 0;
+            while (head < tail) {
+                const cell = queue[head++], x = cell % width, y = Math.floor(cell / width);
+                for (const direction of neighbors) {
+                    const nx = x + direction.dx, ny = y + direction.dy, next = ny * width + nx;
+                    if (!passable(x, y, nx, ny, direction) || distances[next] !== -1) continue;
+                    distances[next] = distances[cell] + 1; queue[tail++] = next;
                 }
             }
-            for (const direction of neighbors) {
-                const nx = x + direction.dx, ny = y + direction.dy;
-                if (nx < 0 || ny < 0 || nx >= width || ny >= height || !layerDef.activeCells[ny][nx]) continue;
-                const next = ny * width + nx;
-                if (parents[next] !== -1) continue;
-                const wall = this._getWallBetween({ x, y }, { x: nx, y: ny }, layerState.wallStates, direction);
-                if (wall && wall.type !== WALL_TYPES.EMPTY && !(wall.type === WALL_TYPES.LETTER_DOOR && wall.currentState === 'open')) continue;
-                parents[next] = cell; queue[tail++] = next;
-            }
+            if (targets.size >= 32) targets.delete(targets.keys().next().value);
+            targets.set(target, distances);
         }
-        return null;
+        let x = start.x, y = start.y;
+        if (distances[y * width + x] < 0) return null;
+        const path = [{ x, y }];
+        while (x !== end.x || y !== end.y) {
+            const distance = distances[y * width + x];
+            // 保留原从鬼出发BFS的上、右、下、左等长路线选择顺序。
+            const direction = neighbors.find(d => passable(x, y, x + d.dx, y + d.dy, d) && distances[(y + d.dy) * width + x + d.dx] === distance - 1);
+            if (!direction) return null;
+            x += direction.dx; y += direction.dy; path.push({ x, y });
+        }
+        return path;
     }
 };

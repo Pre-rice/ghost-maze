@@ -22,7 +22,8 @@ export function applyTheme(mode) {
     // 获取所有主题图标和按钮
     const themeToggles = [
         { btn: document.getElementById("theme-toggle-btn"), icon: document.getElementById("theme-icon") },
-        { btn: document.getElementById("editor-theme-toggle-btn"), icon: document.getElementById("editor-theme-icon") }
+        { btn: document.getElementById("editor-theme-toggle-btn"), icon: document.getElementById("editor-theme-icon") },
+        { btn: document.getElementById("gallery-theme-toggle-btn"), icon: document.getElementById("gallery-theme-icon") }
     ];
     
     // 更新所有主题切换按钮

@@ -15,7 +15,7 @@ for (const name of core) {
     const file = 'src/core/' + name;
     digest.update(file + ':' + sha(source(file)) + '\n');
 }
-const build = { version: '1.0.0', engine: 'sha256:' + digest.digest('hex'), format: 'ghostmaze-playtest-v1' };
+const build = { version: '1.0.1', engine: 'sha256:' + digest.digest('hex'), format: 'ghostmaze-playtest-v1' };
 
 // 只处理本仓库的命名ES模块；拒绝外部依赖。包装改变模块装载方式，不改规则实现。
 function bundle(entry, factory) {

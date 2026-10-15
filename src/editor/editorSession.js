@@ -65,7 +65,7 @@ export class EditorDocument {
     load(source) {
         const mapData = normalizeMapData(source);
         this.width = mapData.width; this.height = mapData.height;
-        this.mode = mapData.editorMode; this.gameMode = mapData.gameMode; this.initialHealth = mapData.initialHealth;
+        this.mode = mapData.editorMode; this.sourceMode = mapData.editorMode; this.gameMode = mapData.gameMode; this.initialHealth = mapData.initialHealth;
         this.startPos = { x: 1, y: this.height - 2 };
         this.multiLayerMode = mapData.multiLayerMode; this.layerCount = mapData.layerCount;
         this.stairs = mapData.stairs; this.layers = mapData.layers;
@@ -81,13 +81,22 @@ export class EditorDocument {
         const layer = {
             hWalls: this.hWalls, vWalls: this.vWalls, activeCells: this.activeCells,
             ghosts: this.ghosts, items: this.items, buttons: this.buttons,
-            endPos: this.endPos, customStartPos: this.mode === 'regular' ? this.startPos : this.customStartPos
+            endPos: this.endPos, customStartPos: this.customStartPos ?? (this.mode === 'regular' ? this.startPos : null)
         };
+        const layers = this.multiLayerMode ? this.layers : [layer];
+        // 统一编辑不会丢掉仍然完整的经典出生房间；改动房间或出生点后按自由图保存。
+        const room = layers[0], start = room.customStartPos, roomY = this.height - START_ROOM_SIZE;
+        const keepsRoom = this.sourceMode === 'regular' && start?.x === 1 && start.y === this.height - 2 &&
+            Array.from({length:START_ROOM_SIZE},(_,dy)=>Array.from({length:START_ROOM_SIZE},(_,x)=>{
+                const y=roomY+dy;
+                return room.activeCells[y]?.[x] && (dy===0 || room.hWalls[y][x].type===WALL_TYPES.EMPTY) &&
+                    (x===0 || room.vWalls[y][x].type===WALL_TYPES.EMPTY);
+            }).every(Boolean)).every(Boolean);
         return normalizeMapData({
-            width: this.width, height: this.height, editorMode: this.mode,
+            width: this.width, height: this.height, editorMode: this.mode === 'regular' || keepsRoom ? 'regular' : 'free',
             gameMode: this.gameMode, initialHealth: this.initialHealth,
             layerCount: this.multiLayerMode ? this.layerCount : 1,
-            layers: this.multiLayerMode ? this.layers : [layer], stairs: this.stairs
+            layers, stairs: this.stairs
         });
     }
 

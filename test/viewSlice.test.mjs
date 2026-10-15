@@ -355,27 +355,25 @@ test('computeEditorView 投影产物喂渲染层跑通（renderStaticLayer + dra
     assert(true, '无异常');
 });
 
-test('死亡回放只在出生点投影玩家，历史、致死位置及存活前帧保持', () => {
+test('致死回放当步已在出生点，物理碰撞判定与历史初态不污染', () => {
     for (const gameMode of ['exploration', 'death-loop']) {
         const mapDef = new MapDefinition(makeMap({ gameMode, initialGhosts: [{ x: 1, y: 0, id: 0 }] }));
-        const history = new ActionHistory(mapDef, ['R']);
-        const gameState = history.stateAt(1), before = JSON.stringify(gameState);
-        assert(gameState.isDead, '真实移动产生死亡帧');
-        assertEq(gameState.player.x, 1, '历史保留实际死亡位置');
-        const params = { state: GAME_STATES.REPLAY, debugVision: false };
-        const view = computeGameView({ mapDef, gameState, viewLayer: 0 }, params);
-        assertEq(view.player.x, 0, '画面显示出生位置');
-        assertEq(view.player.y, 0);
-        assertEq(view.player.hp, gameState.player.hp, '不补生命或隐式复活');
-        assertEq(view.player.steps, 1, '死亡这步仍计入回放');
-        assertEq(view.player.trail.length, 0, '不把死亡轨迹拖到出生位置');
-        assertEq(view.debugVision, gameMode === 'death-loop', '只有死亡循环固定全图');
-        assertEq(JSON.stringify(gameState), before, '只读投影不污染缓存');
-        assertEq(history.stateAt(1).player.x, 1, '再次取死亡帧仍为原局面');
-        const play = computeGameView({ mapDef, gameState, viewLayer: 0 }, { ...params, state: GAME_STATES.DEAD });
-        assertEq(play.player, gameState.player, '游玩的致死位置保持');
-        const initial = history.stateAt(0);
-        assert(!initial.isDead, '回放前一步没有被死亡投影污染');
+        const initial = GameLogic.createInitialState(mapDef);
+        const physical = GameLogic.calculateNextState(initial, {type:'MOVE',payload:{dx:1,dy:0}},mapDef);
+        assert(physical.isDead, '无伤求解仍能识别致死物理动作');
+        assertEq(physical.player.x,1);
+        const history = new ActionHistory(mapDef,['R']);
+        const gameState=history.stateAt(1),before=JSON.stringify(gameState);
+        assert(!gameState.isDead,'回放不存在另一个未复活状态');
+        assertEq(gameState.player.x,0);assertEq(gameState.player.y,0);
+        const view=computeGameView({mapDef,gameState,viewLayer:0},{state:GAME_STATES.REPLAY,debugVision:false});
+        assertEq(view.player,gameState.player,'直接使用当步结束状态');
+        assertEq(view.player.steps,gameMode==='death-loop'?0:1);
+        assertEq(view.debugVision,gameMode==='death-loop');
+        assertEq(JSON.stringify(gameState),before);
+        assertEq(history.stateAt(1).player.x,0);
+        assertEq(history.stateAt(0).player.steps,0);
+        assertEq(physical.player.x,1,'瞬时物理判定未被显示状态覆盖');
     }
 });
 
