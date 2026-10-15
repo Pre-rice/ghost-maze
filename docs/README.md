@@ -8,7 +8,7 @@
 
 - [多层显示与编辑布局修正](archive/delivery/editor-layout-fix-20261015.md)：含最新地图居中、楼层栏位置、单层边框、共享视野与后台随机生成验收。
 
-- [多层交互恢复](archive/delivery/multilayer-restoration-20261015.md)：最新底部数字楼层栏、原版切层／擦除与方向键手势验收。
+- [多层交互恢复](archive/delivery/multilayer-restoration-20261015.md)：此前底部数字楼层栏、原版切层／擦除与方向键手势验收。
 
 - [地图集设计小册](map-design-guide.md)：十三图的基本信息、设计思想、尤里卡时刻和真实简评；含解谜关键。
 - [本轮地图调整](map-adjustments-20261014.md)：本轮四图获准维护、两稿取消、边界修正与反思。
