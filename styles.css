@@ -914,12 +914,12 @@ body.site-app{padding:22px}
 
 /* 地图为正方形，工作区整体居中，两侧保留相等空白。 */
 @media(min-width:769px){
-    .site-layout{gap:64px;max-width:calc(100dvh - 44px + 420px + 64px);margin-inline:auto}
+    .site-layout{gap:24px;max-width:calc(100dvh - 44px + 420px + 24px);margin-inline:auto}
     .map-stage{justify-content:center}
-    .map-layer-bar{position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);width:36px;max-height:100%;flex-direction:column;flex-wrap:nowrap;padding:0;overflow:auto}
+    .map-layer-bar{position:absolute;left:100%;top:50%;transform:translateY(-50%);width:36px;z-index:3;max-height:100%;flex-direction:column;flex-wrap:nowrap;justify-content:flex-start;padding:0;overflow:auto}
     .canvas-host{flex:none;width:100%;aspect-ratio:1}
 }
-@media(min-width:769px) and (max-width:1100px){.site-layout{max-width:calc(100dvh - 32px + 420px + 64px)}}
+@media(min-width:769px) and (max-width:1100px){.site-layout{gap:14px;max-width:calc(100dvh - 32px + 420px + 14px)}.map-layer-bar{left:calc(100% - 5px)}}
 /* 编辑控件紧凑排列，不用分割线隔开。 */
 .site-app #pane-editor .button-row{margin:12px 0}
 .site-app #pane-editor .editor-history{margin-top:0;margin-bottom:7px}
@@ -974,3 +974,12 @@ body.site-app{padding:22px}
 .site-app .tool-palette button:focus-visible{box-shadow:none}
 .site-app .option-button input:focus-visible{box-shadow:none}
 @media(max-width:768px){.map-layer-bar button{width:34px;min-width:34px;height:34px}.map-layer-bar{gap:6px}.site-app .column-tabs{gap:6px}}
+
+/* 选中状态只换颜色；边框占位、同组高度与行间距保持一致。 */
+.site-app button{box-sizing:border-box;border:1px solid transparent;line-height:1.4}
+.site-app .column-tab{border:0}
+.site-app .segmented{align-items:stretch}
+.site-app .segmented>button{height:38px;padding:8px 10px;display:flex;align-items:center;justify-content:center}
+.site-app #pane-play :is(.view-options,.history-row,.play-menus){gap:10px;align-items:stretch;margin:0 0 14px}
+.site-app #pane-play :is(.view-options,.history-row,.play-menus)>:is(button,.option-button){height:42px;box-sizing:border-box;padding:8px 10px;font-size:14px;line-height:1.4;display:flex;align-items:center;justify-content:center}
+.site-app #pane-play .view-options>.option-button{justify-content:space-between}

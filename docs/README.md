@@ -4,6 +4,8 @@
 
 ## 给人查阅
 
+- [站点UI／UX自检报告](archive/reviews/site-ui-ux-20261015.md)：本轮已修正内容、生成速度对照及待审批的优化方案。
+
 - [多层显示与编辑布局修正](archive/delivery/editor-layout-fix-20261015.md)：含最新地图居中、楼层栏位置、单层边框、共享视野与后台随机生成验收。
 
 - [多层交互恢复](archive/delivery/multilayer-restoration-20261015.md)：最新底部数字楼层栏、原版切层／擦除与方向键手势验收。

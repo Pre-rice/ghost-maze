@@ -22,7 +22,7 @@ export class Application {
         for(const d of document.querySelectorAll('dialog'))d.addEventListener('close',()=>this.game?.updateDpadVisibility());
         byId('help-btn').onclick=async()=>{this.game?.stopAutoMove();this.game?.pauseReplay();byId('help-dialog').showModal();this.game?.updateDpadVisibility();try{const m=await this.helpModule();byId('help-body').innerHTML=m.helpContent;}catch{byId('help-body').textContent='帮助加载失败，请关闭后重试。';}};
         byId('theme-toggle').addEventListener('click',()=>requestAnimationFrame(()=>{this.game?.resize();if(this.view==='editor'||this.draftVisible)this.editor?.draw();this.cards.refreshVisible();}));
-        byId('generate-map-btn').onclick=()=>{this.game?.stopAutoMove();byId('new-map-dialog').showModal();byId('new-map-health').focus();this.game?.updateDpadVisibility();};
+        byId('generate-map-btn').onclick=()=>{this.randomModule().then(m=>m.warmRandomGenerator()).catch(()=>{});this.game?.stopAutoMove();byId('new-map-dialog').showModal();byId('new-map-health').focus();this.game?.updateDpadVisibility();};
         byId('new-map-form').onsubmit=e=>{e.preventDefault();this.generateMap();};
         byId('new-map-dialog').addEventListener('close',()=>this.generationAbort?.abort());
         byId('load-link-btn').onclick=()=>{const raw=byId('load-link-input').value.trim();if(!raw)return;this.loadURL(/^[A-Za-z0-9_-]+$/.test(raw)?routeURL({map:raw}):raw);};
@@ -44,17 +44,18 @@ export class Application {
         const abort=new AbortController(),button=byId('new-map-form').querySelector('[type=submit]');
         this.generationAbort=abort;button.disabled=true;button.textContent='正在生成…';byId('new-map-form').setAttribute('aria-busy','true');
         try{
-            const {generateRandomMap}=await import('./site/randomMap.js');
+            const {generateRandomMap}=await this.randomModule();
             const code=await generateRandomMap(size,health,{signal:abort.signal});
             if(!abort.signal.aborted&&await this.loadURL(routeURL({map:code})))byId('new-map-dialog').close();
         }catch(error){if(error.name!=='AbortError')this.notify(error.message,'error');}
         finally{if(this.generationAbort===abort){this.generationAbort=null;button.disabled=false;button.textContent='生成';byId('new-map-form').removeAttribute('aria-busy');}}
     }
+    randomModule(){return this.randomPromise??=import('./site/randomMap.js').catch(error=>{this.randomPromise=null;throw error;});}
     async boot(){
         let route;try{route=readRoute(location.href);}catch(error){this.notify(error.message,'error');}
         if(route?.map||route?.draft)await this.loadURL(location.href,{replace:true,initial:true});else await this.ensureRuntime();
         performance.mark('ghostmaze-current-ready');
-        idle(()=>{this.ensureEditor().catch(()=>{});this.helpModule().catch(()=>{});this.getSolver().catch(()=>{});});
+        idle(()=>{this.ensureEditor().catch(()=>{});this.helpModule().catch(()=>{});this.getSolver().catch(()=>{});this.randomModule().then(m=>m.warmRandomGenerator()).catch(()=>{});});
     }
     async ensureRuntime(){
         if(!this.runtimePromise)this.runtimePromise=(async()=>{
@@ -121,9 +122,11 @@ export class Application {
         const bar=byId('layer-panel'),editing=this.view==='editor'||this.draftVisible,doc=editing?this.editor?.editorDoc:null,a=this.game?.activeController,count=doc?.layerCount||a?.mapDefinition?.layerCount||1,current=doc?.currentLayer??a?.viewLayer??0;
         bar.hidden=count===1;bar.replaceChildren();if(count===1)return;
         const playerLayer=doc?doc.playerLayer:a?.currentGameState?.player.layer,hasStart=!doc||doc.hasStartPoint();
-        if(doc){const minus=document.createElement('button');minus.id='layer-remove-btn';minus.className='secondary layer-step';minus.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>';minus.title=minus.ariaLabel='删除顶层';minus.onclick=()=>this.editor.removeLayer();bar.append(minus);}
-        for(let i=0;i<count;i++){const b=document.createElement('button');b.textContent=String(i+1);b.dataset.layer=i;b.className='layer-btn'+(i===current?' active':' secondary')+(hasStart&&i===playerLayer?' player-layer':'');b.setAttribute('aria-label','查看第'+(i+1)+'层');b.setAttribute('aria-current',String(i===current));b.onclick=()=>{if(doc)this.editor.switchToLayer(i);else this.game.switchToLayer(i);};bar.append(b);}
-        if(doc){const plus=document.createElement('button');plus.id='layer-add-btn';plus.className='secondary layer-step';plus.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>';plus.title=plus.ariaLabel='添加楼层';plus.disabled=count>=10;plus.onclick=()=>this.editor.addLayer();bar.append(plus);}
+        const vertical=matchMedia('(min-width:769px)').matches;
+        const step=add=>{const b=document.createElement('button');b.id=add?'layer-add-btn':'layer-remove-btn';b.className='secondary layer-step';b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+(add?'M5 12h14M12 5v14':'M5 12h14')+'"/></svg>';b.title=b.ariaLabel=add?'添加楼层':'删除顶层';b.disabled=add&&count>=10;b.onclick=()=>add?this.editor.addLayer():this.editor.removeLayer();bar.append(b);};
+        if(doc)step(vertical);
+        for(let n=0;n<count;n++){const i=vertical?count-1-n:n,b=document.createElement('button');b.textContent=String(i+1);b.dataset.layer=i;b.className='layer-btn'+(i===current?' active':' secondary')+(hasStart&&i===playerLayer?' player-layer':'');b.setAttribute('aria-label','查看第'+(i+1)+'层');b.setAttribute('aria-current',String(i===current));b.onclick=()=>{if(doc)this.editor.switchToLayer(i);else this.game.switchToLayer(i);};bar.append(b);}
+        if(doc)step(!vertical);
     }
     renderLibraries(){
         const locals=this.library.list('play').map(e=>({...e,local:true})),drafts=this.library.list('draft').map(e=>({...e,local:true}));
