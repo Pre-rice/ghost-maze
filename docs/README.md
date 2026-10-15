@@ -13,6 +13,7 @@
 
 | 任务 | 入口 |
 | --- | --- |
+| AI自主试玩、规则探索与最短挑战 | [技能使用与维护](ai-playtest.md)，手动调用，不含具体地图答案 |
 | 接手与协作 | [AGENTS](../AGENTS.md)、AI仓[当前状态](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/status.md) |
 | 云端运行、恢复与导出 | [codex-cloud](codex-cloud.md) |
 | 修改玩法、编辑器、回放或状态 | [当前架构](architecture.md) |

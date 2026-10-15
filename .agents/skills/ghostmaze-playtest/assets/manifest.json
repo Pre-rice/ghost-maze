@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "engine": "sha256:045d5a8353422b89980b2d2f0e2a1bf4bebdada54436f8d37792fc42bc675441",
+  "format": "ghostmaze-playtest-v1",
+  "sources": {
+    "src/playtest/public.js": "6750130a5897a547c13a98144fd4ab6f3aa713c1b5e9e27198efc7b83d90488b",
+    "src/playtest/session.js": "497c2bccc855afd465948e4c0d1cc7670438824637130caf80e03e1591371fc2",
+    "src/core/gameLogic.js": "6e3899409739cf370f69601cde5399c4f497876ff0b62b9095ff4dc3dc151424",
+    "src/core/constants.js": "d255fe6a37b04bba52d9fc54a267b764079b3de38b114112a844e6b654bfea56",
+    "src/core/gameState.js": "0b3df61441df78017a1ed2d75cce5997249afee341d9fe124053a62c66f515f6",
+    "src/core/mapDataUtils.js": "64dfca10735ce26ae5f075b939676e9c04e485f82efe848c13103bc575e30a04",
+    "src/core/pathfinding.js": "333c35b051237b97373903c1b2a8d6b5bfca3cbb71c4089542dc0202855404bd",
+    "src/core/mapDefinition.js": "a842b9e8a68a21b3a93d6429cf3ab06c31b18808201ef45f16ba3e6bd5bc3bf6",
+    "src/core/dataSerializer.js": "5a0c990494bd64e60d9e98670967553d29b0152e861f86e66fca0b2353def9b3",
+    "src/core/binaryCodec.js": "3dfba2c82b4d2a776c023d2aa44cda36dc8975e1fa195b7030df4d28fa8a335c",
+    "src/core/replaySerializer.js": "a77af6c9ceae70cdc9e087b70e7ae80017099ba40d85119d0aaf266bb28f9ff2",
+    "src/core/actions.js": "4f430e2d7485706ed8aa95517fad07a2d2925a9f64cdd76011ae8506e74b789e",
+    "src/playtest/observation.js": "008e8bee138cb709c1e2ac36e483de6a5ff85b0bc20c3ea14baf4e4e499755e6",
+    "src/playtest/portable.js": "909b43413e38473cebe0e0dfd7f550289641e34e57d887b1d199d4d8fb41db32",
+    "src/vendor/pako.js": "ede2693a4a6a5126b9d35669062b358ecab6ae7b9b86a1cf302feb45a8514907",
+    "src/playtest/target-public.js": "da740a778068666eb5efee0a94a48cfed8729b357e64d151ed73a1a011826a47",
+    "src/playtest/target.js": "10e3f3f6e32f48d15c68d128e2d96931fe7212198ec061ab84c522bf0608c531",
+    "src/solver/breadthFirst.js": "d8009e0a3d280663b64684e53105a15401dcda827eaa87570d4a37437362f0d5",
+    "src/solver/searchEnvironment.js": "b17d2abfbf23566cbc577ea6214dc29c18e8f169782813e6372040b68b5b38e4",
+    "src/solver/searchIndex.js": "f2dfef332276000bb7b8bedb71cd0ef142d3e314d0222ef2c408b8a187eaf0e9"
+  },
+  "assets": {
+    "playtest.js": "a0e8c0b00ba7f344ebae0ea4476da1fd088ba42cc71dddc998d65fbb1925b7ce",
+    "target.js": "cb0d01e35261b5004870a62e50084dcba8b7098e41c011f65dbe7cc35aca225d"
+  }
+}
