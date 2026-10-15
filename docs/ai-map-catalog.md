@@ -1,5 +1,19 @@
 # AI 地图总目录
 
+## 2026-10-15 新候选：《换手》
+
+单层15格、两鬼，一个A和一个B按钮，两扇A门、一扇B门；无钥匙、普通门、玻璃或楼梯。最优38步，两种鬼轨迹最优解；全部最优无重合，指定实际入场及1910次排列／变编号后继核验通过。**未获真人评价，未入地图集。** [完整来源与证据](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/shift-handoff-20261015)。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwMAHbgPOgOYLAgBUAAQCAXAVwBAAABEC4gVQKoEQBAAAhAg)
+
+<details><summary>设计思想与参考（含答案）</summary>
+
+关住旧鬼只是临时保护；必须从另一侧把它引离门边，才能重开A。此后才开B，让新鬼接替阻挡，旧鬼跟随绕回后借新鬼脱身。四项关键事件分别禁止后全续解无解，但预期发现仍待真人体验检验。
+
+[参考回放](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwMAHbgPOgOYLAgBUAAQCAXAVwBAAABEC4gVQKoEQBAAAhAg&replay=EEI2NzL6APpV_iA8mV9g)，38步。从共享控制大图大胆删去任务钥匙、无用门和开场独立困鬼段，保留跨阶段的换手关系；母图好评不继承，不算新独立家族。
+
+</details>
+
 ## 2026-10-15 新候选：《悬置》
 
 单层15格、两鬼，A／0／普通门各一，无钥匙、玻璃、楼梯。唯一最优22，中性开局及指定实际入场通过。**未获真人评价，未入地图集。** [完整来源与机械证据](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/suspended-exit-20261015)。
