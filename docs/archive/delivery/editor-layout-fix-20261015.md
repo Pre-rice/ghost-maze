@@ -43,3 +43,5 @@
 追加20项浏览器验收通过，原23项重新复验；两仓统一检查通过。求解用真实后台Worker跨原一秒停点实测仍在搜索，随后移动和切换均保持运行，最后换图正常终止旧任务。没有通过修改搜索物理、最优目标、分享格式或十三图来通过验收；规则内容锁保持。
 
 追加证据见AI仓[20项检查](https://github.com/Pre-rice/ghost-maze-ai/blob/preview/site-optimization-20261014/data/manifests/ui-followup-browser-20261015.json)。所有截图和测试为合成验收，不是人类解谜反馈；手机使用触控模拟，未声称真机验收。
+
+最终预览已再次发布：52个静态文件与已验收源码逐文件一致；发布后以私有预览授权实际读取6个关键资源，全部哈希一致，包括纯数字楼层、编辑保存、叠放滑条及持续求解。正式站未访问、未更新。发布与资源证据见AI仓[最终清单](https://github.com/Pre-rice/ghost-maze-ai/blob/preview/site-optimization-20261014/data/manifests/editor-layout-deployment-20261015.json)。
