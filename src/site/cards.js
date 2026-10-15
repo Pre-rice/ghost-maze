@@ -4,8 +4,8 @@ const bin='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M9 6V3h6v
 const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;};
 export class CardViews {
     constructor(app){
-        this.app=app;this.queue=[];this.busy=false;
-        this.observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){this.observer.unobserve(e.target);this.queue.push(e.target);this.run();}},{root:document.getElementById('panel-scroll'),rootMargin:'150px'});
+        this.app=app;this.queue=[];this.busy=false;this.version=0;this.palette=this.theme();
+        this.observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){this.observer.unobserve(e.target);this.enqueue(e.target);}},{root:document.getElementById('panel-scroll'),rootMargin:'150px'});
     }
     make(record,{checkpoint=false}={}){
         const card=node('article',checkpoint?'library-card checkpoint-card':'library-card');card.dataset.recordId=record.id||'';
@@ -20,11 +20,57 @@ export class CardViews {
         preview.record=record;preview.metaElement=meta;this.observer.observe(preview);
         return card;
     }
-    fill(container,records){container.replaceChildren(...records.map(r=>this.make(r)));}
+    theme(){return document.documentElement.classList.contains('dark')?'dark':'light';}
+    syncPalette(){
+        const theme=this.theme();if(theme===this.palette)return;
+        this.palette=theme;this.version++;
+        document.querySelectorAll('.card-preview').forEach(p=>p.dataset.previewReady='false');
+    }
+    fill(container,records){
+        const signature=JSON.stringify(records);if(container.recordSignature===signature)return;
+        container.recordSignature=signature;container.querySelectorAll('.card-preview').forEach(p=>this.observer.unobserve(p));
+        container.replaceChildren(...records.map(r=>this.make(r)));
+    }
+    isReady(container){this.syncPalette();return [...container.querySelectorAll('.card-preview')].every(p=>p.readyVersion===this.version&&p.dataset.previewReady==='true');}
+    async preload(container){
+        this.syncPalette();const version=this.version,nodes=[...container.querySelectorAll('.card-preview')];
+        const results=await Promise.all(nodes.map(p=>this.enqueue(p)));
+        if(version!==this.version||nodes.some(p=>!p.isConnected))return this.preload(container);
+        return results.every(Boolean);
+    }
+    enqueue(preview){
+        this.syncPalette();if(preview.paintVersion===this.version&&preview.paintPromise)return preview.paintPromise;
+        let resolve;const promise=new Promise(done=>resolve=done),job={preview,version:this.version,promise,resolve};
+        preview.paintVersion=this.version;preview.paintPromise=promise;preview.dataset.previewReady='false';
+        this.queue.push(job);this.run();return promise;
+    }
+    finish(job,success){
+        const p=job.preview;
+        if(p.paintPromise===job.promise){p.dataset.previewReady=String(success);if(success)p.readyVersion=job.version;else p.paintPromise=null;}
+        job.resolve(success);
+    }
     async run(){
         if(this.busy)return;this.busy=true;
-        try {const {drawRecord}=await this.app.thumbnailModule();while(this.queue.length){const preview=this.queue.shift();if(!preview.isConnected)continue;try{const meta=await drawRecord(preview.querySelector('canvas'),preview.record);if(preview.record.kind==='save')preview.metaElement.textContent=`第 ${meta.steps} 步`;else preview.metaElement.textContent=`${meta.cells} 格 · ${meta.ghosts} 只鬼`;}catch(error){preview.metaElement.textContent='记录无法加载';preview.title=error.message;}}}
-        finally{this.busy=false;}
+        try {
+            const {drawRecord}=await this.app.thumbnailModule();
+            while(this.queue.length){
+                const job=this.queue.shift(),p=job.preview;
+                if(!p.isConnected||job.version!==this.version){this.finish(job,false);continue;}
+                try {
+                    const meta=await drawRecord(p.querySelector('canvas'),p.record);
+                    if(job.version!==this.version){this.finish(job,false);continue;}
+                    p.metaElement.textContent=p.record.kind==='save'?`第 ${meta.steps} 步`:`${meta.cells} 格 · ${meta.ghosts} 只鬼`;
+                    this.finish(job,true);
+                }catch{p.metaElement.textContent='记录无法加载';p.title='记录无法加载';this.finish(job,false);}
+                // 折叠时也绘制精品图，但每张之间让界面处理输入和绘制。
+                await new Promise(resolve=>setTimeout(resolve,0));
+            }
+        }catch{
+            while(this.queue.length){const job=this.queue.shift();job.preview.metaElement.textContent='记录无法加载';this.finish(job,false);}
+        }finally{this.busy=false;}
     }
-    refreshVisible(){document.querySelectorAll('.card-preview').forEach(p=>{if(p.record)this.observer.observe(p);});}
+    refreshVisible(){
+        this.syncPalette();this.preload(document.getElementById('premium-map-grid'));
+        document.querySelectorAll('.card-preview').forEach(p=>{if(p.record)this.observer.observe(p);});
+    }
 }

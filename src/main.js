@@ -52,7 +52,7 @@ export class GhostMazeGame {
     }
     resize(){
         const r=this.canvas.getBoundingClientRect(),ratio=Math.min(2,devicePixelRatio||1);
-        if(r.width>0&&r.height>0){const oldWidth=this.canvas.width,oldHeight=this.canvas.height;this.canvas.width=Math.round(r.width*ratio);this.canvas.height=Math.round(r.height*ratio);if(this.app.editor?.loaded&&oldWidth&&oldHeight){const v=this.app.editor.view,scale=Math.min(this.canvas.width/oldWidth,this.canvas.height/oldHeight);v.x=this.canvas.width/2-(oldWidth/2-v.x)*scale;v.y=this.canvas.height/2-(oldHeight/2-v.y)*scale;v.scale*=scale;}}
+        if(r.width>0&&r.height>0){const oldWidth=this.canvas.width,oldHeight=this.canvas.height;this.canvas.width=Math.round(r.width*ratio);this.canvas.height=Math.round(r.height*ratio);if(this.app.editor?.loaded&&oldWidth&&oldHeight)this.app.editor.resizeViewport(oldWidth,oldHeight);}
         this.colors=getColorsFromCSS();this.configureCanvas();this.app.renderMap();
     }
     configureCanvas(){

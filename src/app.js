@@ -4,6 +4,7 @@ import { aiMaps } from './maps/ai-gallery.js';
 import { LocalLibrary,readRoute,routeURL } from './site/localLibrary.js';
 import { CardViews } from './site/cards.js';
 import { PanelScroll } from './site/panelScroll.js';
+import { MobileLayout } from './site/mobileLayout.js';
 
 const AUTO='ghostmaze-editor-draft-v3';
 const byId=id=>document.getElementById(id);
@@ -12,7 +13,7 @@ export class Application {
     constructor(){
         this.view='maps';this.playPanel=null;this.scrolls={};this.loadToken=0;this.hasLoadedMap=false;this.recoverAllowed=!location.search;this.replaySource='current';this.replayDirty=true;
         this.library=new LocalLibrary();this.cards=new CardViews(this);this.mapCode=null;this.draftVisible=false;window.app=this;
-        initThemeManager();this.bind();this.panelScroll=new PanelScroll();this.renderLibraries();performance.mark('ghostmaze-shell-ready');try{const route=readRoute(location.href);this.showColumn(route.draft?'editor':route.replay?'replay':route.map?'play':'maps');}catch{}this.boot();
+        initThemeManager();this.bind();this.panelScroll=new PanelScroll();this.mobileLayout=new MobileLayout();this.renderLibraries();performance.mark('ghostmaze-shell-ready');try{const route=readRoute(location.href);this.showColumn(route.draft?'editor':route.replay?'replay':route.map?'play':'maps');}catch{}this.boot();
     }
     get dialogOpen(){return !!document.querySelector('dialog[open]');}
     notify(message,type='info'){const el=byId('toast-notification');clearTimeout(this.toastTimer);el.textContent=message;el.className='toast show '+(type==='info'?'':type);this.toastTimer=setTimeout(()=>el.classList.remove('show'),3500);}
@@ -22,6 +23,15 @@ export class Application {
         for(const d of document.querySelectorAll('dialog'))d.addEventListener('close',()=>this.game?.updateDpadVisibility());
         byId('help-btn').onclick=async()=>{this.game?.stopAutoMove();this.game?.pauseReplay();byId('help-dialog').showModal();this.game?.updateDpadVisibility();try{const m=await this.helpModule();byId('help-body').innerHTML=m.helpContent;}catch{byId('help-body').textContent='帮助加载失败，请关闭后重试。';}};
         byId('theme-toggle').addEventListener('click',()=>requestAnimationFrame(()=>{this.game?.resize();if(this.view==='editor'||this.draftVisible)this.editor?.draw();this.cards.refreshVisible();}));
+        const premium=byId('premium-section'),summary=premium.querySelector('summary');
+        summary.addEventListener('click',async e=>{
+            if(premium.open||this.cards.isReady(byId('premium-map-grid')))return;
+            e.preventDefault();this.premiumWanted=!this.premiumWanted;
+            if(this.premiumLoading)return;
+            this.premiumLoading=true;summary.setAttribute('aria-busy','true');
+            try{const ready=await this.cards.preload(byId('premium-map-grid'));if(ready&&this.premiumWanted)premium.open=true;else if(!ready&&this.premiumWanted)this.notify('地图预览加载失败，请刷新后重试','error');}
+            finally{this.premiumLoading=false;this.premiumWanted=false;summary.removeAttribute('aria-busy');}
+        });
         byId('generate-map-btn').onclick=()=>{this.randomModule().then(m=>m.warmRandomGenerator()).catch(()=>{});this.game?.stopAutoMove();byId('new-map-dialog').showModal();byId('new-map-health').focus();this.game?.updateDpadVisibility();};
         byId('new-map-form').onsubmit=e=>{e.preventDefault();this.generateMap();};
         byId('new-map-dialog').addEventListener('close',()=>this.generationAbort?.abort());
@@ -55,7 +65,7 @@ export class Application {
         let route;try{route=readRoute(location.href);}catch(error){this.notify(error.message,'error');}
         if(route?.map||route?.draft)await this.loadURL(location.href,{replace:true,initial:true});else await this.ensureRuntime();
         performance.mark('ghostmaze-current-ready');
-        idle(()=>{this.ensureEditor().catch(()=>{});this.helpModule().catch(()=>{});this.getSolver().catch(()=>{});this.randomModule().then(m=>m.warmRandomGenerator()).catch(()=>{});});
+        idle(()=>{this.ensureEditor().catch(()=>{});this.helpModule().catch(()=>{});this.getSolver().catch(()=>{});this.randomModule().then(m=>m.warmRandomGenerator()).catch(()=>{});this.cards.preload(byId('premium-map-grid'));});
     }
     async ensureRuntime(){
         if(!this.runtimePromise)this.runtimePromise=(async()=>{
@@ -120,14 +130,27 @@ export class Application {
     }
     renderLayers(){
         const bar=byId('layer-panel'),editing=this.view==='editor'||this.draftVisible,doc=editing?this.editor?.editorDoc:null,a=this.game?.activeController,count=doc?.layerCount||a?.mapDefinition?.layerCount||1,current=doc?.currentLayer??a?.viewLayer??0;
-        bar.hidden=count===1;bar.replaceChildren();if(count===1)return;
+        const focus=document.activeElement,focused=bar.contains(focus)?{id:focus.id,layer:focus.dataset.layer}:null;
+        bar.hidden=count===1;
+        if(count===1){bar.replaceChildren();delete bar.dataset.structure;if(focused)(byId(this.view==='editor'?'layer-mode-single-btn':'tab-'+this.view))?.focus({preventScroll:true});return;}
         const playerLayer=doc?doc.playerLayer:a?.currentGameState?.player.layer,hasStart=!doc||doc.hasStartPoint();
-        const vertical=matchMedia('(min-width:769px)').matches;
-        const step=add=>{const b=document.createElement('button');b.id=add?'layer-add-btn':'layer-remove-btn';b.className='secondary layer-step';b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+(add?'M5 12h14M12 5v14':'M5 12h14')+'"/></svg>';b.title=b.ariaLabel=add?'添加楼层':'删除顶层';b.disabled=add&&count>=10;b.onclick=()=>add?this.editor.addLayer():this.editor.removeLayer();bar.append(b);};
-        if(doc)step(vertical);
-        for(let n=0;n<count;n++){const i=vertical?count-1-n:n,b=document.createElement('button');b.textContent=String(i+1);b.dataset.layer=i;b.className='layer-btn'+(i===current?' active':' secondary')+(hasStart&&i===playerLayer?' player-layer':'');b.setAttribute('aria-label','查看第'+(i+1)+'层');b.setAttribute('aria-current',String(i===current));b.onclick=()=>{if(doc)this.editor.switchToLayer(i);else this.game.switchToLayer(i);};bar.append(b);}
-        if(doc)step(!vertical);
+        const vertical=matchMedia('(min-width:769px)').matches,key=[count,!!doc,vertical].join(':');
+        if(!vertical){const slots=count+2,max=Math.max(1,Math.floor((bar.clientWidth+6)/40));bar.style.setProperty('--layer-columns',String(Math.ceil(slots/Math.ceil(slots/max))));}
+        if(bar.dataset.structure!==key){
+            bar.replaceChildren();bar.dataset.structure=key;
+            const step=add=>{
+                if(!doc){const slot=document.createElement('span');slot.className='layer-slot';slot.setAttribute('aria-hidden','true');bar.append(slot);return;}
+                const b=document.createElement('button');b.id=add?'layer-add-btn':'layer-remove-btn';b.className='secondary layer-step';b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+(add?'M5 12h14M12 5v14':'M5 12h14')+'"/></svg>';b.title=b.ariaLabel=add?'添加楼层':'删除顶层';b.disabled=add&&count>=10;b.onclick=()=>add?this.editor.addLayer():this.editor.removeLayer();bar.append(b);
+            };
+            // 游玩和回放也保留加减号的空位，手机换行不会改变地图区高度。
+            step(vertical);
+            for(let n=0;n<count;n++){const i=vertical?count-1-n:n,b=document.createElement('button');b.textContent=String(i+1);b.dataset.layer=i;b.setAttribute('aria-label','查看第'+(i+1)+'层');b.onclick=()=>{if(doc)this.editor.switchToLayer(i);else this.game.switchToLayer(i);};bar.append(b);}
+            step(!vertical);
+        }
+        for(const b of bar.querySelectorAll('[data-layer]')){const i=Number(b.dataset.layer);b.className='layer-btn'+(i===current?' active':' secondary')+(hasStart&&i===playerLayer?' player-layer':'');b.setAttribute('aria-current',String(i===current));b.setAttribute('aria-pressed',String(i===current));}
+        if(focused&&!bar.contains(document.activeElement)){const target=focused.layer!==undefined?bar.querySelector('[data-layer="'+focused.layer+'"]'):byId(focused.id);(target&&!target.disabled?target:bar.querySelector('[data-layer="'+current+'"]'))?.focus({preventScroll:true});}
     }
+
     renderLibraries(){
         const locals=this.library.list('play').map(e=>({...e,local:true})),drafts=this.library.list('draft').map(e=>({...e,local:true}));
         byId('local-count').textContent=locals.length+' 个';byId('local-empty').hidden=!!locals.length;this.cards.fill(byId('local-map-grid'),locals);

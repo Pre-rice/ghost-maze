@@ -6,6 +6,7 @@ import { computeEditorView } from './view/viewSlice.js';
 import * as Renderer from './view/renderer.js';
 import { getColorsFromCSS } from './themeManager.js';
 import { InlineProperties } from './editor/inlineProperties.js';
+import { fitScale,resizeView } from './editor/viewport.js';
 
 export class EditorApp {
     constructor(app){
@@ -67,6 +68,7 @@ export class EditorApp {
         document.getElementById('editor-initial-health').value=d.initialHealth;document.getElementById('initial-health-container').hidden=d.gameMode!=='exploration';
         for(const mode of ['death-loop','exploration'])document.getElementById('editor-mode-'+mode+'-btn').classList.toggle('secondary',d.gameMode!==mode);
         document.getElementById('layer-mode-single-btn').classList.toggle('secondary',d.layerCount!==1);document.getElementById('layer-mode-multi-btn').classList.toggle('secondary',d.layerCount===1);
+        document.getElementById('layer-mode-single-btn').setAttribute('aria-pressed',String(d.layerCount===1));document.getElementById('layer-mode-multi-btn').setAttribute('aria-pressed',String(d.layerCount>1));
         document.getElementById('tool-stair').hidden=d.layerCount===1;
         document.querySelectorAll('[data-editor-tool]').forEach(b=>{b.classList.toggle('active',b.dataset.editorTool===this.tool);b.setAttribute('aria-pressed',String(b.dataset.editorTool===this.tool));});
         for(const mode of ['death-loop','exploration'])document.getElementById('editor-mode-'+mode+'-btn').setAttribute('aria-pressed',String(d.gameMode===mode));
@@ -74,7 +76,8 @@ export class EditorApp {
         document.getElementById('editor-undo').disabled=!this.workspace.undoStack.length;document.getElementById('editor-redo').disabled=!this.workspace.redoStack.length;
         if(this.visible){this.app.renderLayers();this.draw();}
     }
-    fit(){const f=this.workspace.frame;this.view.scale=Math.min((this.canvas.width-48)/f.width,(this.canvas.height-48)/f.height,180*(devicePixelRatio||1));this.view.x=(this.canvas.width-f.width*this.view.scale)/2-f.x*this.view.scale;this.view.y=(this.canvas.height-f.height*this.view.scale)/2-f.y*this.view.scale;if(this.visible)this.draw();}
+    fit(){const f=this.workspace.frame;this.view.scale=fitScale(f,this.canvas.width,this.canvas.height,180*(devicePixelRatio||1));this.view.x=(this.canvas.width-f.width*this.view.scale)/2-f.x*this.view.scale;this.view.y=(this.canvas.height-f.height*this.view.scale)/2-f.y*this.view.scale;if(this.visible)this.draw();}
+    resizeViewport(width,height){this.view=resizeView(this.view,this.workspace.frame,{width,height},{width:this.canvas.width,height:this.canvas.height},180*(devicePixelRatio||1));}
     zoom(factor,cx=null,cy=null){const r=this.canvas.getBoundingClientRect(),x=cx===null?this.canvas.width/2:(cx-r.left)*this.canvas.width/r.width,y=cy===null?this.canvas.height/2:(cy-r.top)*this.canvas.height/r.height;const scale=Math.max(10,Math.min(700,this.view.scale*factor)),ratio=scale/this.view.scale;this.view.x=x-(x-this.view.x)*ratio;this.view.y=y-(y-this.view.y)*ratio;this.view.scale=scale;this.draw();}
     draw(){
         const d=this.editorDoc,colors=getColorsFromCSS();
