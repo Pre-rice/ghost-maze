@@ -69,3 +69,5 @@
 本轮24项专项、两仓cloud:check通过：本体23测试文件、AI参考与4份旧测试、规则锁、原种子、22个HTTP入口及代理来源检查。覆盖769–1920px电脑居中、320–768px手机、十层、撤销、视野共享、单层边框、图形中心及生成成功／取消／失败。仅做合成验收，未开训练、未改十三图、未写人类反馈，正式两个main与远端一致且未更新。
 
 详细证据见AI仓[24项验收](https://github.com/Pre-rice/ghost-maze-ai/blob/preview/site-optimization-20261014/data/manifests/ui-centering-browser-20261015.json)。发布后再核对实际预览资源，不能以本地通过替代已发布内容检查。
+
+本次预览已发布成功：54个静态文件与本轮验收源码逐字节一致；发布后实际读取8个改动资源，全部内容一致，包含后台生成入口与Worker。未改变私有预览受众；仅预览分支和Sites源仓发生推送，正式main保持。[发布与资源证据](https://github.com/Pre-rice/ghost-maze-ai/blob/preview/site-optimization-20261014/data/manifests/ui-centering-deployment-20261015.json)。
