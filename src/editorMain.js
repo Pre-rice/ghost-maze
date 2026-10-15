@@ -74,7 +74,7 @@ export class EditorApp {
         document.getElementById('editor-undo').disabled=!this.workspace.undoStack.length;document.getElementById('editor-redo').disabled=!this.workspace.redoStack.length;
         if(this.visible){this.app.renderLayers();this.draw();}
     }
-    fit(){const f=this.workspace.frame;this.view.scale=Math.min((this.canvas.width-56)/f.width,(this.canvas.height-56)/f.height,180*(devicePixelRatio||1));this.view.x=(this.canvas.width-f.width*this.view.scale)/2-f.x*this.view.scale;this.view.y=(this.canvas.height-f.height*this.view.scale)/2-f.y*this.view.scale;if(this.visible)this.draw();}
+    fit(){const f=this.workspace.frame;this.view.scale=Math.min((this.canvas.width-48)/f.width,(this.canvas.height-48)/f.height,180*(devicePixelRatio||1));this.view.x=(this.canvas.width-f.width*this.view.scale)/2-f.x*this.view.scale;this.view.y=(this.canvas.height-f.height*this.view.scale)/2-f.y*this.view.scale;if(this.visible)this.draw();}
     zoom(factor,cx=null,cy=null){const r=this.canvas.getBoundingClientRect(),x=cx===null?this.canvas.width/2:(cx-r.left)*this.canvas.width/r.width,y=cy===null?this.canvas.height/2:(cy-r.top)*this.canvas.height/r.height;const scale=Math.max(10,Math.min(700,this.view.scale*factor)),ratio=scale/this.view.scale;this.view.x=x-(x-this.view.x)*ratio;this.view.y=y-(y-this.view.y)*ratio;this.view.scale=scale;this.draw();}
     draw(){
         const d=this.editorDoc,colors=getColorsFromCSS();

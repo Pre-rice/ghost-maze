@@ -1,5 +1,5 @@
 import { test, suite, summary, assertDeepEq, assertEq } from './_assert.mjs';
-import { drawCorners } from '../src/view/renderer.js';
+import { drawCorners, drawEditor } from '../src/view/renderer.js';
 import { WALL_TYPES as W, GAME_STATES } from '../src/core/constants.js';
 
 suite('renderer');
@@ -38,5 +38,13 @@ test('迷雾中未绘出的内墙不泄露补角；已探索和编辑器显示�
     const v=view();v.debugVision=false;v.seenCells.forEach(row=>row.fill(false));
     v.hWalls[1][1]={type:W.SOLID};v.vWalls[1][1]={type:W.SOLID};assertEq(atCenter(v),false);assertEq(atCenter(v,true),true);
     v.seenCells[1][1]=true;assertEq(atCenter(v),true);
+});
+test('编辑鼠标越过地图四边时不越界，绘制坐标不残留偏移',()=>{
+    let depth=0;
+    const ctx=new Proxy({canvas:{width:200,height:200},save(){depth++},restore(){depth--}},{get(target,key){return key in target?target[key]:()=>{};}});
+    const v={...view(),workspaceFrame:{x:0,y:0,width:3,height:3},offsetX:30,offsetY:24,stairs:[],ghosts:[],items:[],buttons:[]};
+    for(const hoveredWall of [{type:'v',x:1,y:-1},{type:'v',x:1,y:3},{type:'h',x:-1,y:1},{type:'h',x:3,y:1},{type:'v',x:1,y:1}]){
+        v.editor={mode:'free',tool:'wall',hoveredWall};drawEditor(ctx,v);assertEq(depth,0);
+    }
 });
 summary();

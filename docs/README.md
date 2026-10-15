@@ -4,6 +4,8 @@
 
 ## 给人查阅
 
+- [多层显示与编辑布局修正](archive/delivery/editor-layout-fix-20261015.md)：范围外悬停错乱、纯数字楼层、等量留白与紧凑输入。
+
 - [多层交互恢复](archive/delivery/multilayer-restoration-20261015.md)：最新底部数字楼层栏、原版切层／擦除与方向键手势验收。
 
 - [地图集设计小册](map-design-guide.md)：十三图的基本信息、设计思想、尤里卡时刻和真实简评；含解谜关键。

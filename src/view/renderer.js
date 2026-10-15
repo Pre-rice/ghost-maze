@@ -641,7 +641,7 @@ export function drawEditor(ctx, view) {
             case EDITOR_TOOLS.LOCK: wallType = 3; break; case EDITOR_TOOLS.ONE_WAY: wallType = 4; break;
             case EDITOR_TOOLS.LETTER_DOOR: wallType = 6; break; default: wallType = 1;
         }
-        const isValidWall = (type === 'h') ? (y > 0 && y < view.height && view.activeCells[y - 1][x] && view.activeCells[y][x]) : (x > 0 && x < view.width && view.activeCells[y][x - 1] && view.activeCells[y][x]);
+        const isValidWall = (type === 'h') ? (x >= 0 && x < view.width && y > 0 && y < view.height && view.activeCells[y - 1][x] && view.activeCells[y][x]) : (y >= 0 && y < view.height && x > 0 && x < view.width && view.activeCells[y][x - 1] && view.activeCells[y][x]);
         if (isValidWall) {
             ctx.beginPath(); const wallObject = { type: wallType, keys: '?', direction: direction };
             if (type === 'h') drawWallOrDoor(ctx, x * cs, y * cs, (x + 1) * cs, y * cs, wallObject, cs, view.colors, view.state, true);

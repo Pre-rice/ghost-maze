@@ -6,10 +6,10 @@ export class InlineProperties {
         this.editor=editor;this.host=editor.canvas.parentElement;
         this.element=document.createElement('div');this.element.className='element-popover';this.element.hidden=true;
         this.element.setAttribute('role','group');this.element.setAttribute('aria-label','编辑元件');
-        this.label=document.createElement('label');this.caption=document.createElement('span');this.input=document.createElement('input');this.input.id='element-value';
-        this.input.autocomplete='off';this.input.spellcheck=false;this.label.append(this.caption,this.input);this.element.append(this.label);this.host.append(this.element);
+        this.input=document.createElement('input');this.input.id='element-value';this.open=false;
+        this.input.autocomplete='off';this.input.spellcheck=false;this.element.append(this.input);this.host.append(this.element);
         this.input.addEventListener('input',()=>this.change());
-        window.addEventListener('keydown',e=>{if(e.key==='Tab'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!this.element.hidden&&editor.visible&&!editor.app.dialogOpen){e.preventDefault();e.stopPropagation();this.cycle(e.shiftKey?-1:1);this.input.focus({preventScroll:true});this.input.select();}},true);
+        window.addEventListener('keydown',e=>{if(e.key==='Tab'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&this.open&&editor.visible&&!editor.app.dialogOpen){e.preventDefault();e.stopPropagation();this.cycle(e.shiftKey?-1:1);this.input.focus({preventScroll:true});this.input.select();}},true);
         this.input.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();this.hide();editor.canvas.focus();}});
         this.element.addEventListener('pointerenter',()=>clearTimeout(this.closeTimer));
         this.element.addEventListener('pointerleave',e=>{if(e.pointerType!=='touch')this.closeSoon();});
@@ -32,27 +32,28 @@ export class InlineProperties {
     }
     hover(p){
         const target=this.at(p),key=this.key(target);
-        if(key===this.key(this.target)&&!this.element.hidden){clearTimeout(this.closeTimer);return;}
-        if(!this.element.hidden)this.closeSoon();
+        if(key===this.key(this.target)&&this.open){clearTimeout(this.closeTimer);return;}
+        if(this.open){if(target)this.hide();else this.closeSoon();}
         if(key===this.hoverKey)return;
         clearTimeout(this.hoverTimer);this.hoverKey=key;
         if(target)this.hoverTimer=setTimeout(()=>{if(this.editor.visible&&!this.editor.gesture&&this.hoverKey===key)this.show(target,false);},550);
     }
     show(target,focus=true){
         const value=this.value(target);if(!value)return;
-        clearTimeout(this.hoverTimer);clearTimeout(this.closeTimer);this.target={...target};this.hoverKey=this.key(target);
+        clearTimeout(this.hoverTimer);clearTimeout(this.closeTimer);clearTimeout(this.hideTimer);this.target={...target};this.hoverKey=this.key(target);
         this.editor.editorDoc.saveCurrentLayer();const layers=this.editor.editorDoc.layers;
         this.pool=target.kind==='lock'?Array.from({length:1+layers.reduce((n,l)=>n+l.items.filter(i=>i.type==='key').length,0)},(_,i)=>i):
             [...new Set(layers.flatMap(l=>[...l.buttons.map(b=>b.letter),...[...l.hWalls,...l.vWalls].flatMap(row=>row.filter(w=>w.type===W.LETTER_DOOR).map(w=>w.letter))]))].sort();
-        this.caption.textContent=target.kind==='lock'?'钥匙':'字母';this.input.type=target.kind==='lock'?'number':'text';
+        this.input.type='text';
         this.input.setAttribute('aria-label',target.kind==='lock'?'数字门钥匙数量':'元件字母');
-        if(target.kind==='lock'){this.input.min='0';this.input.max='4294967295';this.input.removeAttribute('maxlength');this.input.inputMode='numeric';}
+        if(target.kind==='lock'){this.input.maxLength=10;this.input.inputMode='numeric';}
         else{this.input.maxLength=1;this.input.inputMode='text';}
-        this.input.value=target.kind==='lock'?value.keys:value.letter;this.input.removeAttribute('aria-invalid');this.element.hidden=false;this.position();
+        this.input.value=target.kind==='lock'?value.keys:value.letter;this.input.removeAttribute('aria-invalid');this.open=true;this.element.hidden=false;this.element.inert=false;this.element.setAttribute('aria-hidden','false');this.position();
+        requestAnimationFrame(()=>{if(this.open)this.element.classList.add('is-visible');});
         if(focus){this.input.focus({preventScroll:true});this.input.select();}
     }
     position(){
-        if(this.element.hidden||!this.target)return;
+        if(!this.open||!this.target)return;
         if(!this.editor.visible||!this.value()){this.hide();return;}
         const t=this.target,r=this.editor.canvas.getBoundingClientRect(),host=this.host.getBoundingClientRect(),v=this.editor.view;
         const x=t.kind==='button'?t.x+.5+t.dx*.4:t.x+(t.type==='h'?.5:0),y=t.kind==='button'?t.y+.5+t.dy*.4:t.y+(t.type==='v'?.5:0);
@@ -77,5 +78,5 @@ export class InlineProperties {
         this.editor.apply(()=>{const object=this.value();if(object)object[t.kind==='lock'?'keys':'letter']=value;});
     }
     closeSoon(){clearTimeout(this.closeTimer);this.closeTimer=setTimeout(()=>this.hide(),120);}
-    hide(){clearTimeout(this.hoverTimer);clearTimeout(this.closeTimer);this.hoverKey='';this.target=null;this.element.hidden=true;if(document.activeElement===this.input)this.input.blur();}
+    hide(){clearTimeout(this.hoverTimer);clearTimeout(this.closeTimer);clearTimeout(this.hideTimer);this.hoverKey='';this.target=null;this.open=false;this.element.classList.remove('is-visible');this.element.inert=true;this.element.setAttribute('aria-hidden','true');if(document.activeElement===this.input)this.input.blur();this.hideTimer=setTimeout(()=>{if(!this.open)this.element.hidden=true;},150);}
 }

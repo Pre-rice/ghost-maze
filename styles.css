@@ -835,7 +835,7 @@ display: none !important;
 /* 四栏目单页：地图常驻，只有面板内容滚动。 */
 html:has(body.site-app),body.site-app{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
 body.site-app{padding:18px;min-height:0;display:block;box-sizing:border-box}
-.site-layout{height:calc(100dvh - 36px);display:grid;grid-template-columns:minmax(0,1fr) 444px;gap:24px;width:100%;min-height:0}
+.site-layout{height:calc(100dvh - 36px);display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:24px;width:100%;min-height:0}
 .map-stage{min-width:0;min-height:0;display:flex;flex-direction:column;position:relative}
 .canvas-host{flex:1;min-height:0;position:relative;overflow:hidden}
 .site-app #game-canvas{width:100%;height:100%;display:block;box-shadow:none;touch-action:none}
@@ -854,7 +854,7 @@ body.site-app{padding:18px;min-height:0;display:block;box-sizing:border-box}
 .site-app input:not([type=checkbox]):not([type=range]),.site-app select{font:inherit;color:var(--text-color);background:var(--container-bg);border:1px solid var(--border-color);border-radius:4px;padding:7px;box-sizing:border-box;min-width:0}.site-app .status-bar{gap:10px;display:flex;flex-wrap:wrap;font-size:13px;padding:0;margin:0 0 12px}.site-app .mode-label{font-size:15px;margin-bottom:12px}.option-button{font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--disabled-color);border:1px solid var(--border-color);border-radius:4px;padding:9px;cursor:pointer;white-space:nowrap}.option-button input{accent-color:var(--primary-color)}.view-options{margin-top:0}.history-row{margin-bottom:18px}.play-menus{margin-bottom:14px}.play-menus button[aria-expanded=true]{border-color:var(--primary-color);color:var(--primary-color);background:color-mix(in srgb,var(--primary-color) 8%,var(--container-bg))!important}.outcome-notice{border:1px solid var(--border-color);border-radius:6px;padding:12px;margin:12px 0;font-size:13px;line-height:1.7}.outcome-notice p{margin:0 0 10px}.outcome-notice button{width:100%;padding:8px}.checkpoint-list{display:flex;flex-direction:column;gap:16px;margin-top:20px}.checkpoint-card{border:1px solid var(--border-color);border-radius:6px;padding:12px}.checkpoint-card h3{font-size:14px;margin:0 0 10px}.checkpoint-card .card-preview{border-radius:4px;max-width:240px;margin:0 auto}.checkpoint-card .button-row{margin-bottom:0}.checkpoint-card button{font-size:12px;padding:9px 6px}.site-app .solver-routes{max-height:none;overflow:visible;gap:9px}.site-app .solver-routes a{font-size:14px;padding:9px 0}.solver-scope{font-size:12px;opacity:.6;line-height:1.7}.replay-buttons button{padding:9px 12px}.replay-position{display:flex;gap:12px;align-items:center;justify-content:space-between;font-size:13px;margin-bottom:18px}.replay-position input{width:60px}.replay-position select{min-width:60px!important}.site-app #replay-step-range{margin:0 0 16px}
 .site-app .tool-palette{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;position:static;padding:0;background:transparent}.site-app .tool-palette button{display:grid;place-items:center;aspect-ratio:1;min-width:0;width:100%;height:auto;padding:9px;background:var(--disabled-color);color:var(--text-color);border:1px solid var(--border-color);border-radius:5px}.site-app .tool-palette button.active{border:2px solid var(--primary-color);background:color-mix(in srgb,var(--primary-color) 10%,var(--container-bg));padding:8px}.site-app .tool-palette svg{width:26px;height:26px}.tool-title{font-size:14px;margin:12px 0 4px;font-weight:600}.tool-tip{font-size:12px;line-height:1.7;opacity:.65;margin:0 0 12px}.tool-settings label{display:flex;align-items:center;justify-content:space-between;font-size:13px;margin:8px 0}.tool-settings input,.tool-settings select{width:90px}.editor-section{border-top:1px solid var(--border-color);padding-top:8px;margin:18px 0}.site-app .dimension-fields{display:flex;gap:9px;align-items:center;margin:14px 0}.dimension-fields label{min-width:0;flex:1;display:flex;align-items:center;gap:6px;font-size:13px}.site-app .dimension-fields input{width:100%;height:auto}.dimension-fields button{padding:8px 12px;flex:none}.inline-field{display:flex;align-items:center;justify-content:space-between;font-size:13px;margin:12px 0}.inline-field input{width:110px}.editor-history{margin-top:0}.editor-bottom{margin-top:22px}.button-face-controls{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}.button-face-controls button{font-size:12px;padding:6px 9px}.button-face-controls button.active{border-color:var(--primary-color)}#editor-button-face>span{font-size:12px;opacity:.7}#editor-solve-results{margin-top:12px}
 .site-app dialog{color:var(--text-color);background:var(--container-bg);border:1px solid var(--border-color);border-radius:10px;padding:0;max-width:calc(100vw - 28px);max-height:calc(100dvh - 36px);box-shadow:0 12px 60px #0003;overflow:hidden}.site-app dialog::backdrop{background:#0007}.dialog-header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--border-color);gap:16px;flex-shrink:0}.dialog-header h2{font-size:19px;margin:0}.dialog-close{width:30px;height:30px;padding:0!important;font-size:24px;border-radius:50%}.help-dialog[open]{width:min(1200px,92vw);height:min(850px,90dvh);display:flex;flex-direction:column}.dialog-scroll{min-height:0;overflow:auto;padding:22px;line-height:1.8}.help-dialog .dialog-scroll{flex:1;overscroll-behavior:contain}.help-dialog h3{font-size:16px;margin:22px 0 8px}.help-dialog p,.help-dialog li{font-size:14px}.help-dialog table{width:100%;border-collapse:collapse;font-size:13px}.help-dialog td,.help-dialog th{padding:8px;border:1px solid var(--border-color);text-align:left}#new-map-form{padding:20px 22px;width:270px;box-sizing:border-box}#new-map-form>label{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:0 0 16px;font-size:14px}#new-map-form input{width:100px}#new-map-form .button-row{margin:22px 0 0}#confirm-dialog{width:min(400px,90vw)}.site-app .toast{z-index:100}
-@media(max-width:1100px){body.site-app{padding:12px}.site-layout{height:calc(100dvh - 24px);grid-template-columns:minmax(0,1fr) 390px;gap:14px}.site-header{gap:7px;padding:12px 10px}.column-tab{font-size:13px;gap:4px}.nav-icons{gap:5px}.panel-scroll{padding:14px}}
+@media(max-width:1100px){body.site-app{padding:12px}.site-layout{height:calc(100dvh - 24px);grid-template-columns:minmax(0,1fr) 420px;gap:14px}.site-header{gap:7px;padding:12px 10px}.column-tab{font-size:13px;gap:4px}.nav-icons{gap:5px}.panel-scroll{padding:14px}}
 @media(max-width:768px){body.site-app{padding:8px}.site-layout{height:calc(100dvh - 16px);display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(150px,42%) minmax(0,1fr);gap:10px}.site-header{padding:10px 8px;gap:5px}.column-tab{font-size:12px;padding:8px 2px;gap:3px}.column-tab svg{width:12px;height:12px}.nav-icons{gap:4px}.nav-icons .help-btn,.nav-icons .home-btn,.nav-icons .theme-toggle-btn,.nav-icons .theme-toggle{width:24px;height:24px}.nav-icons svg{width:16px;height:16px}.panel-scroll{padding:14px}.library-grid{gap:12px}.card-time{font-size:10px}.site-app .tool-palette{grid-template-columns:repeat(5,minmax(0,1fr))}.site-app .tool-palette button{max-height:55px;aspect-ratio:auto}.site-app .tool-palette svg{width:24px;height:24px}.help-dialog[open]{width:calc(100vw - 20px);height:calc(100dvh - 30px)}.dialog-header{padding:14px 16px}.dialog-scroll{padding:16px}.site-app .mode-label{font-size:14px}.map-layer-bar{padding-top:4px;gap:4px}.map-layer-bar button{padding:4px 8px}.delete-record{width:29px;height:29px}.card-preview .preview-enter{opacity:0}.card-preview:focus-visible .preview-enter{opacity:1}}
 @media(max-width:350px){.site-header{padding:8px 6px}.nav-icons{gap:3px}.column-tab{font-size:11px}.column-tab svg{width:11px;height:11px}.panel-scroll{padding:12px}.library-grid{grid-template-columns:minmax(0,1fr)}.button-row{gap:6px}.button-row>button{font-size:12px;padding:9px 6px}.replay-position{font-size:12px;gap:6px}}
 
@@ -881,9 +881,8 @@ body.site-app{padding:18px;min-height:0;display:block;box-sizing:border-box}
 .layer-stepper{display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:13px}
 .layer-stepper button{width:30px;height:32px;padding:0;font-size:19px}
 .layer-fill-actions>button{padding:10px 5px;font-size:13px}
-.element-popover{position:absolute;z-index:8;background:var(--container-bg);border:1px solid var(--border-color);border-radius:7px;box-shadow:0 3px 16px #0003;padding:8px;max-width:calc(100% - 12px)}
-.element-popover label{display:flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap}
-.site-app .element-popover input{width:68px;padding:6px;text-align:center}
+.element-popover{position:absolute;z-index:8;background:var(--container-bg);border:1px solid var(--border-color);border-radius:5px;box-shadow:0 2px 10px #0002;padding:3px;max-width:calc(100% - 12px);opacity:0;transform:translateY(-2px);pointer-events:none;transition:opacity .14s ease,transform .14s ease}.element-popover.is-visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.site-app .element-popover input{display:block;width:42px;height:28px;padding:2px;text-align:center;font-size:14px;appearance:textfield}
 .element-popover input[aria-invalid=true]{border-color:#d44}
 .checkpoint-card{position:relative}
 @media(max-width:768px){
@@ -899,16 +898,36 @@ body.site-app{padding:18px;min-height:0;display:block;box-sizing:border-box}
 body.site-app{padding:22px}
 .site-layout{height:calc(100dvh - 44px)}
 .panel-scroll{padding:22px}
-.site-app .tool-palette{grid-template-columns:repeat(7,40px);gap:8px;justify-content:center;padding:6px 0}
+.site-app .tool-palette{grid-template-columns:repeat(8,40px);gap:6px;justify-content:center;padding:6px 0}
 .site-app .tool-palette button{box-sizing:border-box;width:40px;height:40px;min-height:0;max-height:none;aspect-ratio:1;padding:6px}
 .site-app .tool-palette button.active{padding:5px}
 .site-app .tool-palette svg{width:22px;height:22px}
 @media(max-width:1100px){body.site-app{padding:16px}.site-layout{height:calc(100dvh - 32px)}.panel-scroll{padding:20px}}
-@media(max-width:768px){body.site-app{padding:12px}.site-layout{height:calc(100dvh - 24px);gap:14px}.panel-scroll{padding:18px}.site-app .tool-palette{grid-template-columns:repeat(7,38px);gap:7px}.site-app .tool-palette button{width:38px;height:38px}.site-app .tool-palette svg{width:21px;height:21px}}
-@media(max-width:350px){.site-app .tool-palette{grid-template-columns:repeat(6,38px);gap:6px}}
+@media(max-width:768px){body.site-app{padding:12px}.site-layout{height:calc(100dvh - 24px);gap:14px}.panel-scroll{padding:18px}.site-app .tool-palette{grid-template-columns:repeat(8,38px);gap:3px}.site-app .tool-palette button{width:38px;height:38px}.site-app .tool-palette svg{width:21px;height:21px}}
+@media(max-width:350px){.panel-scroll{padding:12px}.site-app .tool-palette{grid-template-columns:repeat(7,38px);gap:.5px}}
 
 /* 楼层编辑与浏览共用地图下方的一栏。 */
 .map-layer-bar{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;padding:8px 0 0}
 .map-layer-bar button{height:32px;min-width:32px;padding:4px 9px;margin:0;line-height:1}
 .map-layer-bar .layer-step{font-size:20px}
 .map-layer-bar .layer-btn.player-layer{border-color:var(--key-color);box-shadow:inset 0 0 0 1px var(--key-color)}
+
+/* 地图为正方形，工作区整体居中，两侧保留相等空白。 */
+@media(min-width:769px){
+    .site-layout{max-width:calc(100dvh - 84px + 420px + 24px);margin-inline:auto}
+    .canvas-host{flex:none;width:100%;aspect-ratio:1}
+}
+@media(min-width:769px) and (max-width:1100px){.site-layout{max-width:calc(100dvh - 72px + 420px + 14px)}}
+/* 编辑控件紧凑排列，不用分割线隔开。 */
+.site-app #pane-editor .button-row{margin:9px 0}
+.site-app #pane-editor .editor-history{margin-top:0;margin-bottom:7px}
+.site-app #pane-editor .editor-section{border:0;padding:0;margin:9px 0}
+.site-app #pane-editor .dimension-fields{margin:9px 0;gap:7px}
+.site-app #pane-editor .dimension-fields label{gap:5px;font-size:13px;margin:0;white-space:nowrap}
+.site-app #pane-editor .dimension-fields input{width:44px;flex:1;padding:6px 3px;text-align:center}
+.site-app #pane-editor #initial-health-container{flex:1.6}
+.site-app #pane-editor .layer-controls{margin-top:9px}
+.site-app #pane-editor .layer-controls .button-row{margin:0}
+.site-app #pane-editor .editor-mode-tabs>button,.site-app #pane-editor .layer-fill-actions>button{padding-top:8px;padding-bottom:8px}
+.site-app #pane-editor .library-section{margin-top:16px}
+@media(max-width:350px){.site-app #pane-editor .dimension-fields{gap:4px}.site-app #pane-editor .dimension-fields label{font-size:12px;gap:3px}.site-app #pane-editor .dimension-fields input{width:28px;padding:5px 0}.site-app #pane-editor .dimension-fields button{padding:7px 8px}}
