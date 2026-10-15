@@ -10,6 +10,7 @@ description: "仅在用户显式调用 ghostmaze-playtest／鬼迷宫试玩时�
 ## 开始前
 
 1. 从用户消息读取地图分享码／含map的链接，或含map与save的存档链接。缺地图才询问。链接只解析参数，不访问网页；replay参数默认忽略，避免读取答案。
+   同对话已有试玩时，先归档旧图的完整记录，再开始新图；每张图使用独立文件名，不能覆盖上一轮报告。可以继承自己的经验，但不把旧图物理状态迁入新图。
 2. 默认`rules: known`、`challenge: normal`、探索有限视野。用户说探索规则／不要读规则时设`rules: discover`；要求最短步数时设`challenge: shortest`。两者独立组合。只有用户明确允许探索全图时同时设`fullVision: true, allowFullVision: true`。
 3. 核对当前对话是否已经出现本图解法、关键设计或已有评价；如有，在`priorKnowledge`如实记录，不能声称首次盲玩。同对话自己获得的经验可以运用，以简短文字填入`inheritedExperience`；新对话不自动加载旧经验或其他地图资料。不要自动修改本skill。
 4. 先读[操作与棋盘](references/controls.md)和[运行方法](references/runtime.md)。known模式再读[规则](references/rules.md)；discover模式不得读取规则文件、引擎／目标模块源码、帮助内容或借其他资料获得机制。已有知识不能靠换模式消除，需如实记录。

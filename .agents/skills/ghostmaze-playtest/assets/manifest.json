@@ -25,7 +25,7 @@
     "src/solver/searchIndex.js": "f2dfef332276000bb7b8bedb71cd0ef142d3e314d0222ef2c408b8a187eaf0e9"
   },
   "assets": {
-    "playtest.js": "a0e8c0b00ba7f344ebae0ea4476da1fd088ba42cc71dddc998d65fbb1925b7ce",
-    "target.js": "cb0d01e35261b5004870a62e50084dcba8b7098e41c011f65dbe7cc35aca225d"
+    "playtest.js": "7f4f50bd2c42d5b4077c86836ff4e99dfc3f1c7044474b27519497d179a287de",
+    "target.js": "70a2ebe8995b086a481ee99bfc605b731fed0ee26abb507725be3a1f15209618"
   }
 }

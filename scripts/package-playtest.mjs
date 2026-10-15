@@ -39,13 +39,14 @@ function bundle(entry, factory) {
             return '';
         });
         if (/^\s*(import|export)\s/m.test(code)) throw new Error('不支持的模块语法：' + file);
-        modules.set(file, `function(__load){\n${code}\nreturn {${names.map(([name, local]) => `${JSON.stringify(name)}:${local}`).join(',')}};\n}`);
+        // 以字符串保存模块，保留原始换行／尾空格，不把原源码的格式问题带入生成文件。
+        modules.set(file, JSON.stringify(`${code}\nreturn {${names.map(([name, local]) => `${JSON.stringify(name)}:${local}`).join(',')}};\n`));
     }
     visit(entry); visit('src/playtest/portable.js');
     const vendor = source('src/vendor/pako.js'); sources['src/vendor/pako.js'] = sha(vendor);
     return `/* 自动生成，禁止手改；由scripts/package-playtest.mjs从本体生成。\n * pako许可随包附带；引擎 ${build.engine}\n */\n(function(){\n` +
         `const __factories={${[...modules].map(([name, code]) => `${JSON.stringify(name)}:${code}`).join(',\n')}};\n` +
-        `const __cache=Object.create(null);function __load(id){return __cache[id]||(__cache[id]=__factories[id](__load));}\n` +
+        `const __cache=Object.create(null);function __load(id){return __cache[id]||(__cache[id]=Function('__load',__factories[id])(__load));}\n` +
         `const __pako=(function(){var module={exports:{}};var exports=module.exports;\n${vendor}\nreturn module.exports;})();\n` +
         `__load('src/playtest/portable.js').installPortableGlobals(__pako);\n` +
         `return __load(${JSON.stringify(entry)})[${JSON.stringify(factory)}](${JSON.stringify(build)});\n})();\n`;

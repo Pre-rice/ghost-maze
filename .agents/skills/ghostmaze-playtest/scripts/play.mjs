@@ -21,7 +21,8 @@ try {
         result = target.prepare(session, request.budget);
     } else if (request.op === 'export') {
         const record = api.export(session);
-        const exportFile = resolve(request.file || 'work/ghostmaze-playtest/record.json');
+        const stamp = session.startedAt.replace(/[^\dTZ]/g, '-');
+        const exportFile = resolve(request.file || `work/ghostmaze-playtest/record-${stamp}.json`);
         mkdirSync(dirname(exportFile), { recursive: true }); writeFileSync(exportFile, JSON.stringify(record, null, 2) + '\n');
         console.log(JSON.stringify({ success: true, file: exportFile, status: record.status, stats: record.stats,
             goal: record.conditions.goal, replay: record.currentReplay, attempts: record.attempts, notes: record.notes }));
