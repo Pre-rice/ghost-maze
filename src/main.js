@@ -90,7 +90,7 @@ export class GhostMazeGame {
         if(next){this.app.gameChanged();this.animateTrails();}return next;
     }
     movePlayer(dx,dy){return this.processAction({type:'MOVE',payload:{dx,dy}});}
-    useStair(){return this.processAction({type:'USE_STAIR'});}
+    useStair(){const layer=this.controller.currentGameState?.player.layer;if(layer!==undefined&&this.controller.viewLayer!==layer)this.switchToLayer(layer);return this.processAction({type:'USE_STAIR'});}
     handleUndo(){this.stopAutoMove();if(this.controller.undo().ok)this.app.gameChanged();}
     handleRedo(){this.stopAutoMove();if(this.controller.redo().ok)this.app.gameChanged();}
     resetCurrentMap(){this.stopAutoMove();if(this.controller.reset().ok)this.app.gameChanged();}

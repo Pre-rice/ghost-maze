@@ -31,9 +31,8 @@ export class EditorApp {
         for(const id of ['editor-width','editor-height']){on(id,()=>this.resizeFrame(),'change');on(id,e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}},'keydown');}
         on('layer-mode-multi-btn',()=>{if(this.editorDoc.layerCount===1)this.addLayer();});
         on('layer-mode-single-btn',()=>{if(this.editorDoc.layerCount>1)this.app.confirm('改为单层将保留第1层并移除其他层，可撤销。继续？',()=>this.apply(()=>{const m=this.editorDoc.toMapData();m.layers=m.layers.slice(0,1);m.layerCount=1;m.multiLayerMode=false;m.stairs=[];this.workspace.replace(m);}));});
-        on('layer-add-btn',()=>this.addLayer());on('layer-remove-btn',()=>this.app.confirm('删除底层及其相连楼梯，可撤销。继续？',()=>this.removeBottomLayer()));
-        on('editor-clear-entities',()=>this.app.confirm('清空当前层元件并保留地板，可撤销。继续？',()=>this.apply(()=>{this.editorDoc.clearWalls();this.editorDoc.clearEntities();})));
-        on('editor-clear',()=>this.app.confirm('清空当前层，可撤销。继续？',()=>this.apply(()=>{this.editorDoc.clearWalls();this.editorDoc.clearAllGrids();})));
+        on('editor-clear-entities',()=>this.apply(()=>{this.editorDoc.clearWalls();this.editorDoc.clearEntities();}));
+        on('editor-clear',()=>this.apply(()=>{this.editorDoc.clearWalls();this.editorDoc.clearAllGrids();}));
         on('editor-fill',()=>this.fillLayer());
         on('editor-save-draft',()=>this.app.saveDraft());on('solve-edited-map-btn',()=>this.app.solveEditor());
         for(const type of ['pointerdown','pointermove','pointerup','pointercancel'])this.canvas.addEventListener(type,e=>this.pointer(e));
@@ -43,14 +42,15 @@ export class EditorApp {
         this.canvas.addEventListener('wheel',e=>{if(!this.visible)return;e.preventDefault();this.zoom(e.deltaY>0?.9:1.1,e.clientX,e.clientY);},{passive:false});
         window.addEventListener('blur',()=>this.cancelGesture());
     }
-    addLayer(){this.apply(()=>{const m=this.editorDoc.toMapData();if(m.layers.length>=10)throw new Error('最多10层');const empty=()=>({type:0,keys:0});m.layers.push({hWalls:Array.from({length:m.height+1},()=>Array.from({length:m.width},empty)),vWalls:Array.from({length:m.height},()=>Array.from({length:m.width+1},empty)),activeCells:Array.from({length:m.height},()=>Array(m.width).fill(false)),ghosts:[],items:[],buttons:[],customStartPos:null,endPos:null});m.layerCount=m.layers.length;m.multiLayerMode=true;this.workspace.replace(m);this.editorDoc.switchLayer(m.layerCount-1);});}
+    addLayer(){this.apply(()=>{const m=this.editorDoc.toMapData();if(m.layers.length>=10)throw new Error('最多10层');const empty=()=>({type:0,keys:0});m.layers.push({hWalls:Array.from({length:m.height+1},()=>Array.from({length:m.width},empty)),vWalls:Array.from({length:m.height},()=>Array.from({length:m.width+1},empty)),activeCells:Array.from({length:m.height},(_,y)=>Array.from({length:m.width},(_,x)=>x>=this.workspace.frame.x&&x<this.workspace.frame.x+this.workspace.frame.width&&y>=this.workspace.frame.y&&y<this.workspace.frame.y+this.workspace.frame.height)),ghosts:[],items:[],buttons:[],customStartPos:null,endPos:null});m.layerCount=m.layers.length;m.multiLayerMode=true;this.workspace.replace(m);this.editorDoc.switchLayer(m.layerCount-1);});}
     resizeFrame(){
         const w=Number(document.getElementById('editor-width').value),h=Number(document.getElementById('editor-height').value),loss=this.workspace.resizeLoss(w,h);
         const resize=()=>this.apply(()=>this.workspace.resize(w,h),true);
         if(loss.cells||loss.entities)this.app.confirm(`缩小范围将删除 ${loss.cells} 格和 ${loss.entities} 个元件，可撤销。继续？`,resize);else resize();
     }
     adapt(){this.properties.hide();this.apply(()=>{const map=this.editorDoc.toMapData(),b=mapBounds(map);this.workspace.replace(reshapeMap(map,Math.max(8,b.width),Math.max(8,b.height),-b.x,-b.y));this.workspace.frame={x:0,y:0,width:b.width,height:b.height};},true);}
-    removeBottomLayer(){this.properties.hide();this.apply(()=>{const m=this.editorDoc.toMapData(),layer=this.editorDoc.currentLayer;if(m.layers.length===1)return;m.layers.shift();m.layerCount=m.layers.length;m.multiLayerMode=m.layerCount>1;m.stairs=m.stairs.filter(s=>s.layer>0&&s.layer+(s.direction==='up'?1:-1)>0).map(s=>({...s,layer:s.layer-1}));this.workspace.replace(m);this.editorDoc.switchLayer(Math.max(0,layer-1));});}
+    removeLayer(){if(this.editorDoc.layerCount<=1)return;this.app.confirm('删除顶层及其相连楼梯，可撤销。继续？',()=>{this.properties.hide();this.apply(()=>{const m=this.editorDoc.toMapData(),layer=this.editorDoc.currentLayer;m.layers.pop();m.layerCount=m.layers.length;m.multiLayerMode=m.layerCount>1;m.stairs=m.stairs.filter(s=>s.layer<m.layerCount&&s.layer+(s.direction==='up'?1:-1)<m.layerCount);this.workspace.replace(m);this.editorDoc.switchLayer(Math.min(layer,m.layerCount-1));});});}
+    switchToLayer(index){if(index<0||index>=this.editorDoc.layerCount)return;this.cancelGesture();this.editorDoc.saveCurrentLayer();this.editorDoc.switchLayer(index);this.sync();}
     fillLayer(){this.properties.hide();this.apply(()=>{const d=this.editorDoc,f=this.workspace.frame;
         const wallFor=b=>b.direction.dx?{type:'v',x:b.x+(b.direction.dx===1?1:0),y:b.y}:{type:'h',x:b.x,y:b.y+(b.direction.dy===1?1:0)};
         const anchors=d.buttons.map(wallFor).filter(w=>!isInteriorWall(w,d.width,d.height,d.activeCells));
@@ -68,7 +68,7 @@ export class EditorApp {
         document.getElementById('editor-initial-health').value=d.initialHealth;document.getElementById('initial-health-container').hidden=d.gameMode!=='exploration';
         for(const mode of ['death-loop','exploration'])document.getElementById('editor-mode-'+mode+'-btn').classList.toggle('secondary',d.gameMode!==mode);
         document.getElementById('layer-mode-single-btn').classList.toggle('secondary',d.layerCount!==1);document.getElementById('layer-mode-multi-btn').classList.toggle('secondary',d.layerCount===1);
-        document.getElementById('editor-layer-actions').hidden=d.layerCount===1;document.getElementById('editor-layer-count').textContent=d.layerCount+' 层';document.getElementById('layer-add-btn').disabled=d.layerCount>=10;document.getElementById('layer-remove-btn').disabled=d.layerCount<=1;document.getElementById('tool-stair').hidden=d.layerCount===1;
+        document.getElementById('tool-stair').hidden=d.layerCount===1;
         document.querySelectorAll('[data-editor-tool]').forEach(b=>{b.classList.toggle('active',b.dataset.editorTool===this.tool);b.setAttribute('aria-pressed',String(b.dataset.editorTool===this.tool));});
         for(const mode of ['death-loop','exploration'])document.getElementById('editor-mode-'+mode+'-btn').setAttribute('aria-pressed',String(d.gameMode===mode));
         document.getElementById('editor-undo').disabled=!this.workspace.undoStack.length;document.getElementById('editor-redo').disabled=!this.workspace.redoStack.length;
@@ -133,13 +133,8 @@ export class EditorApp {
                 if(['letter','lock'].includes(g.tool))g.editTarget={...w,kind:g.tool,layer:d.currentLayer};
                 this.workspace.setWall(w,value);g.validPaint=true;this.draw();return;
             }
-            const key=x+','+y;if(g.seen.has(key))return;g.seen.add(key);
-            if(g.tool==='eraser'){
-                const wall=this.wallAt(p),near=Math.min(Math.abs(p.x-Math.round(p.x)),Math.abs(p.y-Math.round(p.y)))<.2;
-                if(near&&isInteriorWall(wall,d.width,d.height,d.activeCells))this.workspace.setWall(wall,{type:W.EMPTY,keys:0});
-                else if(d.activeCells[y]?.[x]){if(d.stairs.some(s=>s.layer===d.currentLayer&&s.x===x&&s.y===y))d.eraseStairAt(x,y,d.currentLayer);else {const occupied=[...d.ghosts,...d.items,...d.buttons,d.customStartPos,d.endPos].filter(Boolean).some(v=>v.x===x&&v.y===y);if(occupied){d.ghosts=d.ghosts.filter(v=>v.x!==x||v.y!==y);d.items=d.items.filter(v=>v.x!==x||v.y!==y);d.buttons=d.buttons.filter(v=>v.x!==x||v.y!==y);if(d.customStartPos?.x===x&&d.customStartPos?.y===y)d.customStartPos=null;if(d.endPos?.x===x&&d.endPos?.y===y)d.endPos=null;}else this.workspace.eraseCell(x,y);}}
-                g.validPaint=true;this.draw();return;
-            }
+            const key=x+','+y;if(g.tool!=='eraser'&&g.seen.has(key))return;g.seen.add(key);
+            if(g.tool==='eraser'){d.eraseAt({x:p.x,y:p.y},1);g.validPaint=true;this.draw();return;}
             if(g.tool==='button'){
                 if(!d.activeCells[y]?.[x])throw new Error('按钮需要活动格');const w=this.wallAt(p);
                 const direction=w.type==='h'?{dx:0,dy:w.y===y?-1:1}:{dx:w.x===x?-1:1,dy:0},wall=d[w.type+'Walls'][w.y]?.[w.x];if(isInteriorWall(w,d.width,d.height,d.activeCells)&&wall.type!==W.SOLID)throw new Error('按钮只能依附实墙');
@@ -158,7 +153,7 @@ export class EditorApp {
     handleKey(e){
         const k=e.key.toLowerCase();if(k==='f'){e.preventDefault();this.fit();}else if(['+','=','-','_'].includes(k)){e.preventDefault();this.zoom(k==='-'||k==='_'?.8:1.25);}else if(k==='escape'){this.cancelGesture();}
         else if(['arrowleft','a','arrowright','d'].includes(k)){e.preventDefault();const tools=[...document.querySelectorAll('[data-editor-tool]')].filter(b=>!b.hidden).map(b=>b.dataset.editorTool),index=tools.indexOf(this.tool),delta=['a','arrowleft'].includes(k)?-1:1;this.tool=tools[(index+delta+tools.length)%tools.length];this.sync();}
-        else if(['arrowup','w','arrowdown','s'].includes(k)&&this.editorDoc.layerCount>1){e.preventDefault();const delta=['arrowup','w'].includes(k)?1:-1;this.editorDoc.switchLayer((this.editorDoc.currentLayer+delta+this.editorDoc.layerCount)%this.editorDoc.layerCount);this.sync();}
-        else if(k===' '){e.preventDefault();this.editorDoc.switchLayer(this.editorDoc.playerLayer);this.sync();}
+        else if(['arrowup','w','arrowdown','s'].includes(k)&&this.editorDoc.layerCount>1){e.preventDefault();const delta=['arrowup','w'].includes(k)?1:-1;this.switchToLayer((this.editorDoc.currentLayer+delta+this.editorDoc.layerCount)%this.editorDoc.layerCount);}
+        else if(k===' '){e.preventDefault();this.switchToLayer(this.editorDoc.playerLayer);}
     }
 }

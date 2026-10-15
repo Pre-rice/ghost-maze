@@ -88,8 +88,8 @@ export function initializeDpadTouchControls(dpad) {
     const ensureJsPositioning = () => {
         if (dpad.element.style.left === '' || dpad.element.style.top === '') {
             const rect = dpad.element.getBoundingClientRect();
-            dpad.element.style.left = `${rect.left}px`;
-            dpad.element.style.top = `${rect.top}px`;
+            dpad.element.style.left = `${rect.left + (rect.width - dpad.element.offsetWidth) / 2}px`;
+            dpad.element.style.top = `${rect.top + (rect.height - dpad.element.offsetHeight) / 2}px`;
             dpad.element.style.right = 'auto';
             dpad.element.style.bottom = 'auto';
         }
@@ -101,6 +101,7 @@ export function initializeDpadTouchControls(dpad) {
             e.preventDefault();
             ensureJsPositioning();
             dpad.isDragging = true;
+            dpad.didDrag = false;
             dpad.startX = touches[0].clientX;
             dpad.startY = touches[0].clientY;
             dpad.initialLeft = parseFloat(dpad.element.style.left);
@@ -113,6 +114,8 @@ export function initializeDpadTouchControls(dpad) {
         if (touches.length === 2) {
             e.preventDefault();
             ensureJsPositioning();
+            dpad.isDragging = false;
+            dpad.didDrag = true;
             dpad.isResizing = true;
             const dx = touches[0].clientX - touches[1].clientX;
             const dy = touches[0].clientY - touches[1].clientY;
@@ -128,6 +131,7 @@ export function initializeDpadTouchControls(dpad) {
         if (dpad.isDragging && touches.length === 1) {
             const dx = touches[0].clientX - dpad.startX;
             const dy = touches[0].clientY - dpad.startY;
+            if (Math.hypot(dx, dy) > 6) dpad.didDrag = true;
             dpad.element.style.left = `${dpad.initialLeft + dx}px`;
             dpad.element.style.top = `${dpad.initialTop + dy}px`;
         } else if (dpad.isResizing && touches.length === 2) {
@@ -142,6 +146,8 @@ export function initializeDpadTouchControls(dpad) {
     }, { passive: false });
 
     document.addEventListener('touchend', (e) => {
+        if (e.touches.length) return;
+        const centerTap = dpad.isDragging && !dpad.didDrag && !dpad.isResizing;
         if (dpad.isResizing) {
             const transformStyle = dpad.element.style.transform;
             const scaleMatch = transformStyle.match(/scale\((.+)\)/);
@@ -156,7 +162,24 @@ export function initializeDpadTouchControls(dpad) {
         }
         dpad.isDragging = false;
         dpad.isResizing = false;
+        if (centerTap) dpad.onCenterTap?.();
     });
+    dpad.grip.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        e.preventDefault(); ensureJsPositioning(); dpad.mouseDrag = {x:e.clientX,y:e.clientY,left:parseFloat(dpad.element.style.left),top:parseFloat(dpad.element.style.top),moved:false};
+    });
+    document.addEventListener('mousemove', e => {
+        const drag=dpad.mouseDrag;if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+        if(Math.hypot(dx,dy)>6)drag.moved=true;
+        dpad.element.style.left=(drag.left+dx)+'px';dpad.element.style.top=(drag.top+dy)+'px';
+    });
+    document.addEventListener('mouseup', () => {
+        const drag=dpad.mouseDrag;if(!drag)return;dpad.mouseDrag=null;
+        safeSet('dpadLeft',dpad.element.style.left);safeSet('dpadTop',dpad.element.style.top);
+        if(!drag.moved)dpad.onCenterTap?.();
+    });
+    document.addEventListener('touchcancel',()=>{dpad.isDragging=false;dpad.isResizing=false;dpad.didDrag=true;});
+    window.addEventListener('blur',()=>{dpad.mouseDrag=null;dpad.isDragging=false;dpad.isResizing=false;});
 }
 
 /**

@@ -106,7 +106,10 @@ export class Application {
     renderLayers(){
         const bar=byId('layer-panel'),editing=this.view==='editor'||this.draftVisible,doc=editing?this.editor?.editorDoc:null,a=this.game?.activeController,count=doc?.layerCount||a?.mapDefinition?.layerCount||1,current=doc?.currentLayer??a?.viewLayer??0;
         bar.hidden=count===1;bar.replaceChildren();if(count===1)return;
-        for(let i=0;i<count;i++){const b=document.createElement('button');b.textContent=(i+1)+'层';b.className=i===current?'':'secondary';b.onclick=()=>{if(doc){doc.switchLayer(i);this.editor.sync();if(!this.editor.visible)this.renderMap();}else this.game.switchToLayer(i);};bar.append(b);}
+        const playerLayer=doc?doc.playerLayer:a?.currentGameState?.player.layer,hasStart=!doc||doc.hasStartPoint();
+        if(doc){const minus=document.createElement('button');minus.id='layer-remove-btn';minus.className='secondary layer-step';minus.textContent='−';minus.title=minus.ariaLabel='删除顶层';minus.onclick=()=>this.editor.removeLayer();bar.append(minus);}
+        for(let i=0;i<count;i++){const b=document.createElement('button');b.textContent=String(i+1);b.dataset.layer=i;b.className='layer-btn'+(i===current?' active':' secondary')+(hasStart&&i===playerLayer?' player-layer':'');b.setAttribute('aria-label','查看第'+(i+1)+'层');b.setAttribute('aria-current',String(i===current));b.onclick=()=>{if(doc)this.editor.switchToLayer(i);else this.game.switchToLayer(i);};bar.append(b);}
+        if(doc){const plus=document.createElement('button');plus.id='layer-add-btn';plus.className='secondary layer-step';plus.textContent='＋';plus.title=plus.ariaLabel='添加楼层';plus.disabled=count>=10;plus.onclick=()=>this.editor.addLayer();bar.append(plus);}
     }
     renderLibraries(){
         const locals=this.library.list('play').map(e=>({...e,local:true})),drafts=this.library.list('draft').map(e=>({...e,local:true}));

@@ -62,14 +62,7 @@ export function bindDpadControls(game) {
     addListeners(document.getElementById('dpad-left'), -1, 0);
     addListeners(document.getElementById('dpad-right'), 1, 0);
 
-    const centerBtn = document.getElementById('dpad-center');
-    if (centerBtn) {
-        centerBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleCenterPress();
-        }, { passive: false });
-        centerBtn.addEventListener('mousedown', handleCenterPress);
-    }
+    game.dpad.onCenterTap = handleCenterPress;
 
     document.addEventListener('touchend', handleDpadRelease);
     document.addEventListener('mouseup', handleDpadRelease);
