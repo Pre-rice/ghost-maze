@@ -11,6 +11,11 @@ import {
 import {
     EditorWorkspace,mapBounds
 } from '../src/editor/workspace.js';
+import {MapDefinition} from '../src/core/mapDefinition.js';
+import {GameLogic} from '../src/core/gameLogic.js';
+import {DataSerializer} from '../src/core/dataSerializer.js';
+import {installBrowserEnv} from './helpers/browser-env.mjs';
+installBrowserEnv();
 suite('editorWorkspace');
 test('真实5×7小图按包络装载；扩展保留全部原格、出生、门和元件，撤销恢复',()=>{
     const map=normalizeMapData(makeMap());map.layers[0].activeCells=map.layers[0].activeCells.map((row,y)=>row.map((_,x)=>x>=1&&x<=5&&y<7));map.layers[0].customStartPos={
@@ -51,5 +56,14 @@ test('区域移动不能覆盖未选区域，旧常规图无效操作不会自�
     })),ws=new EditorWorkspace(map);ws.begin();assert.equal(ws.commit(),false);assert.equal(ws.doc.mode,'regular');const before=ws.snapshot();assert.throws(()=>ws.apply(()=>ws.moveRegion({
         x:0,y:0,width:2,height:2
     },2,0)),/目标区域已有/);assert.deepEqual(ws.snapshot(),before);
+});
+test('经典出生房间普通编辑后仍完整可见，改出生或隔断后不套用旧房间',()=>{
+    const ws=new EditorWorkspace(normalizeMapData(makeMap({editorMode:'regular',customStartPos:{x:1,y:6}})));
+    ws.apply(()=>ws.doc.items.push({x:4,y:4,type:'key'}));
+    const code=DataSerializer.generateShareCode(ws.doc.toMapData());assert(code.success);
+    const data=DataSerializer.loadFromShareCode(code.code).data.mapData;assert.equal(data.editorMode,'regular');
+    const state=GameLogic.createInitialState(new MapDefinition(data));assert(state.seenCells[0].slice(5,8).every(row=>row.slice(0,3).every(Boolean)));
+    ws.apply(()=>{ws.doc.customStartPos={x:4,y:4};});assert.equal(ws.doc.toMapData().editorMode,'free');ws.undo();assert.equal(ws.doc.toMapData().editorMode,'regular');
+    ws.apply(()=>{ws.doc.hWalls[6][0]={type:1,keys:0};});assert.equal(ws.doc.toMapData().editorMode,'free');ws.undo();assert.equal(ws.doc.toMapData().editorMode,'regular');
 });
 summary();

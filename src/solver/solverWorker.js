@@ -14,7 +14,7 @@ import {
 globalThis.window = {
     pako: globalThis.pako
 };
-let search, grouping, env, mapData, routes, running = false, allowance, increment, skip = 0, background = false, deadline = Infinity;
+let search, grouping, env, mapData, routes, running = false, allowance, increment, skip = 0, background = false;
 const reportError = error => {
     running = false;
     postMessage({
@@ -48,7 +48,6 @@ function emitRoutes(){
     }
 } function advance(){
     if(!running)return;
-    if(background && performance.now()>deadline){running=false;postMessage({type:'unknown',reason:'background_budget'});return;}
     try{
         const result=grouping?grouping.run({
             stateBudget:allowance*4,budgetMs:background?15:40
@@ -56,13 +55,8 @@ function emitRoutes(){
             nodeBudget:allowance,stateBudget:allowance,budgetMs:background?15:40
         });
         if(result.status==='unknown'){
-            if(result.reason==='time_budget'){
-                setTimeout(advance,background?10:0);
-                return;
-            }running=false;
-            postMessage({
-                type:'unknown',grouping:!!grouping
-            });
+            if(result.reason!=='time_budget')allowance+=increment;
+            setTimeout(advance,background?10:0);
             return;
         }     if(result.status==='proven_unsat'){
             running=false;
@@ -92,7 +86,7 @@ function emitRoutes(){
 })=>{
     try{
         if(data.type==='start'){
-            background=!!data.background;deadline=background?performance.now()+1000:Infinity;
+            background=!!data.background;
             mapData=data.mapData;
             env=createSearchEnvironment(mapData);
             increment=Math.max(1000,Math.min(100000,Math.floor(96*1024*1024/(env.stateKey(env.initialState()).length*2+4096))));
@@ -105,10 +99,9 @@ function emitRoutes(){
             skip=data.skip??0;
             running=true;
             advance();
-        }     else if(data.type==='pause')running=false;
-        else if(data.type==='foreground'){background=false;deadline=Infinity;}
+        }     else if(data.type==='foreground'){background=false;}
         else if(data.type==='continue'&&!routes){
-            background=false;deadline=Infinity;
+            background=false;
             allowance+=increment;
             running=true;
             advance();

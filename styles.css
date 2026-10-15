@@ -931,3 +931,35 @@ body.site-app{padding:22px}
 .site-app #pane-editor .editor-mode-tabs>button,.site-app #pane-editor .layer-fill-actions>button{padding-top:8px;padding-bottom:8px}
 .site-app #pane-editor .library-section{margin-top:16px}
 @media(max-width:350px){.site-app #pane-editor .dimension-fields{gap:4px}.site-app #pane-editor .dimension-fields label{font-size:12px;gap:3px}.site-app #pane-editor .dimension-fields input{width:28px;padding:5px 0}.site-app #pane-editor .dimension-fields button{padding:7px 8px}}
+
+/* 面板内容宽度固定；滑条叠放在右缘，不挤动卡片与工具。 */
+.panel-viewport{position:relative;min-height:0;flex:1;overflow:hidden}
+.site-app .panel-scroll{box-sizing:border-box;width:100%;height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.site-app .panel-scroll::-webkit-scrollbar{display:none}
+.panel-scrollbar{position:absolute;top:5px;bottom:5px;right:3px;width:7px;z-index:5;touch-action:none;border-radius:8px;cursor:pointer}
+.panel-scroll-thumb{width:5px;margin-inline:auto;border-radius:8px;background:var(--text-color);opacity:.25;transition:opacity .14s}
+.panel-scrollbar:hover .panel-scroll-thumb,.panel-scrollbar:focus-visible .panel-scroll-thumb{opacity:.55}
+.site-app .column-tabs{flex:0 1 auto;gap:2px}
+.site-app .column-tab{flex:none;padding:8px 7px}
+.site-app .nav-icons{margin-left:auto}
+.site-app .status-bar{column-gap:20px;row-gap:8px;align-items:center;font-size:13px;margin-bottom:16px;line-height:1.7}
+.site-app .status-bar>span{white-space:nowrap}
+.site-app .play-menus{gap:10px}
+.site-app .play-menus>button{border-radius:5px}
+.site-app .checkpoint-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+.site-app .checkpoint-card{min-width:0;padding:0}
+.site-app .checkpoint-card .card-preview{max-width:none;border-radius:0}
+.site-app .checkpoint-card h3{margin:0 0 8px;font-size:14px}
+.site-app .checkpoint-save{width:100%;font-size:12px;padding:8px 5px}
+.site-app #solver-status{font-size:14px;line-height:1.7;margin:0 0 12px}
+.site-app .solver-routes{display:flex;flex-direction:column;gap:9px}
+.site-app .solver-routes .solution-link{display:flex;align-items:center;gap:11px;padding:10px 12px;color:var(--text-color);text-decoration:none;border:1px solid var(--border-color);border-radius:6px;background:color-mix(in srgb,var(--primary-color) 3%,var(--container-bg));font-size:14px;transition:background .14s,border-color .14s}
+.site-app .solver-routes .solution-link:hover{border-color:var(--primary-color);background:color-mix(in srgb,var(--primary-color) 8%,var(--container-bg))}
+.solution-mark{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;color:var(--primary-color);background:color-mix(in srgb,var(--primary-color) 12%,var(--container-bg));font-size:10px;flex-shrink:0}
+.solution-arrow{margin-left:auto;opacity:.5;font-size:18px}
+.site-app .help-dialog[open]{width:calc(100vw - 2*var(--page-inset,22px));max-width:calc(100vw - 2*var(--page-inset,22px));box-sizing:border-box}
+@media(max-width:768px){.site-app .column-tab{padding:8px 5px}.site-app .checkpoint-list{gap:12px}.site-app .status-bar{column-gap:16px}}
+@media(max-width:350px){.site-app .column-tab{padding:8px 4px}.site-app .status-bar{font-size:12px;column-gap:12px}.site-app .checkpoint-list{gap:10px}}
+
+.site-app .column-tab[aria-selected=false]:hover{background:var(--disabled-color)}
+@media(hover:none){.site-app .column-tab[aria-selected=false]:hover{background:transparent}}

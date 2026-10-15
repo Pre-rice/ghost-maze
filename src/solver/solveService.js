@@ -19,33 +19,24 @@ export class SolveService {
     activate(){if(!this.job)return;if(this.job.status==='unknown'||this.job.status==='error')this.continue();else if(this.job.status==='searching'&&this.job.background){this.job.background=false;this.worker?.postMessage({type:'foreground'});}this.render();}
     continue(){if(!this.job)return;this.job.status='searching';this.job.background=false;if(this.worker)this.worker.postMessage({type:'continue'});else this.startWorker(false,this.job.codes.length);this.render();}
     more(){if(!this.job)return;if(this.worker)this.worker.postMessage({type:'more'});else this.startWorker(false,this.job.codes.length);}
-    pauseBackground(){if(this.job?.background&&this.job.status==='searching'){this.worker?.postMessage({type:'pause'});this.job.status='unknown';this.render();}}
     receive(data){
         const j=this.job;if(!j)return;
         if(data.type==='proved'){j.steps=data.steps;}
         else if(data.type==='solved'){j.status='ready';j.steps=data.steps??j.steps;j.count=data.count;}
         else if(data.type==='routes'){j.codes.push(...data.codes);j.complete=!!data.complete||(j.count!==null&&BigInt(j.codes.length)===BigInt(j.count));if(j.complete){this.cache.set(j.mapCode,{steps:j.steps,count:j.count,codes:j.codes.slice(),complete:true});while(this.cache.size>16)this.cache.delete(this.cache.keys().next().value);safeSet(KEY,JSON.stringify([...this.cache]));this.worker?.terminate();this.worker=null;}}
-        else if(data.type==='unknown'){j.status='unknown';}
+        else if(data.type==='unknown'){this.continue();return;}
         else if(data.type==='unsat'){j.status='unsat';this.worker?.terminate();this.worker=null;}
         else if(data.type==='error'){j.status='error';j.error=data.message;}
         this.render();
     }
-    mount(container){
-        if(container.id==='solve-pane'){
-            if(!container.querySelector('.solver-scope')){const tip=document.createElement('p');tip.className='solver-scope';tip.textContent='从地图初态出发，无伤、无复活。';container.prepend(tip);}
-        }else if(!container.querySelector('[data-solver-status]')){
-            container.innerHTML='<p class="solver-scope">从地图初态出发，无伤、无复活。</p><p data-solver-status role="status"></p><div data-solver-routes class="solver-routes"></div><div class="button-row"><button data-solver-continue class="secondary" hidden>继续求解</button><button data-solver-more class="secondary" hidden>继续显示</button></div>';
-            container.querySelector('[data-solver-continue]').onclick=()=>this.continue();container.querySelector('[data-solver-more]').onclick=()=>this.more();
-        }
-        this.views.add(container);this.render();
-    }
+    mount(container){this.views.add(container);this.render();}
     render(){
         const j=this.job;
         for(const container of this.views){
             const status=container.querySelector('[data-solver-status],#solver-status'),list=container.querySelector('[data-solver-routes],#solver-routes'),cont=container.querySelector('[data-solver-continue],#solver-continue-btn'),more=container.querySelector('[data-solver-more],#solver-more-btn');if(!status)continue;
-            status.textContent=!j?'尚未求解':j.status==='ready'?`最优解 ${j.steps} 步，共 ${j.count} 种`:j.status==='unsat'?'无伤、无复活条件下无解':j.status==='unknown'?j.steps===null?'求解已暂停，可继续':`最优解 ${j.steps} 步，正在整理不同解法，可继续`:j.status==='error'?j.error:j.steps===null?'正在求解…':`最优解 ${j.steps} 步，正在整理不同解法…`;
-            cont.hidden=!j||!['unknown','error'].includes(j.status);more.hidden=!j||j.status!=='ready'||j.complete;
-            list.replaceChildren();if(j)j.codes.forEach((code,index)=>{const a=document.createElement('a');a.textContent='查看解法 '+(index+1);a.href=routeURL({map:j.mapCode,replay:code});a.onclick=e=>{e.preventDefault();this.app.openSolution(j.mapCode,code);};list.append(a);});
+            status.textContent=!j?'尚未求解':j.status==='ready'?`最优解 ${j.steps} 步，共 ${j.count} 种`:j.status==='unsat'?'无伤、无复活条件下无解':j.status==='error'?j.error:j.steps===null?'正在求解…':`最优解 ${j.steps} 步，正在整理不同解法…`;
+            cont.hidden=!j||j.status!=='error';more.hidden=!j||j.status!=='ready'||j.complete;
+            list.replaceChildren();if(j)j.codes.forEach((code,index)=>{const a=document.createElement('a');a.className='solution-link';const mark=document.createElement('span');mark.className='solution-mark';mark.textContent='▶';mark.setAttribute('aria-hidden','true');const label=document.createElement('span');label.textContent='查看解法 '+(index+1);const arrow=document.createElement('span');arrow.className='solution-arrow';arrow.textContent='→';arrow.setAttribute('aria-hidden','true');a.append(mark,label,arrow);a.href=routeURL({map:j.mapCode,replay:code});a.onclick=e=>{e.preventDefault();this.app.openSolution(j.mapCode,code);};list.append(a);});
         }
     }
 }

@@ -8,16 +8,15 @@ export class CardViews {
         this.observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){this.observer.unobserve(e.target);this.queue.push(e.target);this.run();}},{root:document.getElementById('panel-scroll'),rootMargin:'150px'});
     }
     make(record,{checkpoint=false}={}){
-        const card=node('article',checkpoint?'checkpoint-card':'library-card');card.dataset.recordId=record.id||'';
-        if(checkpoint)card.append(node('h3','',`第 ${record.step} 步`));
+        const card=node('article',checkpoint?'library-card checkpoint-card':'library-card');card.dataset.recordId=record.id||'';
         const preview=node('button','card-preview');preview.type='button';preview.title='加载';preview.setAttribute('aria-label',record.title?'游玩 '+record.title:checkpoint?'加载第 '+record.step+' 步存档':'加载'+(record.kind==='draft'?'草稿':'本地存档'));
         const canvas=document.createElement('canvas');canvas.width=canvas.height=280;preview.append(canvas);const overlay=node('span','preview-enter');overlay.innerHTML=enter;preview.append(overlay);
         preview.onclick=()=>this.app.loadURL(record.url);card.append(preview);
-        const info=node('div','card-info');if(record.title)info.append(node('h3','',record.title));
+        const info=node('div','card-info');if(checkpoint)info.append(node('h3','',`第 ${record.step} 步`));if(record.title)info.append(node('h3','',record.title));
         const meta=node('p','card-meta',record.cells!==undefined?`${record.cells} 格 · ${record.ghosts} 只鬼`:record.kind==='save'&&record.step!==undefined?`第 ${record.step} 步`:'正在加载…');
-        if(!checkpoint)info.append(meta);if(record.time&&!checkpoint)info.append(node('time','card-time',formatSavedTime(record.time)));if(!checkpoint)card.append(info);
+        if(!checkpoint)info.append(meta);if(record.time&&!checkpoint)info.append(node('time','card-time',formatSavedTime(record.time)));card.append(info);
         if(record.local||checkpoint){const remove=node('button','delete-record');remove.type='button';remove.title=remove.ariaLabel=checkpoint?'删除临时存档':'删除'+(record.kind==='draft'?'草稿':'本地存档');remove.innerHTML=bin;remove.onclick=e=>{e.stopPropagation();try{if(checkpoint){const c=this.app.game.controller;c.checkpoints=c.checkpoints.filter(p=>p.code!==record.code);this.app.renderPoints();}else this.app.library.remove(record.id);this.app.notify('已删除');}catch(error){this.app.notify(error.message,'error');}};card.append(remove);}
-        if(checkpoint){const row=node('div','button-row');const load=node('button','', '加载该存档'),save=node('button','secondary','保存到本地');load.onclick=()=>this.app.loadURL(record.url);save.onclick=()=>this.app.saveLocal('save',record.url);row.append(load,save);card.append(row);}
+        if(checkpoint){const save=node('button','secondary checkpoint-save','保存到本地');save.onclick=()=>this.app.saveLocal('save',record.url);info.append(save);}
         preview.record=record;preview.metaElement=meta;this.observer.observe(preview);
         return card;
     }

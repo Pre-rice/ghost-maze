@@ -34,7 +34,7 @@ export class EditorApp {
         on('editor-clear-entities',()=>this.apply(()=>{this.editorDoc.clearWalls();this.editorDoc.clearEntities();}));
         on('editor-clear',()=>this.apply(()=>{this.editorDoc.clearWalls();this.editorDoc.clearAllGrids();}));
         on('editor-fill',()=>this.fillLayer());
-        on('editor-save-draft',()=>this.app.saveDraft());on('solve-edited-map-btn',()=>this.app.solveEditor());
+        on('editor-save-draft',()=>this.app.saveDraft());on('editor-save-map',()=>this.app.saveEditorMap());
         for(const type of ['pointerdown','pointermove','pointerup','pointercancel'])this.canvas.addEventListener(type,e=>this.pointer(e));
         this.canvas.addEventListener('lostpointercapture',e=>{if(this.gesture&&this.gesture.pointerId===e.pointerId)this.cancelGesture();});
         this.canvas.addEventListener('pointerleave',e=>{if(!this.gesture){if(e.pointerType!=='touch')this.properties.closeSoon();this.hover=null;if(this.visible)this.draw();}});
@@ -71,6 +71,7 @@ export class EditorApp {
         document.getElementById('tool-stair').hidden=d.layerCount===1;
         document.querySelectorAll('[data-editor-tool]').forEach(b=>{b.classList.toggle('active',b.dataset.editorTool===this.tool);b.setAttribute('aria-pressed',String(b.dataset.editorTool===this.tool));});
         for(const mode of ['death-loop','exploration'])document.getElementById('editor-mode-'+mode+'-btn').setAttribute('aria-pressed',String(d.gameMode===mode));
+        document.getElementById('editor-save-map').disabled=!this.app.mapCode||this.app.draftVisible;
         document.getElementById('editor-undo').disabled=!this.workspace.undoStack.length;document.getElementById('editor-redo').disabled=!this.workspace.redoStack.length;
         if(this.visible){this.app.renderLayers();this.draw();}
     }

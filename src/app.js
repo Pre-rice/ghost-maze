@@ -3,6 +3,7 @@ import { safeGet,safeSet } from './storage.js';
 import { aiMaps } from './maps/ai-gallery.js';
 import { LocalLibrary,readRoute,routeURL } from './site/localLibrary.js';
 import { CardViews } from './site/cards.js';
+import { PanelScroll } from './site/panelScroll.js';
 
 const AUTO='ghostmaze-editor-draft-v3';
 const byId=id=>document.getElementById(id);
@@ -11,7 +12,7 @@ export class Application {
     constructor(){
         this.view='maps';this.playPanel=null;this.scrolls={};this.loadToken=0;this.hasLoadedMap=false;this.recoverAllowed=!location.search;this.replaySource='current';this.replayDirty=true;
         this.library=new LocalLibrary();this.cards=new CardViews(this);this.mapCode=null;this.draftVisible=false;window.app=this;
-        initThemeManager();this.bind();this.renderLibraries();performance.mark('ghostmaze-shell-ready');try{const route=readRoute(location.href);this.showColumn(route.draft?'editor':route.replay?'replay':route.map?'play':'maps');}catch{}this.boot();
+        initThemeManager();this.bind();this.panelScroll=new PanelScroll();this.renderLibraries();performance.mark('ghostmaze-shell-ready');try{const route=readRoute(location.href);this.showColumn(route.draft?'editor':route.replay?'replay':route.map?'play':'maps');}catch{}this.boot();
     }
     get dialogOpen(){return !!document.querySelector('dialog[open]');}
     notify(message,type='info'){const el=byId('toast-notification');clearTimeout(this.toastTimer);el.textContent=message;el.className='toast show '+(type==='info'?'':type);this.toastTimer=setTimeout(()=>el.classList.remove('show'),3500);}
@@ -26,14 +27,14 @@ export class Application {
         byId('new-map-form').onsubmit=async e=>{e.preventDefault();const size=Number(byId('new-map-size').value),health=Number(byId('new-map-health').value);if(!Number.isInteger(size)||size<8||size>20||!Number.isInteger(health)||health<1||health>0xffffffff)return;await this.ensureRuntime();const {generateFullMaze}=await import('./core/mazeGenerator.js');const {DEFAULT_GHOST_COUNT}=await import('./core/constants.js');const map={...generateFullMaze(size,size,DEFAULT_GHOST_COUNT),gameMode:'exploration',initialHealth:health};if(await this.loadMap(map)){byId('new-map-dialog').close();}};
         byId('load-link-btn').onclick=()=>{const raw=byId('load-link-input').value.trim();if(!raw)return;this.loadURL(/^[A-Za-z0-9_-]+$/.test(raw)?routeURL({map:raw}):raw);};
         byId('load-link-input').addEventListener('keydown',e=>{if(e.key==='Enter')byId('load-link-btn').click();});
-        for(const [id,panel] of [['save-menu-btn','save'],['solve-map-btn','solve']])for(const event of ['mouseenter','focus','click'])byId(id).addEventListener(event,()=>this.openPlayPanel(panel));
+        for(const [id,panel] of [['save-menu-btn','save'],['solve-map-btn','solve']])byId(id).addEventListener('click',()=>this.openPlayPanel(panel));
         byId('save-btn').onclick=()=>{const result=this.game.controller.save();if(result.ok){this.renderPoints();this.notify('已在第 '+result.step+' 步建立存档点');}else this.notify(result.error,'error');};
         byId('save-map-local').onclick=()=>this.saveLocal('map',routeURL({map:this.mapCode}));
         byId('solver-continue-btn').onclick=()=>this.solver?.continue();byId('solver-more-btn').onclick=()=>this.solver?.more();
         this.library.subscribe(()=>this.renderLibraries());
         for(const [id,key] of [['local-section','locals'],['premium-section','premium'],['draft-section','drafts']]){const value=safeGet('ghostmaze-fold-'+key);if(id==='premium-section')byId(id).open=false;else if(value!==null)byId(id).open=value==='open';byId(id).addEventListener('toggle',()=>safeSet('ghostmaze-fold-'+key,byId(id).open?'open':'closed'));}
         window.addEventListener('keydown',e=>this.key(e));window.addEventListener('popstate',()=>this.loadURL(location.href,{replace:true}));
-        document.addEventListener('visibilitychange',()=>{if(document.hidden){this.game?.pauseReplay();this.game?.stopAutoMove();this.solver?.pauseBackground();}});
+        document.addEventListener('visibilitychange',()=>{if(document.hidden){this.game?.pauseReplay();this.game?.stopAutoMove();}});
         new ResizeObserver(()=>this.game?.resize()).observe(document.querySelector('.canvas-host'));
     }
     async boot(){
@@ -136,7 +137,7 @@ export class Application {
         clearTimeout(this.editorSolveTimer);this.solver?.invalidate();if(result.success)this.editorSolveTimer=setTimeout(()=>this.getSolver().then(s=>s.prepare(editor.editorDoc.toMapData(),result.code,true)),650);
     }
     gameChanged(){
-        this.setURL({map:this.mapCode});this.solutionOrigin=null;this.replaySource='current';this.replayDirty=true;this.solver?.pauseBackground();this.game.sync();
+        this.setURL({map:this.mapCode});this.solutionOrigin=null;this.replaySource='current';this.replayDirty=true;this.game.sync();
     }
     refreshCurrentReplay(){
         const c=this.game.controller,actions=c.replayActions,signature=this.mapCode+':'+actions.join(',');
@@ -151,9 +152,9 @@ export class Application {
         byId('save-menu-btn').setAttribute('aria-expanded',String(this.playPanel==='save'));byId('solve-map-btn').setAttribute('aria-expanded',String(this.playPanel==='solve'));
         for(const [id,panel] of [['save-menu-btn','save'],['solve-map-btn','solve']])byId(id).setAttribute('aria-pressed',String(this.playPanel===panel));
     }
-    async solveEditor(){
-        const code=this.editor.code();if(!code.success){this.notify('草稿尚未完成：'+code.error,'error');return;}
-        const solver=await this.getSolver();solver.prepare(this.editor.editorDoc.toMapData(),code.code,false);byId('editor-solve-results').hidden=false;solver.mount(byId('editor-solve-results'));solver.activate();
+    saveEditorMap(){
+        const code=this.editor.code();if(!code.success){this.notify('地图尚未完成：'+code.error,'error');return;}
+        this.saveLocal('map',routeURL({map:code.code}));
     }
     async openSolution(mapCode,code){
         const parsed=this.runtime.DataSerializer.loadFromShareCode(mapCode),decoded=parsed.success&&this.runtime.ReplaySerializer.loadFromShareCode(parsed.data.mapData,code);
@@ -164,7 +165,7 @@ export class Application {
     returnFromSolution(){
         const origin=this.solutionOrigin;if(!origin)return;this.game.pauseReplay();history.replaceState({},'',origin.url);this.showColumn(origin.view);
         if(origin.view==='play'){this.playPanel='solve';this.syncPlayPanel();this.solver?.mount(byId('solve-pane'));}
-        else {byId('editor-solve-results').hidden=false;this.solver?.mount(byId('editor-solve-results'));}
+
     }
     async loadReplayStep(){
         const r=this.game.replay;if(!r)return;this.game.pauseReplay();const actions=r.history.actions.slice(0,r.currentStep),encoded=this.runtime.ReplaySerializer.generateShareCode(r.mapData,actions);
