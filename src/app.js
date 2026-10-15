@@ -16,7 +16,6 @@ export class Application {
     }
     get dialogOpen(){return !!document.querySelector('dialog[open]');}
     notify(message,type='info'){const el=byId('toast-notification');clearTimeout(this.toastTimer);el.textContent=message;el.className='toast show '+(type==='info'?'':type);this.toastTimer=setTimeout(()=>el.classList.remove('show'),3500);}
-    confirm(message,fn){const dialog=byId('confirm-dialog');byId('confirm-message').textContent=message;byId('confirm-yes-btn').onclick=()=>{dialog.close();fn();};byId('confirm-no-btn').onclick=()=>dialog.close();this.game?.stopAutoMove();dialog.showModal();}
     bind(){
         document.querySelectorAll('[data-column]').forEach(b=>b.onclick=()=>this.switchColumn(b.dataset.column));
         document.querySelectorAll('[data-close-dialog]').forEach(b=>b.onclick=()=>byId(b.dataset.closeDialog).close());
@@ -24,7 +23,8 @@ export class Application {
         byId('help-btn').onclick=async()=>{this.game?.stopAutoMove();this.game?.pauseReplay();byId('help-dialog').showModal();this.game?.updateDpadVisibility();try{const m=await this.helpModule();byId('help-body').innerHTML=m.helpContent;}catch{byId('help-body').textContent='帮助加载失败，请关闭后重试。';}};
         byId('theme-toggle').addEventListener('click',()=>requestAnimationFrame(()=>{this.game?.resize();if(this.view==='editor'||this.draftVisible)this.editor?.draw();this.cards.refreshVisible();}));
         byId('generate-map-btn').onclick=()=>{this.game?.stopAutoMove();byId('new-map-dialog').showModal();byId('new-map-health').focus();this.game?.updateDpadVisibility();};
-        byId('new-map-form').onsubmit=async e=>{e.preventDefault();const size=Number(byId('new-map-size').value),health=Number(byId('new-map-health').value);if(!Number.isInteger(size)||size<8||size>20||!Number.isInteger(health)||health<1||health>0xffffffff)return;await this.ensureRuntime();const {generateFullMaze}=await import('./core/mazeGenerator.js');const {DEFAULT_GHOST_COUNT}=await import('./core/constants.js');const map={...generateFullMaze(size,size,DEFAULT_GHOST_COUNT),gameMode:'exploration',initialHealth:health};if(await this.loadMap(map)){byId('new-map-dialog').close();}};
+        byId('new-map-form').onsubmit=e=>{e.preventDefault();this.generateMap();};
+        byId('new-map-dialog').addEventListener('close',()=>this.generationAbort?.abort());
         byId('load-link-btn').onclick=()=>{const raw=byId('load-link-input').value.trim();if(!raw)return;this.loadURL(/^[A-Za-z0-9_-]+$/.test(raw)?routeURL({map:raw}):raw);};
         byId('load-link-input').addEventListener('keydown',e=>{if(e.key==='Enter')byId('load-link-btn').click();});
         for(const [id,panel] of [['save-menu-btn','save'],['solve-map-btn','solve']])byId(id).addEventListener('click',()=>this.openPlayPanel(panel));
@@ -36,6 +36,19 @@ export class Application {
         window.addEventListener('keydown',e=>this.key(e));window.addEventListener('popstate',()=>this.loadURL(location.href,{replace:true}));
         document.addEventListener('visibilitychange',()=>{if(document.hidden){this.game?.pauseReplay();this.game?.stopAutoMove();}});
         new ResizeObserver(()=>this.game?.resize()).observe(document.querySelector('.canvas-host'));
+    }
+    async generateMap(){
+        if(this.generationAbort)return;
+        const size=Number(byId('new-map-size').value),health=Number(byId('new-map-health').value);
+        if(!Number.isInteger(size)||size<8||size>20||!Number.isInteger(health)||health<1||health>0xffffffff)return;
+        const abort=new AbortController(),button=byId('new-map-form').querySelector('[type=submit]');
+        this.generationAbort=abort;button.disabled=true;button.textContent='正在生成…';byId('new-map-form').setAttribute('aria-busy','true');
+        try{
+            const {generateRandomMap}=await import('./site/randomMap.js');
+            const code=await generateRandomMap(size,health,{signal:abort.signal});
+            if(!abort.signal.aborted&&await this.loadURL(routeURL({map:code})))byId('new-map-dialog').close();
+        }catch(error){if(error.name!=='AbortError')this.notify(error.message,'error');}
+        finally{if(this.generationAbort===abort){this.generationAbort=null;button.disabled=false;button.textContent='生成';byId('new-map-form').removeAttribute('aria-busy');}}
     }
     async boot(){
         let route;try{route=readRoute(location.href);}catch(error){this.notify(error.message,'error');}
@@ -108,9 +121,9 @@ export class Application {
         const bar=byId('layer-panel'),editing=this.view==='editor'||this.draftVisible,doc=editing?this.editor?.editorDoc:null,a=this.game?.activeController,count=doc?.layerCount||a?.mapDefinition?.layerCount||1,current=doc?.currentLayer??a?.viewLayer??0;
         bar.hidden=count===1;bar.replaceChildren();if(count===1)return;
         const playerLayer=doc?doc.playerLayer:a?.currentGameState?.player.layer,hasStart=!doc||doc.hasStartPoint();
-        if(doc){const minus=document.createElement('button');minus.id='layer-remove-btn';minus.className='secondary layer-step';minus.textContent='−';minus.title=minus.ariaLabel='删除顶层';minus.onclick=()=>this.editor.removeLayer();bar.append(minus);}
+        if(doc){const minus=document.createElement('button');minus.id='layer-remove-btn';minus.className='secondary layer-step';minus.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>';minus.title=minus.ariaLabel='删除顶层';minus.onclick=()=>this.editor.removeLayer();bar.append(minus);}
         for(let i=0;i<count;i++){const b=document.createElement('button');b.textContent=String(i+1);b.dataset.layer=i;b.className='layer-btn'+(i===current?' active':' secondary')+(hasStart&&i===playerLayer?' player-layer':'');b.setAttribute('aria-label','查看第'+(i+1)+'层');b.setAttribute('aria-current',String(i===current));b.onclick=()=>{if(doc)this.editor.switchToLayer(i);else this.game.switchToLayer(i);};bar.append(b);}
-        if(doc){const plus=document.createElement('button');plus.id='layer-add-btn';plus.className='secondary layer-step';plus.textContent='＋';plus.title=plus.ariaLabel='添加楼层';plus.disabled=count>=10;plus.onclick=()=>this.editor.addLayer();bar.append(plus);}
+        if(doc){const plus=document.createElement('button');plus.id='layer-add-btn';plus.className='secondary layer-step';plus.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>';plus.title=plus.ariaLabel='添加楼层';plus.disabled=count>=10;plus.onclick=()=>this.editor.addLayer();bar.append(plus);}
     }
     renderLibraries(){
         const locals=this.library.list('play').map(e=>({...e,local:true})),drafts=this.library.list('draft').map(e=>({...e,local:true}));

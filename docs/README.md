@@ -4,7 +4,7 @@
 
 ## 给人查阅
 
-- [多层显示与编辑布局修正](archive/delivery/editor-layout-fix-20261015.md)：范围外悬停错乱、纯数字楼层、等量留白与紧凑输入。
+- [多层显示与编辑布局修正](archive/delivery/editor-layout-fix-20261015.md)：含最新地图居中、楼层栏位置、单层边框、共享视野与后台随机生成验收。
 
 - [多层交互恢复](archive/delivery/multilayer-restoration-20261015.md)：最新底部数字楼层栏、原版切层／擦除与方向键手势验收。
 

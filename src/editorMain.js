@@ -30,7 +30,7 @@ export class EditorApp {
         on('editor-resize',()=>this.adapt());
         for(const id of ['editor-width','editor-height']){on(id,()=>this.resizeFrame(),'change');on(id,e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}},'keydown');}
         on('layer-mode-multi-btn',()=>{if(this.editorDoc.layerCount===1)this.addLayer();});
-        on('layer-mode-single-btn',()=>{if(this.editorDoc.layerCount>1)this.app.confirm('改为单层将保留第1层并移除其他层，可撤销。继续？',()=>this.apply(()=>{const m=this.editorDoc.toMapData();m.layers=m.layers.slice(0,1);m.layerCount=1;m.multiLayerMode=false;m.stairs=[];this.workspace.replace(m);}));});
+        on('layer-mode-single-btn',()=>{if(this.editorDoc.layerCount>1)this.apply(()=>{const m=this.editorDoc.toMapData();m.layers=m.layers.slice(0,1);m.layerCount=1;m.multiLayerMode=false;m.stairs=[];this.workspace.replace(m);});});
         on('editor-clear-entities',()=>this.apply(()=>{this.editorDoc.clearWalls();this.editorDoc.clearEntities();}));
         on('editor-clear',()=>this.apply(()=>{this.editorDoc.clearWalls();this.editorDoc.clearAllGrids();}));
         on('editor-fill',()=>this.fillLayer());
@@ -44,12 +44,11 @@ export class EditorApp {
     }
     addLayer(){this.apply(()=>{const m=this.editorDoc.toMapData();if(m.layers.length>=10)throw new Error('最多10层');const empty=()=>({type:0,keys:0});m.layers.push({hWalls:Array.from({length:m.height+1},()=>Array.from({length:m.width},empty)),vWalls:Array.from({length:m.height},()=>Array.from({length:m.width+1},empty)),activeCells:Array.from({length:m.height},(_,y)=>Array.from({length:m.width},(_,x)=>x>=this.workspace.frame.x&&x<this.workspace.frame.x+this.workspace.frame.width&&y>=this.workspace.frame.y&&y<this.workspace.frame.y+this.workspace.frame.height)),ghosts:[],items:[],buttons:[],customStartPos:null,endPos:null});m.layerCount=m.layers.length;m.multiLayerMode=true;this.workspace.replace(m);this.editorDoc.switchLayer(m.layerCount-1);});}
     resizeFrame(){
-        const w=Number(document.getElementById('editor-width').value),h=Number(document.getElementById('editor-height').value),loss=this.workspace.resizeLoss(w,h);
-        const resize=()=>this.apply(()=>this.workspace.resize(w,h),true);
-        if(loss.cells||loss.entities)this.app.confirm(`缩小范围将删除 ${loss.cells} 格和 ${loss.entities} 个元件，可撤销。继续？`,resize);else resize();
+        const w=Number(document.getElementById('editor-width').value),h=Number(document.getElementById('editor-height').value);
+        this.apply(()=>this.workspace.resize(w,h),true);
     }
     adapt(){this.properties.hide();this.apply(()=>{const map=this.editorDoc.toMapData(),b=mapBounds(map);this.workspace.replace(reshapeMap(map,Math.max(8,b.width),Math.max(8,b.height),-b.x,-b.y));this.workspace.frame={x:0,y:0,width:b.width,height:b.height};},true);}
-    removeLayer(){if(this.editorDoc.layerCount<=1)return;this.app.confirm('删除顶层及其相连楼梯，可撤销。继续？',()=>{this.properties.hide();this.apply(()=>{const m=this.editorDoc.toMapData(),layer=this.editorDoc.currentLayer;m.layers.pop();m.layerCount=m.layers.length;m.multiLayerMode=m.layerCount>1;m.stairs=m.stairs.filter(s=>s.layer<m.layerCount&&s.layer+(s.direction==='up'?1:-1)<m.layerCount);this.workspace.replace(m);this.editorDoc.switchLayer(Math.min(layer,m.layerCount-1));});});}
+    removeLayer(){if(this.editorDoc.layerCount<=1)return;this.properties.hide();this.apply(()=>{const m=this.editorDoc.toMapData(),layer=this.editorDoc.currentLayer;m.layers.pop();m.layerCount=m.layers.length;m.multiLayerMode=m.layerCount>1;m.stairs=m.stairs.filter(s=>s.layer<m.layerCount&&s.layer+(s.direction==='up'?1:-1)<m.layerCount);this.workspace.replace(m);this.editorDoc.switchLayer(Math.min(layer,m.layerCount-1));});}
     switchToLayer(index){if(index<0||index>=this.editorDoc.layerCount)return;this.cancelGesture();this.editorDoc.saveCurrentLayer();this.editorDoc.switchLayer(index);this.sync();}
     fillLayer(){this.properties.hide();this.apply(()=>{const d=this.editorDoc,f=this.workspace.frame;
         const wallFor=b=>b.direction.dx?{type:'v',x:b.x+(b.direction.dx===1?1:0),y:b.y}:{type:'h',x:b.x,y:b.y+(b.direction.dy===1?1:0)};

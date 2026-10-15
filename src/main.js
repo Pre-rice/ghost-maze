@@ -31,19 +31,24 @@ export class GhostMazeGame {
     generateShareCode(){return this.controller.mapData?this.mapCode?{success:true,code:this.mapCode}:DataSerializer.generateShareCode(this.controller.mapData):{success:false,error:'请先加载地图'};}
     clear(){this.stopAutoMove();this.pauseReplay();this.controller=this.makeController();this.mapCode=null;this.replay=null;this.sync();}
     get activeController(){return this.app.view==='replay'&&this.replay?this.replay:this.controller;}
-    getGameView(){const a=this.activeController;return computeGameView({mapDef:a.mapDefinition,gameState:a.currentGameState,viewLayer:a.viewLayer},{canvas:this.canvas,staticLayerCanvas:this.staticLayerCanvas,state:this.app.view==='replay'?GAME_STATES.REPLAY:this.state,cellSize:this.cellSize,colors:this.colors,drawOffset:this.drawOffset,debugVision:this.app.view==='replay'?this.replayVision:this.debugVision});}
+    getGameView(){const a=this.activeController;return computeGameView({mapDef:a.mapDefinition,gameState:a.currentGameState,viewLayer:a.viewLayer},{canvas:this.canvas,staticLayerCanvas:this.staticLayerCanvas,state:this.app.view==='replay'?GAME_STATES.REPLAY:this.state,cellSize:this.cellSize,colors:this.colors,drawOffset:this.drawOffset,debugVision:this.debugVision});}
     bind(){
         const on=(id,fn,event='click')=>document.getElementById(id).addEventListener(event,fn);
         on('undo-btn',()=>this.handleUndo());on('redo-btn',()=>this.handleRedo());on('reset-map-btn',()=>this.resetCurrentMap());
         on('revive-btn',()=>this.revivePlayer());
-        on('full-vision-toggle',e=>{this.debugVision=e.target.checked;this.draw();},'change');
+        on('full-vision-toggle',e=>this.setFullVision(e.target.checked),'change');
         on('dpad-toggle',()=>this.updateDpadVisibility(),'change');
-        on('replay-full-vision',e=>{this.replayVision=e.target.checked;this.draw();},'change');
+        on('replay-full-vision',e=>this.setFullVision(e.target.checked),'change');
         on('replay-play-btn',()=>this.replayPlaying?this.pauseReplay():this.playReplay());
         on('replay-prev-btn',()=>this.seekReplay(this.replay.currentStep-1));on('replay-next-btn',()=>this.seekReplay(this.replay.currentStep+1));
         on('replay-step-input',e=>this.seekReplay(Number(e.target.value)),'change');on('replay-step-range',e=>this.seekReplay(Number(e.target.value)),'input');
         on('replay-speed',e=>this.setSpeed(Number(e.target.value)),'change');
         on('replay-load-btn',()=>this.app.loadReplayStep());on('replay-return-btn',()=>this.app.returnFromSolution());
+    }
+    setFullVision(enabled){
+        this.debugVision=!!enabled;
+        for(const id of ['full-vision-toggle','replay-full-vision'])document.getElementById(id).checked=this.debugVision;
+        this.draw();
     }
     resize(){
         const r=this.canvas.getBoundingClientRect(),ratio=Math.min(2,devicePixelRatio||1);
@@ -104,12 +109,11 @@ export class GhostMazeGame {
     }
     switchToLayer(index){const a=this.activeController;if(!a.mapDefinition||index<0||index>=a.mapDefinition.layerCount)return;a.viewLayer=index;this.draw();this.app.renderLayers();}
     showToast(message,duration=2500,type='info'){this.app.notify(message,type);}
-    showConfirm(message,fn){this.app.confirm(message,fn);}
     startGame(map,code){return this.app.loadMap(map,code);}
     openReplay(mapData,actions,mapCode){
         this.pauseReplay();const def=new MapDefinition(mapData),history=new ActionHistory(def,actions);
         this.replay={mapData,mapDefinition:def,history,mapCode,currentStep:0,currentGameState:history.stateAt(0),viewLayer:def.playerStart.layer};
-        this.replayVision=true;document.getElementById('replay-full-vision').checked=true;this.syncReplay();
+        this.syncReplay();
     }
     async seekReplay(step,pause=true){
         if(!this.replay)return;
