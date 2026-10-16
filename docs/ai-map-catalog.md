@@ -1,5 +1,19 @@
 # AI 地图总目录
 
+## 2026-10-16 新候选：《送客》
+
+单层19格、双鬼，A/B各一个按钮，三扇字母门；无钥匙、数字门、普通门、单向门、玻璃或楼梯。最优38步、唯一解；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**未获真人评价，未入地图集；现行十五图保持。**
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcHGK4C86AswKggBUAAQCAXALgHAKgACIFIFUCqBECIFUAQgw) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/see-off-20261016)
+
+<details><summary>预期关键与参考（含答案）</summary>
+
+先安排上鬼的追逐距离，开B把两鬼引离终点入口，再回到安全的位置关B，让反相的终点门重开。先开B再引鬼、从过低处接近两鬼的两个实际安全前缀均无续解；五项原图关系分别禁止都无解。它是《回望》同家族的新改稿，原图、评价与地图集保持，不算独立家族。
+
+[38步参考回放](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcHGK4C86AswKggBUAAQCAXALgHAKgACIFIFUCqBECIFUAQgw&replay=EOP_xgv6APpV_qAPpVnQ)。删去重复按钮、可删门性质和旧取物任务；补齐两下角不改全部最优动作及鬼轨迹。机器证据不代表人的顿悟。
+
+</details>
+
 ## 2026-10-16 《回望》按原版入集
 
 单层16格、双鬼，A/B各一个按钮、两A门一B门及一0门，无钥匙。最优50步、四种逐步鬼轨迹。全部最优无重合、去终点安全，指定实际入场及2780次排列／变编号后继通过。**用户评价“不错的地图，加入地图集”。** 按交付原码追加第十五，原十四图及顺序不变；双0门研究改稿不替换、不继承好评。
