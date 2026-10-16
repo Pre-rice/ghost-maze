@@ -1,6 +1,6 @@
 # 地图集设计小册
 
-更新：2026-10-16。这里按首次交付／发现记录的顺序，简要总结目前上架的十四张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
+更新：2026-10-16。这里按首次交付／发现记录的顺序，简要总结目前上架的十五张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
 
 “关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《周转》《同行》的新评述及五图优化见[本轮记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-adjustments-20261014.md)。
 
@@ -26,6 +26,7 @@
 | 12 | [《周转》](#12-周转) | 2026-10-14 | 15 / 2 / 0 | A/B字母门、普通门；用户优化版 |
 | 13 | [《同行》](#13-同行) | 2026-10-14 | 19 / 3 / 0 | A/B字母门、普通门、单向门；追者互相占位 |
 | 14 | [《换席》](#14-换席) | 2026-10-16 | 16 / 2 / 1 | 单A按钮、两反相A门、普通门、钥匙门；用户增强版 |
+| 15 | [《回望》](#15-回望) | 2026-10-16 | 16 / 2 / 0 | A/B字母门、0门；先准备未来引鬼通道 |
 
 ## 1. 错位
 
@@ -186,6 +187,18 @@
 **验收：** 用户原码保持，最优44步、三种最优解，全部无鬼重合且去终点安全；指定实际入场保持。核对的第27步局面中，按A安全却已无无伤续解，继续绕行可解；上A门右侧的新停位对全部无伤解必要。
 
 [试玩](https://ghostmaze.novic.cc/?map=AWM4wMBQAAKKnxu-OlgxVjAwcDUAhVi4DQQYGFgc5jQmMk1QYmpgEHAAAA) · [参考解法](https://ghostmaze.novic.cc/?map=AWM4wMBQAAKKnxu-OlgxVjAwcDUAhVi4DQQYGFgc5jQmMk1QYmpgEHAAAA&replay=AIK7sy_nfArWUA9WYMOVeQ)
+
+## 15. 回望
+
+**设计思想：** 眼前可以关A困鬼，但之后还要借上方通道改变鬼的停位。0门无需钥匙，并不意味着任何时候开都一样；开门本身也会占用鬼追逐的一步。
+
+**关键发现：** 先打开未来引鬼要用的0门，再完成眼前的保护。晚开门当步仍能存活，却已经失去从较远处启动追逐、把鬼停在上方的条件。这是设计者提出的预期认识；用户尚未具体说明自己的顿悟或路线。
+
+**你的简评：** “不错的地图，加入地图集”。按交付原码加入，不把本次好评转移给母图或正在研究的双0门改稿；无用时、完整路线或提示条件记录。
+
+**验收：** 16格双鬼、最优50步、四种最优解，全部无鬼重合且去终点安全；指定实际入场及编号无关通过。0早于首次关A对全部无伤无复活通关必要，先困鬼和晚开0的安全局面均无续解。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcAHrgPugOYLAgBUAyBAIBcAuAkAAAEQLiBVAqgRApAAAAIQI) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcAHrgPugOYLAgBUAyBAIBcAuAkAAAEQLiBVAqgRApAAAAIQI&replay=EJCN-XPoA9V6APpV_iA8mV9g)
 
 ## 怎样继续使用这份小册
 

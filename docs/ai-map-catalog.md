@@ -1,8 +1,8 @@
 # AI 地图总目录
 
-## 2026-10-16 新候选：《回望》
+## 2026-10-16 《回望》按原版入集
 
-单层16格、双鬼，A/B各一个按钮、两A门一B门及一0门，无钥匙。最优50步、四种逐步鬼轨迹。全部最优无重合、去终点安全，指定实际入场及2780次排列／变编号后继通过。**未获真人评价，未入地图集。** 当前地图集仍为十四图。
+单层16格、双鬼，A/B各一个按钮、两A门一B门及一0门，无钥匙。最优50步、四种逐步鬼轨迹。全部最优无重合、去终点安全，指定实际入场及2780次排列／变编号后继通过。**用户评价“不错的地图，加入地图集”。** 按交付原码追加第十五，原十四图及顺序不变；双0门研究改稿不替换、不继承好评。
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcAHrgPugOYLAgBUAyBAIBcAuAkAAAEQLiBVAqgRApAAAAIQI) · [设计与证据](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/prepared-sightline-20261016)
 
@@ -82,7 +82,7 @@
 | 再借 | [试玩](https://ghostmaze.novic.cc/?map=AADAAHhobHh4AAFR4DAyACAABVAQCQJAAqgAAAAQglQMVyFOQBAAAAAI) | [回放](https://ghostmaze.novic.cc/?map=AADAAHhobHh4AAFR4DAyACAABVAQCQJAAqgAAAAQglQMVyFOQBAAAAAI&replay=CIxe4NrJ3erAnDNc) | 改得很好；保留核心的大胆简化是好示范 |
 
 
-[地图集设计小册](map-design-guide.md)简要解释当前十四图的设计思想与尤里卡时刻；[文档索引](README.md)区分现行约定和历史档案。本目录仍统一保存所有历史地图、参考与真实简评，按需查证。公开源码与反馈摘要使用GitHub入口；runs及私人录制链接只用于已恢复资料的本地资料库，不代表公开下载。
+[地图集设计小册](map-design-guide.md)简要解释当前十五图的设计思想与尤里卡时刻；[文档索引](README.md)区分现行约定和历史档案。本目录仍统一保存所有历史地图、参考与真实简评，按需查证。公开源码与反馈摘要使用GitHub入口；runs及私人录制链接只用于已恢复资料的本地资料库，不代表公开下载。
 
 2026-10-14 本轮更新前地图集11张，按首次交付顺序：《错位》《接力》《归途》《借影》《回环》《回位》《换边》《换岗》《后路》《暂驻》《再借》。楼梯修正规则保持，原十一张单层图全部最优路线不变；《楼间》完成规则修补后按用户最新决定撤出；原图、修补版和先前入门评述留存。《留客》旧稿退役。下列2026-10-13／10-12段为历史快照。
 

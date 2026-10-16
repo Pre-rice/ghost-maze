@@ -111,5 +111,13 @@ export const aiMaps = [
         "cells": 16,
         "ghosts": 2,
         "keys": 1
+    },
+    {
+        "title": "回望",
+        "mapCode": "AADAAHBwUFBwcAHrgPugOYLAgBUAyBAIBcAuAkAAAEQLiBVAqgRApAAAAIQI",
+        "replayCode": "EJCN-XPoA9V6APpV_iA8mV9g",
+        "cells": 16,
+        "ghosts": 2,
+        "keys": 0
     }
 ];
