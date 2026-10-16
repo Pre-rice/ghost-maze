@@ -1,5 +1,19 @@
 # AI 地图总目录
 
+## 2026-10-16 新候选：《换席》
+
+16格、双鬼，一个A按钮、两扇反相A门和一扇普通门。最优30步，三种逐步鬼轨迹；未获真人评价，未入地图集，不继承亲缘图好评。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAABwcHBwcCHzgPUgF4AAAKgAAAcAQJAQAAAEQJyBYQKQIgKAAEA) · [设计说明与证据](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/seat-exchange-20261016)
+
+<details><summary>参考与预期关键（含答案）</summary>
+
+[30步回放](https://ghostmaze.novic.cc/?map=AADAAABwcHBwcCHzgPUgF4AAAKgAAAcAQJAQAAAEQJyBYQKQIgKAAEA&replay=EEqPAkznfArWUA9WUA)。先后把旧鬼留在普通门两侧，再带两鬼共同向上，借门态与优先阻挡重新分开；最优收尾由旧鬼反向挡新鬼。预期为共享庇护的跨阶段安排，是否带来顿悟尚待真人体验。禁止旧鬼取得优先仍有31步解，因此这次反向让路只对最优必要。
+
+全部最优无重合、去终点安全，指定实际入场及2300次排列／变编号后继一致。原草稿和失败记录独立保留，地图集十三图保持。
+
+</details>
+
 ## 2026-10-15 新候选：《换手》
 
 单层15格、两鬼，一个A和一个B按钮，两扇A门、一扇B门；无钥匙、普通门、玻璃或楼梯。最优38步，两种鬼轨迹最优解；全部最优无重合，指定实际入场及1910次排列／变编号后继核验通过。**未获真人评价，未入地图集。** [完整来源与证据](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/shift-handoff-20261015)。
