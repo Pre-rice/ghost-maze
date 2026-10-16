@@ -1,4 +1,5 @@
 import { GAME_STATES } from '../core/constants.js';
+import { deathPositionOf } from '../core/stepOutcome.js';
 
 /**
  * viewSlice - 视图快照（渲染/输入的唯一读取通道）
@@ -18,9 +19,10 @@ import { GAME_STATES } from '../core/constants.js';
 export function computeGameView({ mapDef, gameState, viewLayer }, renderParams) {
     const layerDef = mapDef.layers[viewLayer];
     const layerState = gameState.layerStates[viewLayer];
-    // 当步重生通常已由历史完成；无法继续的终止状态也显示在出生点。
-    const player = renderParams.state === GAME_STATES.REPLAY && gameState.isDead
-        ? { ...gameState.player, ...mapDef.playerStart, trail: [] } : gameState.player;
+    // 当步重生已由历史完成；游玩死亡提示和回放当步都显示在死亡位置。
+    const death = renderParams.state === GAME_STATES.DEAD || renderParams.state === GAME_STATES.REPLAY
+        ? deathPositionOf(gameState) : null;
+    const player = death ? { ...gameState.player, ...death } : gameState.player;
     return {
         // 宿主渲染参数（非数据源）
         canvas: renderParams.canvas,

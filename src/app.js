@@ -35,11 +35,10 @@ export class Application {
         byId('generate-map-btn').onclick=()=>{this.randomModule().then(m=>m.warmRandomGenerator()).catch(()=>{});this.game?.stopAutoMove();byId('new-map-dialog').showModal();byId('new-map-health').focus();this.game?.updateDpadVisibility();};
         byId('new-map-form').onsubmit=e=>{e.preventDefault();this.generateMap();};
         byId('new-map-dialog').addEventListener('close',()=>this.generationAbort?.abort());
-        byId('load-link-btn').onclick=()=>{const raw=byId('load-link-input').value.trim();if(!raw)return;this.loadURL(/^[A-Za-z0-9_-]+$/.test(raw)?routeURL({map:raw}):raw);};
-        byId('load-link-input').addEventListener('keydown',e=>{if(e.key==='Enter')byId('load-link-btn').click();});
         for(const [id,panel] of [['save-menu-btn','save'],['solve-map-btn','solve']])byId(id).addEventListener('click',()=>this.openPlayPanel(panel));
         byId('save-btn').onclick=()=>{const result=this.game.controller.save();if(result.ok){this.renderPoints();this.notify('已在第 '+result.step+' 步建立存档点');}else this.notify(result.error,'error');};
         byId('save-map-local').onclick=()=>this.saveLocal('map',routeURL({map:this.mapCode}));
+        byId('view-replay-btn').onclick=()=>this.switchColumn('replay');byId('view-solution-btn').onclick=()=>this.openPlayPanel('solve');
         byId('solver-continue-btn').onclick=()=>this.solver?.continue();byId('solver-more-btn').onclick=()=>this.solver?.more();
         this.library.subscribe(()=>this.renderLibraries());
         for(const [id,key] of [['local-section','locals'],['premium-section','premium'],['draft-section','drafts']]){const value=safeGet('ghostmaze-fold-'+key);if(id==='premium-section')byId(id).open=false;else if(value!==null)byId(id).open=value==='open';byId(id).addEventListener('toggle',()=>safeSet('ghostmaze-fold-'+key,byId(id).open?'open':'closed'));}

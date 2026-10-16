@@ -8,6 +8,8 @@
 
 - [站点UI／UX自检报告](archive/reviews/site-ui-ux-20261015.md)：精品全景预加载、视野稳定、手机区域调整及已批准方案的执行结果。
 
+- [死亡显示与栏目顺序](archive/delivery/death-display-and-column-order-20261016.md)：地图栏目顺序、死亡当步显示位置、死亡弹窗、通关入口与回放按钮文案的最新调整。
+
 - [多层显示与编辑布局修正](archive/delivery/editor-layout-fix-20261015.md)：含最新地图居中、楼层栏位置、单层边框、共享视野与后台随机生成验收。
 
 - [多层交互恢复](archive/delivery/multilayer-restoration-20261015.md)：此前底部数字楼层栏、原版切层／擦除与方向键手势验收。

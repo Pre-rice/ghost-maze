@@ -5,6 +5,7 @@ import { MapDefinition } from './core/mapDefinition.js';
 import { ActionHistory } from './core/actionHistory.js';
 import { ReplaySerializer } from './core/replaySerializer.js';
 import { computeGameView,pruneTrails } from './view/viewSlice.js';
+import { deathPositionOf } from './core/stepOutcome.js';
 import * as Renderer from './view/renderer.js';
 import { getColorsFromCSS } from './themeManager.js';
 import * as Input from './inputHandler.js';
@@ -35,7 +36,8 @@ export class GhostMazeGame {
     bind(){
         const on=(id,fn,event='click')=>document.getElementById(id).addEventListener(event,fn);
         on('undo-btn',()=>this.handleUndo());on('redo-btn',()=>this.handleRedo());on('reset-map-btn',()=>this.resetCurrentMap());
-        on('revive-btn',()=>this.revivePlayer());
+        on('revive-btn',()=>this.revivePlayer());on('restart-btn',()=>this.resetCurrentMap());
+        document.getElementById('death-dialog').addEventListener('cancel',event=>event.preventDefault());
         on('full-vision-toggle',e=>this.setFullVision(e.target.checked),'change');
         on('dpad-toggle',()=>this.updateDpadVisibility(),'change');
         on('replay-full-vision',e=>this.setFullVision(e.target.checked),'change');
@@ -78,12 +80,24 @@ export class GhostMazeGame {
         document.getElementById('dpad-control').hidden=!mobile||!s;
         document.getElementById('full-vision-control').hidden=!explore||!s;
         document.getElementById('view-options-controls').hidden=!s||(!mobile&&!explore);
-        const notice=document.getElementById('death-notice');notice.hidden=!s||(!c.pendingDeath&&!s.isDead);
-        document.getElementById('death-message').textContent=s?c._deathStats().message:'';
-        document.getElementById('revive-btn').disabled=!c.canRevive;
+        // 死亡当步画在死亡位置；多层的视野层跟着死亡位置，复活后由规则层重新接管。
+        const death=s&&deathPositionOf(s);
+        if(death&&(c.pendingDeath||s.isDead))c.viewLayer=death.layer;
+        const dead=!!s&&(c.pendingDeath||s.isDead)&&this.app.view==='play';
+        document.getElementById('death-message').textContent=dead?this.deathMessage():'';
+        document.getElementById('revive-btn').hidden=!dead||!c.canRevive;
+        document.getElementById('restart-btn').hidden=!dead||c.canRevive;
+        const dialog=document.getElementById('death-dialog');
+        if(dead&&!dialog.open){dialog.showModal();document.getElementById(c.canRevive?'revive-btn':'restart-btn').focus();}else if(!dead&&dialog.open)dialog.close();
         document.getElementById('win-notice').hidden=!s?.isWon;
-        document.getElementById('win-notice').textContent=s?.isWon?c._winStats().text:'';
+        document.getElementById('win-message').textContent=s?.isWon?c._winStats().text:'';
         this.syncButtons();this.updateDpadVisibility();this.app.renderMap();
+    }
+    /** 死亡弹窗文案：能复活时只确认复活，不能复活时只提供重新开始。 */
+    deathMessage(){
+        const c=this.controller,s=c.currentGameState;
+        if(!c.canRevive)return s.player.hp<=0?'生命耗尽':'出生点被占据';
+        return c.gameMode==='exploration'?'你死了，剩余生命 '+s.player.hp:'你死了';
     }
     syncButtons(){
         const c=this.controller;document.getElementById('undo-btn').disabled=!c.canUndo;document.getElementById('redo-btn').disabled=!c.canRedo;
@@ -119,7 +133,7 @@ export class GhostMazeGame {
         if(!this.replay)return;
         if(pause)this.pauseReplay();const r=this.replay;step=Math.max(0,Math.min(r.history.actions.length,Math.floor(step||0)));
         this.seekAbort?.abort();this.seekAbort=new AbortController();const signal=this.seekAbort.signal;
-        try {const state=await r.history.stateAtAsync(step,{signal});if(signal.aborted||this.replay!==r)return;r.currentStep=step;r.currentGameState=state;r.viewLayer=state.player.layer;this.syncReplay();}
+        try {const state=await r.history.stateAtAsync(step,{signal});if(signal.aborted||this.replay!==r)return;r.currentStep=step;r.currentGameState=state;r.viewLayer=deathPositionOf(state)?.layer??state.player.layer;this.syncReplay();}
         catch(e){if(e.name!=='AbortError')this.showToast(e.message,3000,'error');}
     }
     syncReplay(){

@@ -13,6 +13,7 @@ import { EditorDocument } from '../src/editor/editorSession.js';
 import { MapDefinition } from '../src/core/mapDefinition.js';
 import { GameLogic } from '../src/core/gameLogic.js';
 import { ActionHistory } from '../src/core/actionHistory.js';
+import { deathPositionOf } from '../src/core/stepOutcome.js';
 import { makeMap } from './helpers/map-fixture.mjs';
 import { GAME_STATES } from '../src/core/constants.js';
 import * as Renderer from '../src/view/renderer.js';
@@ -355,7 +356,7 @@ test('computeEditorView 投影产物喂渲染层跑通（renderStaticLayer + dra
     assert(true, '无异常');
 });
 
-test('致死回放当步已在出生点，物理碰撞判定与历史初态不污染', () => {
+test('致死回放当步显示死亡位置，权威状态与历史初态不污染', () => {
     for (const gameMode of ['exploration', 'death-loop']) {
         const mapDef = new MapDefinition(makeMap({ gameMode, initialGhosts: [{ x: 1, y: 0, id: 0 }] }));
         const initial = GameLogic.createInitialState(mapDef);
@@ -366,15 +367,29 @@ test('致死回放当步已在出生点，物理碰撞判定与历史初态不�
         const gameState=history.stateAt(1),before=JSON.stringify(gameState);
         assert(!gameState.isDead,'回放不存在另一个未复活状态');
         assertEq(gameState.player.x,0);assertEq(gameState.player.y,0);
+        assertEq(deathPositionOf(gameState).x,1,'当步记下死亡位置');
         const view=computeGameView({mapDef,gameState,viewLayer:0},{state:GAME_STATES.REPLAY,debugVision:false});
-        assertEq(view.player,gameState.player,'直接使用当步结束状态');
+        assertEq(view.player.x,1,'当步画面停在死亡格');
+        assertEq(view.player.y,0);
+        assertEq(view.playerLayer,0);
+        assertEq(gameState.player.x,0,'权威状态仍是复活后的出生点');
         assertEq(view.player.steps,gameMode==='death-loop'?0:1);
         assertEq(view.debugVision,gameMode==='death-loop');
-        assertEq(JSON.stringify(gameState),before);
+        assertEq(JSON.stringify(gameState),before,'死亡位置不写入共享局面');
         assertEq(history.stateAt(1).player.x,0);
         assertEq(history.stateAt(0).player.steps,0);
         assertEq(physical.player.x,1,'瞬时物理判定未被显示状态覆盖');
     }
+});
+
+test('死亡位置只属于当步，游玩继续后不再显示', () => {
+    const mapDef = new MapDefinition(makeMap({ initialGhosts: [{ x: 1, y: 0, id: 0 }] }));
+    const history = new ActionHistory(mapDef,['R','D']);
+    const deathStep=history.stateAt(1),nextStep=history.stateAt(2);
+    assertEq(deathPositionOf(deathStep).x,1);
+    assertEq(deathPositionOf(nextStep),null,'后续步没有死亡标记');
+    assertEq(computeGameView({mapDef,gameState:nextStep,viewLayer:0},{state:GAME_STATES.REPLAY,debugVision:false}).player,nextStep.player,'无标记时直接用权威位置');
+    assertEq(computeGameView({mapDef,gameState:deathStep,viewLayer:0},{state:GAME_STATES.PLAYING,debugVision:false}).player,deathStep.player,'游玩中未死亡提示时也直接用权威位置');
 });
 
 summary('viewSlice');

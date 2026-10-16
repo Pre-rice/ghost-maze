@@ -1,5 +1,5 @@
 /* 自动生成，禁止手改；由scripts/package-playtest.mjs从本体生成。
- * pako许可随包附带；引擎 sha256:5861b72bee934007e2679b60f38e3820ad1e2302a6d0a309bb7a59793eefb109
+ * pako许可随包附带；引擎 sha256:f41c4bf6ab816404ace5b640a7ed04745c99daed64a36e07b8e6c14365963044
  */
 (function(){
 const __factories={"src/playtest/target-public.js":"const { prepareTarget } = __load(\"src/playtest/target.js\");\n\nfunction createTargetAPI(build) {\n    return Object.freeze({ engine: build.engine, prepare: (session, options) => prepareTarget(session, build.engine, options) });\n}\n\nreturn {\"createTargetAPI\":createTargetAPI};\n",
@@ -27,5 +27,5 @@ const __pako=(function(){var module={exports:{}};var exports=module.exports;
 
 return module.exports;})();
 __load('src/playtest/portable.js').installPortableGlobals(__pako);
-return __load("src/playtest/target-public.js")["createTargetAPI"]({"version":"1.0.1","engine":"sha256:5861b72bee934007e2679b60f38e3820ad1e2302a6d0a309bb7a59793eefb109","format":"ghostmaze-playtest-v1"});
+return __load("src/playtest/target-public.js")["createTargetAPI"]({"version":"1.0.1","engine":"sha256:f41c4bf6ab816404ace5b640a7ed04745c99daed64a36e07b8e6c14365963044","format":"ghostmaze-playtest-v1"});
 })();
