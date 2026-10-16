@@ -2,6 +2,8 @@
 
 ## 2026-10-16 新候选：《送客》
 
+**后续反馈：** 用户指出“核心思想和上一张图完全没有区别，甚至还变简单了”，否定本次交付价值。原图和规则验收留档，不计主线进展、未入集；[反馈记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/see-off-review-20261017.json)。以下保留当时交付说明。
+
 单层19格、双鬼，A/B各一个按钮，三扇字母门；无钥匙、数字门、普通门、单向门、玻璃或楼梯。最优38步、唯一解；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**未获真人评价，未入地图集；现行十五图保持。**
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcHGK4C86AswKggBUAAQCAXALgHAKgACIFIFUCqBECIFUAQgw) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/see-off-20261016)
