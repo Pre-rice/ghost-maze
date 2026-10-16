@@ -45,7 +45,7 @@ test('开阔20×20的353亿最短走法直接归并为一条，A*仍证明38步'
         stateBudget:2000,budgetMs:10000
     }).count,'1');const [route]=[...groups.routes()];let s=env.initialState();for(const a of route)s=env.step(s,a);assert(s.isWon);
 });
-test('十三图逐步轨迹数与独立逐条重放归并一致；全部代表解保持最优',()=>{
+test('地图集逐步轨迹数与独立逐条重放归并一致；全部代表解保持最优',()=>{
     for(const row of aiMaps){
         const env=createSearchEnvironment(DataSerializer.loadFromShareCode(row.mapCode).data.mapData),base=createBreadthFirstSearch(env,{
             allOptimal:true

@@ -103,5 +103,13 @@ export const aiMaps = [
         "cells": 19,
         "ghosts": 3,
         "keys": 0
+    },
+    {
+        "title": "换席",
+        "mapCode": "AWM4wMBQAAKKnxu-OlgxVjAwcDUAhVi4DQQYGFgc5jQmMk1QYmpgEHAAAA",
+        "replayCode": "AIK7sy_nfArWUA9WYMOVeQ",
+        "cells": 16,
+        "ghosts": 2,
+        "keys": 1
     }
 ];
