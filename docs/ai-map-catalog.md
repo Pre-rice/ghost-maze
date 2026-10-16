@@ -1,5 +1,19 @@
 # AI 地图总目录
 
+## 2026-10-16 新候选：《回望》
+
+单层16格、双鬼，A/B各一个按钮、两A门一B门及一0门，无钥匙。最优50步、四种逐步鬼轨迹。全部最优无重合、去终点安全，指定实际入场及2780次排列／变编号后继通过。**未获真人评价，未入地图集。** 当前地图集仍为十四图。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcAHrgPugOYLAgBUAyBAIBcAuAkAAAEQLiBVAqgRApAAAAIQI) · [设计与证据](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/prepared-sightline-20261016)
+
+<details><summary>预期关键与参考（含答案）</summary>
+
+先准备未来引鬼要用的通道，再完成眼前的困鬼。若先关A、以后才打开0，开启当步可以存活，却失去了让鬼从较远处启动并停到上方的条件。0早于首次关A对全部无伤无复活通关必要，原双鬼换手仍须完成。
+
+[50步参考](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcAHrgPugOYLAgBUAyBAIBcAuAkAAAEQLiBVAqgRApAAAAIQI&replay=EJCN-XPoA9V6APpV_iA8mV9g)。来自未评价《换手》的独立改稿；钥匙版60步，去钥匙改0后50步保留准备关系。补齐外轮廓的一格死路不改变任何最优动作或鬼轨迹。没有继承母图或用户增强《换席》的好评，也不算新独立家族。
+
+</details>
+
 ## 2026-10-16 《换席》用户增强版入集
 
 16格、双鬼、一把钥匙。按用户原码加入地图集，排第十四，原十三图及顺序不变。AI原版评述为“不错的地图”“新意不大”；用户加钥匙和数字门后评价“瞬间就变得很妙了”，两版独立留档。
