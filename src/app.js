@@ -38,7 +38,7 @@ export class Application {
         for(const [id,panel] of [['save-menu-btn','save'],['solve-map-btn','solve']])byId(id).addEventListener('click',()=>this.openPlayPanel(panel));
         byId('save-btn').onclick=()=>{const result=this.game.controller.save();if(result.ok){this.renderPoints();this.notify('已在第 '+result.step+' 步建立存档点');}else this.notify(result.error,'error');};
         byId('save-map-local').onclick=()=>this.saveLocal('map',routeURL({map:this.mapCode}));
-        byId('view-replay-btn').onclick=()=>this.switchColumn('replay');byId('view-solution-btn').onclick=()=>this.openPlayPanel('solve');
+        byId('view-replay-btn').onclick=()=>this.playthroughReplay();byId('view-solution-btn').onclick=()=>this.openPlayPanel('solve');
         byId('solver-continue-btn').onclick=()=>this.solver?.continue();byId('solver-more-btn').onclick=()=>this.solver?.more();
         this.library.subscribe(()=>this.renderLibraries());
         for(const [id,key] of [['local-section','locals'],['premium-section','premium'],['draft-section','drafts']]){const value=safeGet('ghostmaze-fold-'+key);if(id==='premium-section')byId(id).open=false;else if(value!==null)byId(id).open=value==='open';byId(id).addEventListener('toggle',()=>safeSet('ghostmaze-fold-'+key,byId(id).open?'open':'closed'));}
@@ -200,8 +200,16 @@ export class Application {
         this.solutionOrigin={view:this.view,url:location.href,playPanel:this.playPanel};this.replaySource='external';
         this.game.openReplay(parsed.data.mapData,decoded.actions,mapCode);this.setURL({map:mapCode,replay:code},{push:true});this.showColumn('replay');
     }
+    /** 回到本次游玩的回放：清除已打开的最优解来源和过期缓存，URL 只保留地图。 */
+    playthroughReplay(){
+        this.replaySource='current';this.replayDirty=true;this.solutionOrigin=null;
+        this.setURL(this.mapCode?{map:this.mapCode}:{});
+        this.switchColumn('replay');
+    }
     returnFromSolution(){
-        const origin=this.solutionOrigin;if(!origin)return;this.game.pauseReplay();history.replaceState({},'',origin.url);this.showColumn(origin.view);
+        const origin=this.solutionOrigin;if(!origin)return;this.game.pauseReplay();history.replaceState({},'',origin.url);this.solutionOrigin=null;
+        if(origin.view!=='replay'){this.replaySource='current';this.replayDirty=true;}
+        this.showColumn(origin.view);
         if(origin.view==='play'){this.playPanel='solve';this.syncPlayPanel();this.solver?.mount(byId('solve-pane'));}
 
     }
