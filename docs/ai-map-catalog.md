@@ -1,5 +1,19 @@
 # AI 地图总目录
 
+## 2026-10-17 新候选：《调度》
+
+单层25格、三鬼，A/B各两处按钮、六扇字母门。唯一最优50步；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**未获真人评价、未入地图集；原十五图保持。**
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/inside-shunting-20261017)
+
+<details><summary>设计预期与参考（含答案）</summary>
+
+短暂进入中央区不只为了当次通关，也能提供外围按钮没有的引动方向。先后借右侧与下侧的暂入，逆向调动不同的鬼，给之后的行列安排腾出条件。两种内部引动与至少两次退出对全部通关必要；具体退出口可以不同，不把参考当唯一总体计划。此为设计预期，尚无人的挑战或顿悟评价。
+
+[50步参考回放](https://ghostmaze.novic.cc/?map=AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA&replay=EHN-AvjvKPVZqCl_RcDygpbA)。从十二门构造删去六扇外围门及目标普通门；起点移入控制格省开场赶路。底部B虽可删但增加十步来回，保留以简化执行。不继承旧图好评，不计新的独立质量样本。
+
+</details>
+
 ## 2026-10-17 新候选：《转圜》
 
 **后续反馈：** 用户评价“随便就试出来了啊，根本没有解谜深度”，并质疑近期地图质量。不计挑战／新意主线进展，仍未入地图集；[真实评述与筛选修正](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/turning-room-review-20261017.json)。以下保留交付时的设计预期和物理证据。
