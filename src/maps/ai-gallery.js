@@ -111,5 +111,13 @@ export const aiMaps = [
         "cells": 16,
         "ghosts": 2,
         "keys": 0
+    },
+    {
+        "title": "调度",
+        "mapCode": "AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA",
+        "replayCode": "EHN-Avgo9yn8opZf3Asp1XAKD3KClsA",
+        "cells": 25,
+        "ghosts": 3,
+        "keys": 0
     }
 ];
