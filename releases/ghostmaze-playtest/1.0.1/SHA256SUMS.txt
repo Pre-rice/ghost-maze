@@ -1,0 +1,3 @@
+f29bf1685e61555d1d73dc2e4b749f8aff7e838c880609c7d11e47df2423a2fe  ghostmaze-playtest-skill.zip
+1390d655519e34e7203c2c6110466e5da3753f2362f3831f5e26d711ed7bf16b  ghostmaze-playtest-plugin.zip
+97f0dac171a7c393ec545138c7397b65f4e66e7247a339e3ed3a890fc07b0bd6  verification.json

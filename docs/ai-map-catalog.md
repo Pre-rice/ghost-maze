@@ -1,5 +1,79 @@
 # AI 地图总目录
 
+## 2026-10-18 《调度》新版确认入集
+
+用户在规则更新后实际试玩，评价“新版《调度》甚至更妙了”“需要更复杂的调度”“核心思想几乎完全不变”，明确要求加入地图集。以原图和新规则70步证据追加为第十五张；四种最优鬼轨迹，全部边界通过。旧版反馈、50步证据与源码保持。
+
+此前将“鬼始终留在内圈”作为保留核心的条件过窄；按照用户实际体验撤回该判断，不改变“新最优有鬼进入外圈”的物理事实。[当前证据与参考](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/inside-shunting-20261017/current-rules-20261018)。
+
+## 2026-10-18 规则修正与《后路》移除
+
+关门失去视线仍须保留当步追击。十五图中十四图的全部最优路线及逐步物理局面不变；《后路》59步变无伤无复活无解。《调度》50步变70步，新最优均有鬼离开内圈，原核心待维护。用户随后明确授权发布规则，并将《后路》移出地图集；原地图与评述保留，其余十四图不变。[完整审查](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/pre-action-vision-20261018.md)。
+
+## 2026-10-17 新候选：《调度》
+
+**2026-10-18实际反馈：** 用户评价“好地图”“非常优美，非常有趣”“集大成者”；先尝试把鬼困在外侧，继而转为在外围调动内圈鬼位。肯定属于原规则版本，不转给当前70步或未来改稿；未收到明确入集指令。[真实评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/inside-shunting-review-20261018.json)。以下为交付时原始结果。
+
+单层25格、三鬼，A/B各两处按钮、六扇字母门。唯一最优50步；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**生成时未获评价、未入集；后续好评与规则影响见上。**
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/inside-shunting-20261017)
+
+<details><summary>设计预期与参考（含答案）</summary>
+
+短暂进入中央区不只为了当次通关，也能提供外围按钮没有的引动方向。先后借右侧与下侧的暂入，逆向调动不同的鬼，给之后的行列安排腾出条件。两种内部引动与至少两次退出对全部通关必要；具体退出口可以不同，不把参考当唯一总体计划。此为设计预期，尚无人的挑战或顿悟评价。
+
+[50步参考回放](https://ghostmaze.novic.cc/?map=AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA&replay=EHN-AvjvKPVZqCl_RcDygpbA)。从十二门构造删去六扇外围门及目标普通门；起点移入控制格省开场赶路。底部B虽可删但增加十步来回，保留以简化执行。不继承旧图好评，不计新的独立质量样本。
+
+</details>
+
+## 2026-10-17 新候选：《转圜》
+
+**后续反馈：** 用户评价“随便就试出来了啊，根本没有解谜深度”，并质疑近期地图质量。不计挑战／新意主线进展，仍未入地图集；[真实评述与筛选修正](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/turning-room-review-20261017.json)。以下保留交付时的设计预期和物理证据。
+
+单层23格、双鬼，两处A按钮、五扇A门、一扇普通门、一个单向门和一把钥匙。最优37步，六条物理最优也是六种含停顿鬼轨迹；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**生成时尚无真人评价；后续评述见上，未入地图集，原十五图保持。**
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAOfn54eAAAAEIICQcAdASgEYBUVLgccAUAFUAAAAArMRxyIw1EIIQAAAAAEAEBBBg) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/split-lock-reopening-20261017)
+
+<details><summary>设计预期与参考（含答案）</summary>
+
+初次闭锁只能把一只留在右侧，否则丢失重新开门的条件。闭锁又打开了先前安置鬼的保护，需要再次调整它的接近方向，回左A关闭身后保护、放出另一只；最后借新追鬼与旧鬼共同完成返程。原图捕获零／两只、永久搁置段外鬼或完全不用优先占位均无解。这些只证明关系成立，不代替人的新意与挑战评价。
+
+[37步参考](https://ghostmaze.novic.cc/?map=AADAOfn54eAAAAEIICQcAdASgEYBUVLgccAUAFUAAAAArMRxyIw1EIIQAAAAAEAEBBBg&replay=GJVmRvBWPPaWyApX8DyA) · [全部六种参考](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/split-lock-reopening-20261017/README.md)。两扇多余A删去，目标内移填凹、保持23格；可删内格为避免小洞保留。亲缘保守合并，不继承母图好评。
+
+</details>
+
+## 2026-10-17 新候选：《互锁》
+
+**后续反馈：** 用户评价“没让我感觉到新意啊。就是平平无奇的解谜。”不计新意主线进展，未入地图集，原件保留；[实际评述与判断修正](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/interlock-review-20261017.json)。以下保留原交付的设计预期。
+
+单层20格、双鬼，两处A按钮、四扇A门、两个单向门、两扇普通门和一把钥匙。最优34步，四条物理行动按逐步鬼位归并为两种解法。全部最优无重合、去终点安全，中性开局与指定实际入场通过；原十五图保持。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAAB4eHh4eAGBIC18AXARAF4AAAKoDgDQOOAzUFUAAAABMUEcgsEFWoIQAAEAABBw) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/control-room-interlock-20261017)
+
+<details><summary>预期关键与参考（含答案）</summary>
+
+同组开关的位置与返回通路互相限制。上方A先打开自己的出口，也切断右方回程；安置追逐者后，右A开放回程却关回目标，必须返回上方再切换。不是用同处连按替代换面；原图全部无伤无复活通关至少需上→右→上三个操作位置段。它提出新的控制关系，尚不代表玩家实际感到精妙。
+
+[34步参考一](https://ghostmaze.novic.cc/?map=AADAAAB4eHh4eAGBIC18AXARAF4AAAKoDgDQOOAzUFUAAAABMUEcgsEFWoIQAAEAABBw&replay=EGJb1c7nPoxbcyjK1lA) · [参考二](https://ghostmaze.novic.cc/?map=AADAAAB4eHh4eAGBIC18AXARAF4AAAKoDgDQOOAzUFUAAAABMUEcgsEFWoIQAAEAABBw&replay=EGJb1c7nPoxbcyjK2VA)。上方字母门改普通门省两步，关系保持；四处可删外形格保留完整4×5轮廓，不增加任务。不继承母图评价，训练家族保守合并。
+
+</details>
+
+## 2026-10-16 新候选：《送客》
+
+**后续反馈：** 用户指出“核心思想和上一张图完全没有区别，甚至还变简单了”，否定本次交付价值。原图和规则验收留档，不计主线进展、未入集；[反馈记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/see-off-review-20261017.json)。以下保留当时交付说明。
+
+单层19格、双鬼，A/B各一个按钮，三扇字母门；无钥匙、数字门、普通门、单向门、玻璃或楼梯。最优38步、唯一解；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**未获真人评价，未入地图集；现行十五图保持。**
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcHGK4C86AswKggBUAAQCAXALgHAKgACIFIFUCqBECIFUAQgw) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/see-off-20261016)
+
+<details><summary>预期关键与参考（含答案）</summary>
+
+先安排上鬼的追逐距离，开B把两鬼引离终点入口，再回到安全的位置关B，让反相的终点门重开。先开B再引鬼、从过低处接近两鬼的两个实际安全前缀均无续解；五项原图关系分别禁止都无解。它是《回望》同家族的新改稿，原图、评价与地图集保持，不算独立家族。
+
+[38步参考回放](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcHGK4C86AswKggBUAAQCAXALgHAKgACIFIFUCqBECIFUAQgw&replay=EOP_xgv6APpV_qAPpVnQ)。删去重复按钮、可删门性质和旧取物任务；补齐两下角不改全部最优动作及鬼轨迹。机器证据不代表人的顿悟。
+
+</details>
+
 ## 2026-10-16 《回望》按原版入集
 
 单层16格、双鬼，A/B各一个按钮、两A门一B门及一0门，无钥匙。最优50步、四种逐步鬼轨迹。全部最优无重合、去终点安全，指定实际入场及2780次排列／变编号后继通过。**用户评价“不错的地图，加入地图集”。** 按交付原码追加第十五，原十四图及顺序不变；双0门研究改稿不替换、不继承好评。

@@ -1,6 +1,6 @@
 // 已由共同物理规则穷尽最优前继并按逐步鬼轨迹归并。仅在主动求解区展示。
 export const optimalCache = {
-  "ruleset": "sha256:5861b72bee934007e2679b60f38e3820ad1e2302a6d0a309bb7a59793eefb109",
+  "ruleset": "sha256:762b163064dac2464603c002d5a46782675f0a78274e93f68aa36555683cd91a",
   "maps": {
     "AWM4wGBgYWBgwMDo1CDFpODAwLBApsGBoYCLAQgcVFhBXBCLAQA": {
       "steps": 32,
@@ -72,16 +72,6 @@ export const optimalCache = {
       ],
       "complete": true
     },
-    "AADA8PDw8DAwMDELIDB8CcecBZAfhSgXAQBcgpwAAAOZAoLNiBzHIBAjMBICxAVASAQAYYABhhAI": {
-      "steps": 59,
-      "count": "3",
-      "codes": [
-        "CM7ofIaPJm9VxgD6r6PMlfnYAow",
-        "CM7ofIaPJm9VxgD6r6PMlflwgow",
-        "CM7ofIaPJm9VxgD6r6PMlflwiIw"
-      ],
-      "complete": true
-    },
     "AADAEPj4-Pj4AAEC4C3KASgBBVyAAQFwAZFVAAABAghKoIoVEIIAAAABAA": {
       "steps": 37,
       "count": "2",
@@ -112,6 +102,36 @@ export const optimalCache = {
       "count": "1",
       "codes": [
         "COK8iZEnYL3YKjFWAyJPWdw8"
+      ],
+      "complete": true
+    },
+    "AWM4wMBQAAKKnxu-OlgxVjAwcDUAhVi4DQQYGFgc5jQmMk1QYmpgEHAAAA": {
+      "steps": 44,
+      "count": "1",
+      "codes": [
+        "AIK7sy_nfArWUA9WYMOVeQ"
+      ],
+      "complete": true
+    },
+    "AADAAHBwUFBwcAHrgPugOYLAgBUAyBAIBcAuAkAAAEQLiBVAqgRApAAAAIQI": {
+      "steps": 50,
+      "count": "4",
+      "codes": [
+        "EJCN-XPoA9V6APpV_iA8mV9g",
+        "EJCN-XPoDNV6APpV_iA8mV9g",
+        "EJCN-XPoA9V6APpV_iA8pV9g",
+        "EJCN-XPoDNV6APpV_iA8pV9g"
+      ],
+      "complete": true
+    },
+    "AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA": {
+      "steps": 70,
+      "count": "4",
+      "codes": [
+        "EHN-Avgo9yn8opZf3Asp1XAKD3KClsA",
+        "EHN-AvjKPSn8opZf3Asp1XAKD3KClsA",
+        "EHN-Avgo9yn8opZf3Ao9lXAKD3KClsA",
+        "EHN-AvjKPSn8opZf3Ao9lXAKD3KClsA"
       ],
       "complete": true
     }

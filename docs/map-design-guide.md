@@ -1,12 +1,14 @@
 # 地图集设计小册
 
-更新：2026-10-16。这里按首次交付／发现记录的顺序，简要总结目前上架的十五张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
+更新：2026-10-18。这里按首次交付／发现记录的顺序，简要总结目前上架的十五张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
 
 “关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《周转》《同行》的新评述及五图优化见[本轮记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-adjustments-20261014.md)。
 
 本轮四份获准维护、《回位》《同行》取消稿与边界修正见[反馈及反思](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-maintenance-review-20261014.md)。
 
 《错位》《接力》《再借》的关键也依据你[本次明确总结](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/recruited-return-review-20261013.md#本次重整的设计方向)。
+
+《后路》因关门追击修正后无解，已按用户2026-10-18决定移除；[原条目及评述](archive/reviews/back-route-withdrawal-20261018.md)保留。
 
 “不错”不等于已达到精妙目标。基本数量来自当前地图集；《借影》为获准维护版，不把维护当新作品。
 
@@ -20,13 +22,13 @@
 | 6 | [《回位》](#6-回位) | 2026-10-10 | 16 / 2 / 0 | A/B 字母门，四个操作站位 |
 | 7 | [《换边》](#7-换边) | 2026-10-12 | 11 / 1 / 1 | A 字母门、普通门、钥匙门 |
 | 8 | [《换岗》](#8-换岗) | 2026-10-12 | 22 / 2 / 2 | A/B 字母门、普通门、钥匙门 |
-| 9 | [《后路》](#9-后路) | 2026-10-12 | 24 / 2 / 3 | A/B 字母门、普通门、钥匙门、0 门 |
-| 10 | [《暂驻》](#10-暂驻) | 2026-10-13 | 26 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇 0 门 |
-| 11 | [《再借》](#11-再借) | 2026-10-13 | 19 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇普通门 |
-| 12 | [《周转》](#12-周转) | 2026-10-14 | 15 / 2 / 0 | A/B字母门、普通门；用户优化版 |
-| 13 | [《同行》](#13-同行) | 2026-10-14 | 19 / 3 / 0 | A/B字母门、普通门、单向门；追者互相占位 |
-| 14 | [《换席》](#14-换席) | 2026-10-16 | 16 / 2 / 1 | 单A按钮、两反相A门、普通门、钥匙门；用户增强版 |
-| 15 | [《回望》](#15-回望) | 2026-10-16 | 16 / 2 / 0 | A/B字母门、0门；先准备未来引鬼通道 |
+| 9 | [《暂驻》](#9-暂驻) | 2026-10-13 | 26 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇 0 门 |
+| 10 | [《再借》](#10-再借) | 2026-10-13 | 19 / 2 / 0 | 一个 A 按钮、两扇反相 A 门、一扇普通门 |
+| 11 | [《周转》](#11-周转) | 2026-10-14 | 15 / 2 / 0 | A/B字母门、普通门；用户优化版 |
+| 12 | [《同行》](#12-同行) | 2026-10-14 | 19 / 3 / 0 | A/B字母门、普通门、单向门；追者互相占位 |
+| 13 | [《换席》](#13-换席) | 2026-10-16 | 16 / 2 / 1 | 单A按钮、两反相A门、普通门、钥匙门；用户增强版 |
+| 14 | [《回望》](#14-回望) | 2026-10-16 | 16 / 2 / 0 | A/B字母门、0门；先准备未来引鬼通道 |
+| 15 | [《调度》](#15-调度) | 2026-10-17 | 25 / 3 / 0 | A/B两组、六门；整体调度，采用2026-10-18修正规则 |
 
 ## 1. 错位
 
@@ -118,19 +120,7 @@
 
 [试玩](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMAELIC90BHOAsgPwpQZgOEC5kKcAAOAKAALEDmOQACMwFQEgJAAAQYACGAGEAg) · [参考解法](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMAELIC90BHOAsgPwpQZgOEC5kKcAAOAKAALEDmOQACMwFQEgJAAAQYACGAGEAg&replay=AIsip9aPJm9eCg2fXDqvyMlVeACZv-oD)
 
-## 9. 后路
-
-**设计思想：** 眼前钥匙可以安全拿，却可能破坏以后撤离和重新开门的条件。暂留下方钥匙，先消费 0 门并安排鬼的位置，把后路准备好再取物。
-
-**关键发现：** 预期改变是‘现在能拿不代表现在该拿’；你认可取物顺序和规划，但认为推理仍偏线性。
-
-**你的简评：** ‘不错，比上一张有进步’，不久就想到；仍期待新意与再次眼前一亮。 [评述依据](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/deferred-key-cold-entry-review-20261012.md)。
-
-**本轮维护：** 终点及3钥匙门搬入左上，右侧轮廓补齐；用户评价“改得不错”。原稿遗留边界门已改为墙，四条最优仍59步，钥匙次序与0门关系保留。
-
-[试玩](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMDELIDB8CcecBZAfhSgXAQBcgpwAAAOZAoLNiBzHIBAjMBICxAVASAQAYYABhhAI) · [参考解法](https://ghostmaze.novic.cc/?map=AADA8PDw8DAwMDELIDB8CcecBZAfhSgXAQBcgpwAAAOZAoLNiBzHIBAjMBICxAVASAQAYYABhhAI&replay=CM7ofIaPJm9VxgD6r6PMlfnYAow)
-
-## 10. 暂驻
+## 9. 暂驻
 
 **设计思想：** 暂时帮玩家到达按钮的鬼，随后又挡住打开的出口。借另一只鬼的追击阻挡安排停位；按 A 保护身后、打开出口后，还要再次引走暂驻鬼清路。
 
@@ -142,7 +132,7 @@
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAEPj4-Pj4AAEC4C3KASgBBVyAAQFwAZFVAAABAghKoIoVEIIAAAABAA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAEPj4-Pj4AAEC4C3KASgBBVyAAQFwAZFVAAABAghKoIoVEIIAAAABAA&replay=GNgj2INRANlf8AqXbwIA)
 
-## 11. 再借
+## 10. 再借
 
 **设计思想：** 先把一只鬼安置好后，另一只鬼仍堵着目标；直接引它再退走会继续被追。重新引出先前安置的鬼，让它跟在身后；转向时借它优先追击并占位，挡住另一只鬼，再重新安排当前追鬼。
 
@@ -154,7 +144,7 @@
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAHhobHh4AAFR4DAyACAABVAQCQJAAqgAAAAQglQMVyFOQBAAAAAI) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAHhobHh4AAFR4DAyACAABVAQCQJAAqgAAAAQglQMVyFOQBAAAAAI&replay=CIxe4NrJ3erAnDNc)
 
-## 12. 周转
+## 11. 周转
 
 **设计思想：** 两处停位与开门顺序相互制约。先把第一鬼暂留左门外，再迁入右房，为操作A留下保护；目标鬼最后安排到左房。
 
@@ -164,7 +154,7 @@
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAABgfHh4AAFngIqgJQQgAAAADlQ4UBwKoAAAAAAkBHOQhBYYgAAAIEMAMA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAABgfHh4AAFngIqgJQQgAAAADlQ4UBwKoAAAAAAkBHOQhBYYgAAAIEMAMA&replay=AF4gB2knYL3YKi1nCv8)
 
-## 13. 同行
+## 12. 同行
 
 **设计思想：** 先安排右侧停车与A旁回路。最后按A前重新引上暂留下面的鬼，再带着它与目标鬼先后互相占位阻挡，从下方回路脱身。
 
@@ -176,7 +166,7 @@
 
 《楼间》已按用户2026-10-14决定撤出：每步几乎只有一种选择，没有思考难度。原入门定位、地图与修补历史留在[总目录](ai-map-catalog.md)及[反馈复盘](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/multilayer-rejection-20261014.md)，不改写此前评价。
 
-## 14. 换席
+## 13. 换席
 
 **设计思想：** 原版靠双鬼卡位轮换普通门两侧的保护。用户仅增加一把钥匙及终点前的钥匙门，让原本可行的“靠开关关门困鬼”妨碍后续取钥匙；同一结构现在需要另一种收尾安排。
 
@@ -188,7 +178,7 @@
 
 [试玩](https://ghostmaze.novic.cc/?map=AWM4wMBQAAKKnxu-OlgxVjAwcDUAhVi4DQQYGFgc5jQmMk1QYmpgEHAAAA) · [参考解法](https://ghostmaze.novic.cc/?map=AWM4wMBQAAKKnxu-OlgxVjAwcDUAhVi4DQQYGFgc5jQmMk1QYmpgEHAAAA&replay=AIK7sy_nfArWUA9WYMOVeQ)
 
-## 15. 回望
+## 14. 回望
 
 **设计思想：** 眼前可以关A困鬼，但之后还要借上方通道改变鬼的停位。0门无需钥匙，并不意味着任何时候开都一样；开门本身也会占用鬼追逐的一步。
 
@@ -199,6 +189,18 @@
 **验收：** 16格双鬼、最优50步、四种最优解，全部无鬼重合且去终点安全；指定实际入场及编号无关通过。0早于首次关A对全部无伤无复活通关必要，先困鬼和晚开0的安全局面均无续解。
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcAHrgPugOYLAgBUAyBAIBcAuAkAAAEQLiBVAqgRApAAAAIQI) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAHBwUFBwcAHrgPugOYLAgBUAyBAIBcAuAkAAAEQLiBVAqgRApAAAAIQI&replay=EJCN-XPoA9V6APpV_iA8mV9g)
+
+## 15. 调度
+
+**设计思想：** 5×5外圈包围3×3内区，A/B按钮与门匀称分布。局部像熟悉的门旁困鬼结构，但必须通过不同方向的诱导与出入，协调三只鬼的位置，形成可以进入终点的态势。新版允许鬼进入外圈，仍服务同一调度问题。
+
+**关键发现：** 用户原版试玩从“把鬼困在外面”转为整体安排鬼位；修正规则后，又明确确认需要更复杂的调度而核心几乎完全不变。鬼是否始终留在某圈是实现形态，不是核心定义。
+
+**你的简评：** 原版称“好地图”“非常优美，非常有趣”“集大成者”；新版实际试玩评价“甚至更妙了”，明确要求加入地图集。两版分别保留真实反馈，未报告完整路线、用时或提示条件。[新版评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/inside-shunting-current-review-20261018.json)。
+
+**当前验收：** 原图未改，新规则最优70步、四种逐步鬼轨迹，全部无重合、去终点安全；中性开局、实际入场与编号/排列无关通过。旧50步证据只作历史。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA) · [当前参考](https://ghostmaze.novic.cc/?map=AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA&replay=EHN-Avgo9yn8opZf3Asp1XAKD3KClsA)
 
 ## 怎样继续使用这份小册
 

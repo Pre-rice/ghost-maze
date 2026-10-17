@@ -150,11 +150,11 @@ export const GameLogic = {
 
         if (isStairAction) {
             // 玩家使用楼梯：原层追离开的格子，到达层追玩家的新位置
-            const threatened = this.moveGhostsAfterStair(nextState, originalPlayerPos, mapDef, trails, ghostDiagnostics);
+            const threatened = this.moveGhostsAfterStair(nextState, originalPlayerPos, mapDef, trails, ghostDiagnostics, currentState);
             this.checkCollisions(nextState, mapDef, threatened);
         } else {
             // 普通移动：处理鬼的移动（包括跨楼梯追踪）
-            const threatened = this.moveGhostsWithStairChase(nextState, originalPlayerPos, mapDef, trails, ghostDiagnostics);
+            const threatened = this.moveGhostsWithStairChase(nextState, originalPlayerPos, mapDef, trails, ghostDiagnostics, currentState);
             this.checkCollisions(nextState, mapDef, threatened);
         }
         
@@ -318,23 +318,31 @@ export const GameLogic = {
     },
 
     /** 从可见位置和当前墙态提出意图；仍看得到操作后玩家的鬼优先。 */
-    _getGhostMoveIntents(ghosts, playerBefore, playerAfter, layerDef, layerState) {
+    _getGhostMoveIntents(ghosts, playerBefore, playerAfter, layerDef, layerState, previousLayerState = layerState) {
         const intents = [];
         for (const ghost of ghosts) {
             const seesAfter = !!playerAfter && this._canGhostSeePlayer(ghost, playerAfter, layerDef, layerState);
-            const sawBefore = this._canGhostSeePlayer(ghost, playerBefore, layerDef, layerState);
+            const sawBefore = this._canGhostSeePlayer(ghost, playerBefore, layerDef, previousLayerState);
             const target = seesAfter ? playerAfter : sawBefore ? playerBefore : null;
             if (!target) continue;
-            const path = this._findShortestPath(ghost, target, layerDef, layerState);
-            if (path && path.length > 1) intents.push({ ghost, nextStep: path[1], seesAfter });
+            // 前视线配操作前墙态，后视线配操作后墙态；旧目标只保留当步的一格追击。
+            const path = this._findShortestPath(ghost, target, layerDef, seesAfter ? layerState : previousLayerState);
+            if (!path || path.length < 2) continue;
+            const nextStep = path[1];
+            // 记得旧目标不等于能穿过新关的门，也不能绕路追不可见目标。
+            const direction = { dx: nextStep.x - ghost.x, dy: nextStep.y - ghost.y };
+            const wall = this._getWallBetween(ghost, nextStep, layerState.wallStates, direction);
+            if (wall && wall.type !== WALL_TYPES.EMPTY &&
+                !(wall.type === WALL_TYPES.LETTER_DOOR && wall.currentState === 'open')) continue;
+            intents.push({ ghost, nextStep, seesAfter });
         }
         return intents;
     },
 
     /** 上下楼与移动一样推进一回合：原层追旧位置，到达层追新位置。 */
-    moveGhostsAfterStair(state, originalPlayerPos, mapDef, trails = true, diagnostics = null) {
+    moveGhostsAfterStair(state, originalPlayerPos, mapDef, trails = true, diagnostics = null, previousState = state) {
         const layer = originalPlayerPos.layer, ghosts = state.layerStates[layer].ghosts;
-        const intents = this._getGhostMoveIntents(ghosts, originalPlayerPos, null, mapDef.layers[layer], state.layerStates[layer]);
+        const intents = this._getGhostMoveIntents(ghosts, originalPlayerPos, null, mapDef.layers[layer], state.layerStates[layer], previousState.layerStates[layer]);
         const result = this._resolveGhostMoveConflicts(ghosts, intents, trails);
         if (diagnostics) diagnostics.push(...result.conflicts.map(c => ({ ...c, layer })));
         // 入场前已检查目标楼梯格的占位；到达层的鬼仍要正常追击一次。
@@ -346,9 +354,9 @@ export const GameLogic = {
     },
 
     /** 普通追击与楼梯入场一起争位，楼梯不绕过占位或冲突规则。 */
-    moveGhostsWithStairChase(state, originalPlayerPos, mapDef, trails = true, diagnostics = null) {
+    moveGhostsWithStairChase(state, originalPlayerPos, mapDef, trails = true, diagnostics = null, previousState = state) {
         const layer = state.player.layer, ghosts = state.layerStates[layer].ghosts;
-        const intents = this._getGhostMoveIntents(ghosts, originalPlayerPos, state.player, mapDef.layers[layer], state.layerStates[layer]);
+        const intents = this._getGhostMoveIntents(ghosts, originalPlayerPos, state.player, mapDef.layers[layer], state.layerStates[layer], previousState.layerStates[layer]);
         if (mapDef.multiLayerMode) intents.push(...this._getGhostStairChaseIntents(state, originalPlayerPos, mapDef));
         const result = this._resolveGhostMoveConflicts(ghosts, intents, trails, state.player, intent => {
             if (intent.fromLayer === undefined) return;
