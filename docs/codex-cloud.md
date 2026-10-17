@@ -11,6 +11,24 @@
 
 当前共同规则锁为 `sha256:762b163064dac2464603c002d5a46782675f0a78274e93f68aa36555683cd91a`；2026-10-18按用户要求修正关门当步追击并获明确发布授权，《后路》按用户决定移除，其余十四张地图全部最优路线与逐步局面保持；《调度》原50步失效，现最优70步，地图本身不改。原种子、历史地图与反馈原件保持。
 
+## 分工与避免冲突
+
+2026-10-18按用户要求固定双边分工：云端Codex以`ghost-maze-ai`推进主线（地图设计、搜索、证书、目录与AI文档），主线需要的本体改动也由云端做（`src/core/`、`src/maps/`、试玩包脚本与资产、`releases/`及对应文档）；本地DeepSeek负责本体网页与交互（`index.html`、`styles.css`、`src/app.js`、`src/main.js`、`src/view/`、`src/editor/`、`src/site/`、`src/helpContent.js`）及其验收记录。两边都不在对方正在改的同一处动手。
+
+| 范围 | 默认由谁改 | 约束 |
+| --- | --- | --- |
+| AI仓`ghost-maze-ai` | 云端 | 本地不改 |
+| `src/core/`、`src/maps/` | 云端 | 本地尽量不改；确需改动（如纯显示层的完成态字段）只做最小改动，先说清缘由与影响 |
+| 网页与交互（上列本体网页文件） | 本地 | 云端只在主线必须时动，改前说明 |
+| 生成物：`.agents/skills/ghostmaze-playtest/assets/`、`releases/`、`src/maps/optimal-cache.js` | 改核心的那一方 | 另一方不手改，也不“修复”锁值 |
+| 共享文档：AGENTS、README、docs/README、docs/architecture、docs/codex-cloud | 两边都可能改 | 只做最小改动，推送前先fetch，冲突时保留双方 |
+
+- 开工先`git fetch`看`origin/main`；落后先`git pull --ff-only`。小步提交、尽快推送，一个可用改动推一次，缩短双边同时修改的窗口。
+- 推送前再fetch；远端前进时用`git merge origin/main`正常合并，保留双方提交。禁止rebase、reset、强推或覆盖。
+- 只有真实核心改动才更新共同规则锁。改`src/core/`、试玩包或最优缓存的同一方，在同一次推送里重新生成资产（`node scripts/package-playtest.mjs`）、需要时重算最优缓存与`releases/`，并保持`node scripts/package-playtest.mjs --check`通过。
+- 冲突先查双方原意再合并（通常取并集），不删对方改动；合并后跑`npm test`，涉及界面再补一次浏览器验收。
+- 验收各管各的：本体改动跑`npm test`并在本地浏览器验收；AI仓主线在AI仓跑`npm run cloud:check`。
+
 ## 产品入口与发布
 
 地图与参考回放用https://ghostmaze.novic.cc/，新版地图集／编辑／回放为首页四栏目，帮助为弹窗，不打开用户侧边页。正式恢复版的旧入口不是新版兼容协议。Sites仅用于站点改动预览，用户明确验收通过后才把网站改动推送到 main。实施授权不等于发布授权，历史直接推送许可不沿用到新一轮。GitHub main推送触发Vercel部署，替代Netlify，域名未变；只核验实际推送，不检查正式站或部署。

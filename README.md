@@ -21,7 +21,7 @@
 
 地图和回放分享直接复制地址栏，回放默认暂停；存档与回放复用同一操作编码：?map=地图码、&save=操作码、&replay=操作码；未完成草稿为?draft=草稿码。新码协议见[分享说明](docs/share-codes.md)，不通过猜测旧码兼容历史记录。
 
-以两个 main 开发，完成及时提交推送。GitHub main 自动部署至 Vercel；只核验推送，不检查正式站或部署。地图试玩、回放使用正式域名；Sites只作站点改动预览，用户自行访问。
+以两个 main 开发，完成及时提交推送。云端 Codex 以 AI 仓推进主线，本地负责本体网页与交互；分工与避免冲突见[云端准备与私人资料](docs/codex-cloud.md)。GitHub main 自动部署至 Vercel；只核验推送，不检查正式站或部署。地图试玩、回放使用正式域名；Sites只作站点改动预览，用户自行访问。
 
 [协作指引](AGENTS.md) · [文档索引](docs/README.md) · [当前架构](docs/architecture.md) · [云端准备与私人资料](docs/codex-cloud.md)
 
