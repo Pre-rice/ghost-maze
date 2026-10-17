@@ -1,5 +1,19 @@
 # AI 地图总目录
 
+## 2026-10-17 新候选：《转圜》
+
+单层23格、双鬼，两处A按钮、五扇A门、一扇普通门、一个单向门和一把钥匙。最优37步，六条物理最优也是六种含停顿鬼轨迹；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**尚无真人评价，未入地图集，原十五图保持。**
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAOfn54eAAAAEIICQcAdASgEYBUVLgccAUAFUAAAAArMRxyIw1EIIQAAAAAEAEBBBg) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/split-lock-reopening-20261017)
+
+<details><summary>设计预期与参考（含答案）</summary>
+
+初次闭锁只能把一只留在右侧，否则丢失重新开门的条件。闭锁又打开了先前安置鬼的保护，需要再次调整它的接近方向，回左A关闭身后保护、放出另一只；最后借新追鬼与旧鬼共同完成返程。原图捕获零／两只、永久搁置段外鬼或完全不用优先占位均无解。这些只证明关系成立，不代替人的新意与挑战评价。
+
+[37步参考](https://ghostmaze.novic.cc/?map=AADAOfn54eAAAAEIICQcAdASgEYBUVLgccAUAFUAAAAArMRxyIw1EIIQAAAAAEAEBBBg&replay=GJVmRvBWPPaWyApX8DyA) · [全部六种参考](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/split-lock-reopening-20261017/README.md)。两扇多余A删去，目标内移填凹、保持23格；可删内格为避免小洞保留。亲缘保守合并，不继承母图好评。
+
+</details>
+
 ## 2026-10-17 新候选：《互锁》
 
 **后续反馈：** 用户评价“没让我感觉到新意啊。就是平平无奇的解谜。”不计新意主线进展，未入地图集，原件保留；[实际评述与判断修正](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/interlock-review-20261017.json)。以下保留原交付的设计预期。
