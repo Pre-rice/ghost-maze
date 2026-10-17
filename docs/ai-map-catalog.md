@@ -2,7 +2,9 @@
 
 ## 2026-10-17 新候选：《转圜》
 
-单层23格、双鬼，两处A按钮、五扇A门、一扇普通门、一个单向门和一把钥匙。最优37步，六条物理最优也是六种含停顿鬼轨迹；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**尚无真人评价，未入地图集，原十五图保持。**
+**后续反馈：** 用户评价“随便就试出来了啊，根本没有解谜深度”，并质疑近期地图质量。不计挑战／新意主线进展，仍未入地图集；[真实评述与筛选修正](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/turning-room-review-20261017.json)。以下保留交付时的设计预期和物理证据。
+
+单层23格、双鬼，两处A按钮、五扇A门、一扇普通门、一个单向门和一把钥匙。最优37步，六条物理最优也是六种含停顿鬼轨迹；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**生成时尚无真人评价；后续评述见上，未入地图集，原十五图保持。**
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAOfn54eAAAAEIICQcAdASgEYBUVLgccAUAFUAAAAArMRxyIw1EIIQAAAAAEAEBBBg) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/split-lock-reopening-20261017)
 
