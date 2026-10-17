@@ -1,20 +1,14 @@
 {
-  "role": "1.0.1_engine_binding_QA_not_new_blind_playtest",
-  "engine": "sha256:5861b72bee934007e2679b60f38e3820ad1e2302a6d0a309bb7a59793eefb109",
-  "version": "1.0.1",
-  "normalBundleStandaloneVm": true,
-  "restoreRoundtrip": true,
-  "referenceActions": 12,
-  "finalBoard": {
-    "steps": 12,
-    "keys": 1,
-    "loops": 0
-  },
+  "role": "1.0.2_engine_binding_QA_not_new_blind_playtest",
+  "engine": "sha256:762b163064dac2464603c002d5a46782675f0a78274e93f68aa36555683cd91a",
+  "version": "1.0.2",
+  "sourcePackageCheckPassed": true,
   "skillCases": 29,
-  "gameTestFiles": 26,
+  "gameTestFiles": 28,
+  "targetedPreActionVisionCases": 6,
   "cloudCheckPassed": true,
   "ordinaryChatAccountInstallTested": false,
   "previousActualChatPlayRecord": "1.0.0/javascript-play-record.json",
-  "referenceReplayWon": true,
-  "restoredStatus": "won"
+  "previousRelease": "1.0.1",
+  "status": "user_authorized_main_release"
 }

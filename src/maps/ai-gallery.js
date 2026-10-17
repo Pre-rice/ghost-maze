@@ -65,14 +65,6 @@ export const aiMaps = [
         "keys": 2
     },
     {
-        "title": "后路",
-        "mapCode": "AADA8PDw8DAwMDELIDB8CcecBZAfhSgXAQBcgpwAAAOZAoLNiBzHIBAjMBICxAVASAQAYYABhhAI",
-        "replayCode": "CM7ofIaPJm9VxgD6r6PMlfnYAow",
-        "cells": 24,
-        "ghosts": 2,
-        "keys": 3
-    },
-    {
         "title": "暂驻",
         "mapCode": "AADAEPj4-Pj4AAEC4C3KASgBBVyAAQFwAZFVAAABAghKoIoVEIIAAAABAA",
         "replayCode": "GNgj2INRANlf8AqXbwIA",

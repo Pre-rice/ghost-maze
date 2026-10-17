@@ -1,8 +1,14 @@
 # AI 地图总目录
 
+## 2026-10-18 规则修正与《后路》移除
+
+关门失去视线仍须保留当步追击。十五图中十四图的全部最优路线及逐步物理局面不变；《后路》59步变无伤无复活无解。《调度》50步变70步，新最优均有鬼离开内圈，原核心待维护。用户随后明确授权发布规则，并将《后路》移出地图集；原地图与评述保留，其余十四图不变。[完整审查](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/pre-action-vision-20261018.md)。
+
 ## 2026-10-17 新候选：《调度》
 
-单层25格、三鬼，A/B各两处按钮、六扇字母门。唯一最优50步；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**未获真人评价、未入地图集；原十五图保持。**
+**2026-10-18实际反馈：** 用户评价“好地图”“非常优美，非常有趣”“集大成者”；先尝试把鬼困在外侧，继而转为在外围调动内圈鬼位。肯定属于原规则版本，不转给当前70步或未来改稿；未收到明确入集指令。[真实评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/inside-shunting-review-20261018.json)。以下为交付时原始结果。
+
+单层25格、三鬼，A/B各两处按钮、六扇字母门。唯一最优50步；全部最优无重合、去终点安全，中性开局与指定实际入场通过。**生成时未获评价、未入集；后续好评与规则影响见上。**
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/inside-shunting-20261017)
 

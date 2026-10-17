@@ -55,7 +55,9 @@ test('地图集逐步轨迹数与独立逐条重放归并一致；全部代表�
             }expected.add(frames.join(';'));
         }const search=createOptimalSearch(env,{
             algorithm:'astar',classifyState:ghostFrame
-        }),b=search.run(budget);assert.equal(b.totalActions,a.totalActions,row.title);const groups=createTrajectoryGroups(search.optimalGraph());assert.equal(Number(groups.run({
+        }),b=search.run(budget);assert.equal(b.status,a.status,row.title);assert.notEqual(a.status,'unknown',row.title);
+        if(a.status==='proven_unsat'){assert.throws(()=>search.optimalGraph());continue;}
+        assert.equal(b.totalActions,a.totalActions,row.title);const groups=createTrajectoryGroups(search.optimalGraph());assert.equal(Number(groups.run({
             stateBudget:1000000,budgetMs:30000
         }).count),expected.size,row.title);for(const route of groups.routes()){
             assert.equal(route.length,a.totalActions);let s=env.initialState();const frames=[];for(const action of route){
