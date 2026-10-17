@@ -2,7 +2,9 @@
 
 ## 2026-10-17 新候选：《互锁》
 
-单层20格、双鬼，两处A按钮、四扇A门、两个单向门、两扇普通门和一把钥匙。最优34步，四条物理行动按逐步鬼位归并为两种解法。全部最优无重合、去终点安全，中性开局与指定实际入场通过。**未获真人评价、未入地图集；原十五图保持。**
+**后续反馈：** 用户评价“没让我感觉到新意啊。就是平平无奇的解谜。”不计新意主线进展，未入地图集，原件保留；[实际评述与判断修正](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/interlock-review-20261017.json)。以下保留原交付的设计预期。
+
+单层20格、双鬼，两处A按钮、四扇A门、两个单向门、两扇普通门和一把钥匙。最优34步，四条物理行动按逐步鬼位归并为两种解法。全部最优无重合、去终点安全，中性开局与指定实际入场通过；原十五图保持。
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAAB4eHh4eAGBIC18AXARAF4AAAKoDgDQOOAzUFUAAAABMUEcgsEFWoIQAAEAABBw) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/control-room-interlock-20261017)
 
