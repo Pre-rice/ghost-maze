@@ -1,5 +1,19 @@
 # AI 地图总目录
 
+## 2026-10-17 新候选：《互锁》
+
+单层20格、双鬼，两处A按钮、四扇A门、两个单向门、两扇普通门和一把钥匙。最优34步，四条物理行动按逐步鬼位归并为两种解法。全部最优无重合、去终点安全，中性开局与指定实际入场通过。**未获真人评价、未入地图集；原十五图保持。**
+
+[试玩](https://ghostmaze.novic.cc/?map=AADAAAB4eHh4eAGBIC18AXARAF4AAAKoDgDQOOAzUFUAAAABMUEcgsEFWoIQAAEAABBw) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/control-room-interlock-20261017)
+
+<details><summary>预期关键与参考（含答案）</summary>
+
+同组开关的位置与返回通路互相限制。上方A先打开自己的出口，也切断右方回程；安置追逐者后，右A开放回程却关回目标，必须返回上方再切换。不是用同处连按替代换面；原图全部无伤无复活通关至少需上→右→上三个操作位置段。它提出新的控制关系，尚不代表玩家实际感到精妙。
+
+[34步参考一](https://ghostmaze.novic.cc/?map=AADAAAB4eHh4eAGBIC18AXARAF4AAAKoDgDQOOAzUFUAAAABMUEcgsEFWoIQAAEAABBw&replay=EGJb1c7nPoxbcyjK1lA) · [参考二](https://ghostmaze.novic.cc/?map=AADAAAB4eHh4eAGBIC18AXARAF4AAAKoDgDQOOAzUFUAAAABMUEcgsEFWoIQAAEAABBw&replay=EGJb1c7nPoxbcyjK2VA)。上方字母门改普通门省两步，关系保持；四处可删外形格保留完整4×5轮廓，不增加任务。不继承母图评价，训练家族保守合并。
+
+</details>
+
 ## 2026-10-16 新候选：《送客》
 
 **后续反馈：** 用户指出“核心思想和上一张图完全没有区别，甚至还变简单了”，否定本次交付价值。原图和规则验收留档，不计主线进展、未入集；[反馈记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/see-off-review-20261017.json)。以下保留当时交付说明。
