@@ -7,8 +7,11 @@ import { PanelScroll } from './site/panelScroll.js';
 import { MobileLayout } from './site/mobileLayout.js';
 
 const AUTO='ghostmaze-editor-draft-v3';
+// 界面构建标记：改动界面后手动更新，用来确认“浏览器跑的是不是当前这份代码”。
+const BUILD='2026-10-18c';
 const byId=id=>document.getElementById(id);
 const idle=fn=>window.requestIdleCallback?requestIdleCallback(fn,{timeout:1800}):setTimeout(fn,180);
+console.info('鬼迷宫界面构建 '+BUILD);
 export class Application {
     constructor(){
         this.view='maps';this.playPanel=null;this.scrolls={};this.loadToken=0;this.hasLoadedMap=false;this.recoverAllowed=!location.search;this.replaySource='current';this.replayDirty=true;
