@@ -4,6 +4,7 @@ import { GameController } from './core/gameController.js';
 import { MapDefinition } from './core/mapDefinition.js';
 import { ActionHistory } from './core/actionHistory.js';
 import { ReplaySerializer } from './core/replaySerializer.js';
+import { fitScale,smallMapMinSpan } from './editor/viewport.js';
 import { computeGameView,pruneTrails } from './view/viewSlice.js';
 import { deathPositionOf } from './core/stepOutcome.js';
 import * as Renderer from './view/renderer.js';
@@ -61,8 +62,10 @@ export class GhostMazeGame {
         const md=this.activeController.mapDefinition;if(!md)return;
         let minX=md.width,minY=md.height,maxX=-1,maxY=-1;
         for(const l of md.layers)l.activeCells.forEach((row,y)=>row.forEach((a,x)=>{if(a){minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);}}));
-        this.cellSize=Math.min((this.canvas.width-48)/Math.max(1,maxX-minX+1),(this.canvas.height-48)/Math.max(1,maxY-minY+1),180*(devicePixelRatio||1));
-        this.drawOffset={x:(this.canvas.width-(maxX-minX+1)*this.cellSize)/2-minX*this.cellSize,y:(this.canvas.height-(maxY-minY+1)*this.cellSize)/2-minY*this.cellSize};
+        const spanX=Math.max(1,maxX-minX+1),spanY=Math.max(1,maxY-minY+1);
+        // 电脑端小图按6×6的最小格宽显示再居中；手机端和超过6×6的图仍按实际跨度铺满。
+        this.cellSize=fitScale({width:spanX,height:spanY},this.canvas.width,this.canvas.height,180*(devicePixelRatio||1),smallMapMinSpan());
+        this.drawOffset={x:(this.canvas.width-spanX*this.cellSize)/2-minX*this.cellSize,y:(this.canvas.height-spanY*this.cellSize)/2-minY*this.cellSize};
     }
     draw(){
         if(!this.activeController.currentGameState||this.app.view==='editor'||this.app.draftVisible)return;
