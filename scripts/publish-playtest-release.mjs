@@ -22,16 +22,25 @@ for (const line of readFileSync(join(root, 'SHA256SUMS.txt'), 'utf8').trim().spl
 }
 const gh = (...argv) => execFileSync('gh', argv, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 // 列表用于兼容未公开且尚未创建标签的草稿；鉴权失败不能当作“版本不存在”。
-const list = () => gh('api', '--paginate', '--jq', '.[] | @json', 'repos/{owner}/{repo}/releases')
-    .split('\n').filter(Boolean).map(line => JSON.parse(line));
+const list = () => {
+    const rows = [];
+    for (let page = 1; ; page++) {
+        const batch = JSON.parse(gh('api', `repos/{owner}/{repo}/releases?per_page=100&page=${page}`));
+        rows.push(...batch);
+        if (batch.length < 100) return rows;
+    }
+};
 const releases = list();
 let release = releases.find(row => row.tag_name === tag);
 if (!release) {
-    gh('release', 'create', tag, '--target', record.sourceCommit, '--draft', '--title', `鬼迷宫自主试玩 ${record.version}`, '--notes-file', join(root, 'release-notes.md'));
-    release = list().find(row => row.tag_name === tag);
+    // 直接采用创建响应，避免刚创建的草稿尚未进入列表时重复创建。
+    release = JSON.parse(gh('api', '--method', 'POST', 'repos/{owner}/{repo}/releases',
+        '--raw-field', 'tag_name=' + tag, '--raw-field', 'target_commitish=' + record.sourceCommit,
+        '--raw-field', `name=鬼迷宫自主试玩 ${record.version}`, '--raw-field', 'body=' + readFileSync(join(root, 'release-notes.md'), 'utf8'), '--field', 'draft=true'));
 }
 if (!release) throw new Error('发布草稿未找到');
 if (release.target_commitish !== record.sourceCommit) throw new Error('同名版本的源码提交不一致，拒绝覆盖');
+console.log(JSON.stringify({ tag, releaseId: release.id, draft: release.draft }));
 const expectedAssets = new Map(release.assets.map(a => [a.name, a]));
 for (const name of names) {
     if (!expectedAssets.has(name)) {
