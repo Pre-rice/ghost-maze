@@ -2,6 +2,7 @@ import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../cor
 import * as Editor from './editor.js';
 import { createNewLayer, cleanupStairsOnLayerRemove } from '../layerManager.js';
 import { normalizeMapData, validateMapData, isInteriorWall } from '../core/mapDataUtils.js';
+import { hitsButton, hitsCircle, hitsKey, hitsStair } from '../view/shapes.js';
 
 /**
  * EditorDocument - 编辑器会话的唯一数据源（纯逻辑，零 DOM）
@@ -484,27 +485,33 @@ export class EditorDocument {
     }
 
     /**
-     * 擦除指定画布坐标处的墙与实体（对应 eraseAtPos 纯数据部分）。
-     * @param {object} pos - 画布坐标 {x, y}（未含 padding 偏移，调用方负责换算）
-     * @param {number} cellSize - 单元格像素尺寸
+     * 擦除指定坐标处的元件（对应 eraseAtPos 纯数据部分）。
+     * 按画出来的形状命中：按钮长条 → 钥匙菱形 → 鬼圆 → 出生／终点圆 → 楼梯方块，一次只擦最上层的一个；
+     * 都没命中再按墙线判定。避免以前按整格擦除，点旁边就把整格元件擦掉。
+     * @param {object} pos - 坐标 {x, y}（调用方换算到格宽单位）
+     * @param {number} cellSize - 一格对应的坐标单位
      */
     eraseAt(pos, cellSize) {
-        // 墙判定恒为橡皮擦语义（原实现当前工具在可达路径下恒为 ERASER）
-        const wall = Editor.getWallAtPos(pos.x, pos.y, cellSize, this.width, this.height, EDITOR_TOOLS.ERASER);
+        const px = pos.x, py = pos.y;
+        const cellX = Math.floor(px / cellSize), cellY = Math.floor(py / cellSize);
+        // regular 模式下起始房间的元件受保护（与墙一样由房间规则接管）。
+        if (this.mode === 'free' || !this.isPosInStartRoom(cellX, cellY)) {
+            const button = this.buttons.find(b => hitsButton(px, py, b, cellSize));
+            if (button) { this.buttons = this.buttons.filter(b => b !== button); return; }
+            const key = this.items.find(i => i.type === 'key' && hitsKey(px, py, i.x, i.y, cellSize));
+            if (key) { this.items = this.items.filter(i => i !== key); return; }
+            const ghost = this.ghosts.find(g => hitsCircle(px, py, g.x, g.y, cellSize));
+            if (ghost) { this.ghosts = this.ghosts.filter(g => g !== ghost); return; }
+            if (this.endPos && hitsCircle(px, py, this.endPos.x, this.endPos.y, cellSize)) { this.endPos = null; return; }
+            if (this.customStartPos && hitsCircle(px, py, this.customStartPos.x, this.customStartPos.y, cellSize)) { this.customStartPos = null; return; }
+            const stair = this.stairs.find(s => s.layer === this.currentLayer && hitsStair(px, py, s.x, s.y, cellSize));
+            if (stair) { this.eraseStairAt(stair.x, stair.y, stair.layer); return; }
+        }
+        const wall = Editor.getWallAtPos(px, py, cellSize, this.width, this.height, EDITOR_TOOLS.ERASER);
         if (wall && this.isWallEditable(wall)) {
             this.eraseButtonsOnWall(wall);
             if (wall.type === 'h') this.hWalls[wall.y][wall.x] = { type: WALL_TYPES.EMPTY, keys: 0 };
             else this.vWalls[wall.y][wall.x] = { type: WALL_TYPES.EMPTY, keys: 0 };
-        }
-        const cellX = Math.floor(pos.x / cellSize);
-        const cellY = Math.floor(pos.y / cellSize);
-        if (this.mode === 'free' || !this.isPosInStartRoom(cellX, cellY)) {
-            if (this.endPos && this.endPos.x === cellX && this.endPos.y === cellY) { this.endPos = null; }
-            if (this.customStartPos && this.customStartPos.x === cellX && this.customStartPos.y === cellY) { this.customStartPos = null; }
-            this.ghosts = this.ghosts.filter(g => g.x !== cellX || g.y !== cellY);
-            this.items = this.items.filter(i => i.x !== cellX || i.y !== cellY);
-            this.buttons = this.buttons.filter(b => b.x !== cellX || b.y !== cellY);
-            this.eraseStairAt(cellX, cellY, this.currentLayer);
         }
     }
 

@@ -874,7 +874,13 @@ body.site-app{padding:18px;min-height:0;display:block;box-sizing:border-box}
 .option-button input:checked~.switch-track:after{transform:translateX(14px)}
 .option-button:has(input:focus-visible){border-color:var(--primary-color)}
 .site-app .tool-palette button{display:flex;align-items:center;justify-content:center;line-height:1}
-.site-app .tool-palette svg{display:block;flex:none;transform:translateY(1px)}
+.site-app .tool-palette svg{display:block;flex:none}
+/* 图标按内容包围盒在按钮里居中：个别图形本身在高方向偏了 1～2px，逐项补正。 */
+.site-app #tool-lock svg,.site-app #tool-letter svg{transform:translateY(1px)}
+.site-app #tool-oneway svg{transform:translateY(-1.5px)}
+.site-app #tool-button svg{transform:translateY(2px)}
+.site-app #tool-start svg{transform:translateY(-1px)}
+.site-app #tool-eraser svg{transform:translateY(-.5px)}
 .layer-controls{display:flex;align-items:center;gap:10px;margin-top:14px}
 .layer-controls .layer-mode-tabs{flex:1;margin:0;min-width:0}
 .site-app .layer-mode-tabs>button{padding:9px 7px}

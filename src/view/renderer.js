@@ -1,4 +1,5 @@
 import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../core/constants.js';
+import { SHAPE } from './shapes.js';
 
 /**
  * Renderer 模块 - 处理所有Canvas绘制相关的功能
@@ -208,7 +209,7 @@ export function drawCircle(ctx, x, y, cellSize, color, alpha = 1.0) {
     ctx.globalAlpha = alpha;
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, cellSize * 0.35, 0, 2 * Math.PI);
+    ctx.arc(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, cellSize * SHAPE.circleRadius, 0, 2 * Math.PI);
     ctx.fill();
     ctx.globalAlpha = 1.0;
 }
@@ -224,7 +225,7 @@ export function drawItem(ctx, item, cellSize, colors) {
     if (item.type === 'key') {
         const centerX = item.x * cellSize + cellSize / 2;
         const centerY = item.y * cellSize + cellSize / 2;
-        const size = cellSize * 0.3;
+        const size = cellSize * SHAPE.keyRadius;
         ctx.fillStyle = colors.key;
         ctx.beginPath();
         ctx.moveTo(centerX, centerY - size);
@@ -248,7 +249,7 @@ export function drawItem(ctx, item, cellSize, colors) {
 export function drawStair(ctx, stair, cellSize, colors, isHighlight = false, alpha = 1.0) {
     const x = stair.x * cellSize;
     const y = stair.y * cellSize;
-    const size = cellSize * 0.7;
+    const size = cellSize * SHAPE.stairSize;
     const offset = (cellSize - size) / 2;
     
     ctx.save();
@@ -312,8 +313,8 @@ export function drawStair(ctx, stair, cellSize, colors, isHighlight = false, alp
 export function drawButton(ctx, button, cellSize, colors, isHighlight = false) {
     const centerX = button.x * cellSize + cellSize / 2;
     const centerY = button.y * cellSize + cellSize / 2;
-    const buttonLength = cellSize * 0.5;
-    const buttonWidth = cellSize * 0.2;
+    const buttonLength = cellSize * SHAPE.buttonLength;
+    const buttonWidth = cellSize * SHAPE.buttonWidth;
     
     let p1, p2, p3, p4;
     let letterCenterX, letterCenterY;

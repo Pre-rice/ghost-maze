@@ -288,22 +288,31 @@ test('toggleActiveCell: remove 清实体 + 清四周墙 + 清起点/终点', () 
     assertEq(doc.activeCells[3][3], true, '格重新激活');
 });
 
-test('eraseAt: 擦墙 + 擦实体；regular 起始房间实体受保护', () => {
+test('eraseAt: 按绘制形状擦除（墙线／元件图形），整格空白处不误擦', () => {
     const doc = EditorDocument.blank(10, 10, 'regular');
-    // 内部墙 (4,4)：画布坐标 (4*40+1, 4*40+1) 靠近左/上边界 → 命中竖墙 (4,4) 或横墙 (4,4)
+    // 内部墙 (4,4)：画布坐标 (4*40+5, 4*40+5) 靠近左/上边界 → 命中竖墙 (4,4) 或横墙 (4,4)
     doc.hWalls[4][4] = W(WT.SOLID);
-    doc.ghosts.push({ x: 4, y: 4 });
     doc.eraseAt({ x: 4 * 40 + 5, y: 4 * 40 + 5 }, 40);
-    assertEq(doc.hWalls[4][4].type, WT.EMPTY, '墙擦除');
-    assertEq(doc.ghosts.length, 0, '实体擦除');
+    assertEq(doc.hWalls[4][4].type, WT.EMPTY, '墙线命中擦除');
+    // 鬼与钥匙按绘制图形命中：格内角落不再整格擦除
+    doc.ghosts.push({ x: 4, y: 4 });
+    doc.items.push({ x: 4, y: 4, type: 'key' });
+    doc.eraseAt({ x: 4 * 40 + 5, y: 4 * 40 + 5 }, 40);
+    assertEq(doc.ghosts.length, 1, '角落没点到圆形，鬼保留');
+    assertEq(doc.items.length, 1, '角落没点到菱形，钥匙保留');
+    doc.eraseAt({ x: 4 * 40 + 20, y: 4 * 40 + 20 }, 40);
+    assertEq(doc.items.length, 0, '点到菱形中心先擦最上层的钥匙');
+    assertEq(doc.ghosts.length, 1, '一层只擦一个');
+    doc.eraseAt({ x: 4 * 40 + 20, y: 4 * 40 + 20 }, 40);
+    assertEq(doc.ghosts.length, 0, '再点一次擦掉鬼');
     // 起始房间 (1, 8)：regular 下实体受保护
     doc.ghosts.push({ x: 1, y: 8 });
-    doc.eraseAt({ x: 1 * 40 + 5, y: 8 * 40 + 5 }, 40);
+    doc.eraseAt({ x: 1 * 40 + 20, y: 8 * 40 + 20 }, 40);
     assertEq(doc.ghosts.length, 1, '起始房间实体受保护');
     // free 模式无保护
     const free = EditorDocument.blank(10, 10, 'free');
     free.ghosts.push({ x: 1, y: 8 });
-    free.eraseAt({ x: 1 * 40 + 5, y: 8 * 40 + 5 }, 40);
+    free.eraseAt({ x: 1 * 40 + 20, y: 8 * 40 + 20 }, 40);
     assertEq(free.ghosts.length, 0, 'free 模式无保护');
 });
 

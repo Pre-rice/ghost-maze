@@ -1,6 +1,7 @@
 import { GAME_STATES, WALL_TYPES, EDITOR_TOOLS, MOVE_INTERVAL_MS } from './core/constants.js';
 import * as Editor from './editor/editor.js';
 import * as Pathfinding from './core/pathfinding.js';
+import { hitsButton } from './view/shapes.js';
 
 /**
  * InputHandler 模块 - 处理所有输入事件（键盘、鼠标、触摸）
@@ -182,18 +183,11 @@ export function bindDpadControls(game) {
             return e.clientX >= rect.left - slack && e.clientX <= rect.left + rect.width + slack &&
                 e.clientY >= rect.top - slack && e.clientY <= rect.top + rect.height + slack;
         }
-        /** 点在本格时，落在该格按钮的贴边范围内就返回按钮方向（与编辑器热点同一套判定）。 */
+        /** 点在本格时，落在该格按钮画出的长条范围内（含外扩一点）就返回按钮方向。 */
         function ownButtonDirection(view, pos) {
-            const buttons = view.buttons || [];
-            if (!buttons.some(b => b.x === view.player.x && b.y === view.player.y)) return null;
-            const hotspot = Pathfinding.getButtonHotspotAtPos(pos.x, pos.y, {
-                cellSize: view.cellSize, width: view.width, height: view.height,
-                activeCells: view.activeCells, hWalls: view.hWalls, vWalls: view.vWalls, editorMode: 'free'
-            });
-            if (!hotspot || hotspot.x !== view.player.x || hotspot.y !== view.player.y) return null;
-            const hit = buttons.find(b => b.x === hotspot.x && b.y === hotspot.y &&
-                b.direction.dx === hotspot.direction.dx && b.direction.dy === hotspot.direction.dy);
-            return hit ? hit.direction : null;
+            const button = (view.buttons || []).find(b => b.x === view.player.x && b.y === view.player.y &&
+                hitsButton(pos.x, pos.y, b, view.cellSize));
+            return button ? button.direction : null;
         }
         export function handleCanvasClick(game, e) {
             if (game.state !== GAME_STATES.PLAYING || game.editor.active || !withinClickArea(e)) return;

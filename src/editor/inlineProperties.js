@@ -36,7 +36,7 @@ export class InlineProperties {
         if(this.open){if(target)this.hide();else this.closeSoon();}
         if(key===this.hoverKey)return;
         clearTimeout(this.hoverTimer);this.hoverKey=key;
-        if(target)this.hoverTimer=setTimeout(()=>{if(this.editor.visible&&!this.editor.gesture&&this.hoverKey===key)this.show(target,false);},550);
+        if(target)this.hoverTimer=setTimeout(()=>{if(this.editor.visible&&!this.editor.gesture&&this.hoverKey===key)this.show(target,false);},275);
     }
     show(target,focus=true){
         const value=this.value(target);if(!value)return;

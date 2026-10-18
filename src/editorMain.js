@@ -81,7 +81,7 @@ export class EditorApp {
     zoom(factor,cx=null,cy=null){const r=this.canvas.getBoundingClientRect(),x=cx===null?this.canvas.width/2:(cx-r.left)*this.canvas.width/r.width,y=cy===null?this.canvas.height/2:(cy-r.top)*this.canvas.height/r.height;const scale=Math.max(10,Math.min(700,this.view.scale*factor)),ratio=scale/this.view.scale;this.view.x=x-(x-this.view.x)*ratio;this.view.y=y-(y-this.view.y)*ratio;this.view.scale=scale;this.draw();}
     draw(){
         const d=this.editorDoc,colors=getColorsFromCSS();
-        const v=computeEditorView(d,{canvas:this.canvas,staticLayerCanvas:this.staticLayerCanvas,state:'editor',cellSize:this.view.scale,colors,padding:0,editor:{active:true,mode:'free',tool:this.tool,isDragging:!!this.gesture,stairPlacement:this.gesture?.stairPreview||null,hoveredWall:this.hover&&['wall','door','lock','oneway','glass','letter'].includes(this.tool)?this.wallAt(this.hover):null,isRightClickErasing:this.tool==='eraser',rightClickMousePos:this.hover?{x:this.hover.x*this.view.scale,y:this.hover.y*this.view.scale}:null}});
+        const v=computeEditorView(d,{canvas:this.canvas,staticLayerCanvas:this.staticLayerCanvas,state:'editor',cellSize:this.view.scale,colors,padding:0,editor:{active:true,mode:'free',tool:this.tool,isDragging:!!this.gesture,stairPlacement:this.gesture?.stairPreview||null,hoveredWall:this.hover&&['wall','door','lock','oneway','glass','letter'].includes(this.tool)?this.wallAt(this.hover):null,isRightClickErasing:this.tool==='eraser',rightClickMousePos:this.gesture&&this.hover?{x:this.hover.x*this.view.scale,y:this.hover.y*this.view.scale}:null}});
         v.editor.mode='free';v.offsetX=this.view.x;v.offsetY=this.view.y;v.workspaceFrame=this.workspace.frame;Renderer.drawEditor(this.ctx,v);this.properties.position();
     }
     position(e){const r=this.canvas.getBoundingClientRect(),px=(e.clientX-r.left)*this.canvas.width/r.width,py=(e.clientY-r.top)*this.canvas.height/r.height;return {px,py,x:(px-this.view.x)/this.view.scale,y:(py-this.view.y)/this.view.scale};}
@@ -125,7 +125,8 @@ export class EditorApp {
                 let w=g.tool==='oneway'&&drag?g.line:this.wallAt(p);
                 if(drag&&['wall','glass'].includes(g.tool))w=g.line.type==='h'?{type:'h',x:Math.floor(p.x),y:g.line.y}:{type:'v',x:g.line.x,y:Math.floor(p.y)};
                 if(drag&&['wall','glass'].includes(g.tool)){const from=g.line.type==='h'?g.line.x:g.line.y,to=Math.max(0,Math.min(w.type==='h'?d.width-1:d.height-1,w.type==='h'?w.x:w.y));for(let at=Math.min(from,to);at<=Math.max(from,to);at++){const s=w.type==='h'?{type:'h',x:at,y:w.y}:{type:'v',x:w.x,y:at};if(isInteriorWall(s,d.width,d.height,d.activeCells))this.workspace.setWall(s,{type:g.tool==='wall'?W.SOLID:W.GLASS,keys:0});}g.validPaint=true;this.draw();return;}
-                if(!isInteriorWall(w,d.width,d.height,d.activeCells))throw new Error('边界只能是墙，请先绘制相邻地板');
+                // 图格外（不是两个活动格之间）不响应，也不提示。
+                if(!isInteriorWall(w,d.width,d.height,d.activeCells))return;
                 const key=`${w.type}:${w.x}:${w.y}`;if(g.tool!=='oneway'&&g.seen.has(key))return;g.seen.add(key);
                 const old=d[w.type+'Walls'][w.y][w.x];let value={type:W.SOLID,keys:0};
                 if(['wall','glass'].includes(g.tool))value.type=old.type===(g.tool==='glass'?W.GLASS:W.SOLID)?W.EMPTY:g.tool==='glass'?W.GLASS:W.SOLID;
@@ -139,24 +140,51 @@ export class EditorApp {
             const key=x+','+y;if(g.tool!=='eraser'&&g.seen.has(key))return;g.seen.add(key);
             if(g.tool==='eraser'){d.eraseAt({x:p.x,y:p.y},1);g.validPaint=true;this.draw();return;}
             if(g.tool==='button'){
-                if(!d.activeCells[y]?.[x])throw new Error('按钮需要活动格');const w=this.wallAt(p);
+                if(!d.activeCells[y]?.[x])return;const w=this.wallAt(p);
                 const direction=w.type==='h'?{dx:0,dy:w.y===y?-1:1}:{dx:w.x===x?-1:1,dy:0},wall=d[w.type+'Walls'][w.y]?.[w.x];if(isInteriorWall(w,d.width,d.height,d.activeCells)&&wall.type!==W.SOLID)throw new Error('按钮只能依附实墙');
                 const old=d.buttons.find(b=>b.x===x&&b.y===y&&b.direction.dx===direction.dx&&b.direction.dy===direction.dy);if(!old)d.buttons.push({x,y,direction,letter:this.lastValues.button});
                 g.editTarget={kind:'button',layer:d.currentLayer,x,y,dx:direction.dx,dy:direction.dy};g.validPaint=true;this.draw();return;
             }
             if(g.tool==='stair'){
-                if(!d.activeCells[y]?.[x])throw new Error('请先绘制楼梯所在格');if(d.stairs.some(s=>s.layer===d.currentLayer&&s.x===x&&s.y===y))d.eraseStairAt(x,y,d.currentLayer);else {const dir=g.stairPreview?.direction||this.stairDirection(p,x,y);if(!dir||!d.placeStair(x,y,dir))throw new Error('相邻层同格需要地板，且不能占用现有元件');}g.validPaint=true;this.draw();return;
+                if(!d.activeCells[y]?.[x])return;if(d.stairs.some(s=>s.layer===d.currentLayer&&s.x===x&&s.y===y))d.eraseStairAt(x,y,d.currentLayer);else {const dir=g.stairPreview?.direction||this.stairDirection(p,x,y);if(!dir||!d.placeStair(x,y,dir))throw new Error('相邻层同格需要地板，且不能占用现有元件');}g.validPaint=true;this.draw();return;
             }
-            const a=this.workspace.ensure(x,y);if(a.dx||a.dy){this.view.x-=a.dx*this.view.scale;this.view.y-=a.dy*this.view.scale;g.start.x+=a.dx;g.start.y+=a.dy;g.line.x+=a.dx;g.line.y+=a.dy;}x=a.x;y=a.y;d=this.editorDoc;
-            if(g.tool==='grid'){g.gridAction??=d.activeCells[y][x]?'remove':'add';if(g.gridAction==='remove')this.workspace.eraseCell(x,y);else d.toggleActiveCell(x,y,'add');}
-            else{if(!d.activeCells[y][x])d.toggleActiveCell(x,y,'add');if(g.tool==='ghost'){const old=d.ghosts.find(v=>v.x===x&&v.y===y);if(old&&!drag)d.ghosts=d.ghosts.filter(v=>v!==old);else if(!old)d.ghosts.push({x,y});}else if(g.tool==='key'){const old=d.items.find(v=>v.x===x&&v.y===y);if(old&&!drag)d.items=d.items.filter(v=>v!==old);else if(!old)d.items.push({x,y,type:'key'});}else if(g.tool==='start'){d.saveCurrentLayer();for(const l of d.layers)l.customStartPos=null;d.customStartPos={x,y};d.playerLayer=d.currentLayer;}else if(g.tool==='end')d.endPos=d.endPos?.x===x&&d.endPos?.y===y?null:{x,y};}
+            if(g.tool==='grid'){
+                const a=this.workspace.ensure(x,y);if(a.dx||a.dy){this.view.x-=a.dx*this.view.scale;this.view.y-=a.dy*this.view.scale;g.start.x+=a.dx;g.start.y+=a.dy;g.line.x+=a.dx;g.line.y+=a.dy;}x=a.x;y=a.y;d=this.editorDoc;
+                g.gridAction??=d.activeCells[y][x]?'remove':'add';if(g.gridAction==='remove')this.workspace.eraseCell(x,y);else d.toggleActiveCell(x,y,'add');
+                g.validPaint=true;this.draw();return;
+            }
+            // 其余元件只认活动格：图格外点击不创建图格、不提示，直接无响应。
+            if(!d.activeCells[y]?.[x])return;
+            if(g.tool==='ghost'){const old=d.ghosts.find(v=>v.x===x&&v.y===y);if(old&&!drag)d.ghosts=d.ghosts.filter(v=>v!==old);else if(!old)d.ghosts.push({x,y});}
+            else if(g.tool==='key'){const old=d.items.find(v=>v.x===x&&v.y===y);if(old&&!drag)d.items=d.items.filter(v=>v!==old);else if(!old)d.items.push({x,y,type:'key'});}
+            else if(g.tool==='start'){d.saveCurrentLayer();for(const l of d.layers)l.customStartPos=null;d.customStartPos={x,y};d.playerLayer=d.currentLayer;}
+            else if(g.tool==='end')d.endPos=d.endPos?.x===x&&d.endPos?.y===y?null:{x,y};
             g.validPaint=true;this.draw();
         }catch(error){if(!g.validPaint)this.workspace.cancel();if(!g.error){g.error=true;this.notify(error.message);}}
     }
     handleKey(e){
         const k=e.key.toLowerCase();if(k==='f'){e.preventDefault();this.fit();}else if(['+','=','-','_'].includes(k)){e.preventDefault();this.zoom(k==='-'||k==='_'?.8:1.25);}else if(k==='escape'){this.cancelGesture();}
-        else if(['arrowleft','a','arrowright','d'].includes(k)){e.preventDefault();const tools=[...document.querySelectorAll('[data-editor-tool]')].filter(b=>!b.hidden).map(b=>b.dataset.editorTool),index=tools.indexOf(this.tool),delta=['a','arrowleft'].includes(k)?-1:1;this.tool=tools[(index+delta+tools.length)%tools.length];this.sync();}
-        else if(['arrowup','w','arrowdown','s'].includes(k)&&this.editorDoc.layerCount>1){e.preventDefault();const delta=['arrowup','w'].includes(k)?1:-1;this.switchToLayer((this.editorDoc.currentLayer+delta+this.editorDoc.layerCount)%this.editorDoc.layerCount);}
+        else if(['arrowleft','a','arrowright','d','arrowup','w','arrowdown','s'].includes(k)){e.preventDefault();this.stepTool(k);}
         else if(k===' '){e.preventDefault();this.switchToLayer(this.editorDoc.playerLayer);}
     }
+    /** 按工具栏的视觉排布切工具：左右沿阅读顺序轮换（行末接到下一行行首），上下只在相邻行内移动，到头不切。 */
+    stepTool(k){
+        const buttons=[...document.querySelectorAll('[data-editor-tool]')].filter(b=>!b.hidden&&b.offsetParent!==null);
+        if(!buttons.length)return;
+        const rows=[];
+        for(const b of buttons){
+            const r=b.getBoundingClientRect(),row=rows.find(row=>Math.abs(row.top-r.top)<r.height/2);
+            if(row)row.items.push({b,r});else rows.push({top:r.top,items:[{b,r}]});
+        }
+        rows.sort((a,b)=>a.top-b.top);for(const row of rows)row.items.sort((a,b)=>a.r.left-b.r.left);
+        let row=-1,col=-1;rows.forEach((r,i)=>r.items.forEach((item,j)=>{if(item.b.dataset.editorTool===this.tool){row=i;col=j;}}));
+        if(row<0)return this.setTool(buttons[0].dataset.editorTool);
+        if(['arrowleft','a','arrowright','d'].includes(k)){
+            const order=rows.flatMap(r=>r.items),index=order.indexOf(rows[row].items[col]);
+            return this.setTool(order[(index+(['arrowright','d'].includes(k)?1:-1)+order.length)%order.length].b.dataset.editorTool);
+        }
+        const next=rows[row+(['arrowup','w'].includes(k)?-1:1)];if(!next)return;
+        this.setTool(next.items[Math.min(col,next.items.length-1)].b.dataset.editorTool);
+    }
+    setTool(name){if(!name||name===this.tool)return;this.properties.hide();this.tool=name;this.sync();}
 }

@@ -217,10 +217,24 @@ export class Application {
         const r=this.game.replay;if(!r)return;this.game.pauseReplay();const actions=r.history.actions.slice(0,r.currentStep),encoded=this.runtime.ReplaySerializer.generateShareCode(r.mapData,actions);
         if(!encoded.success){this.notify(encoded.error,'error');return;}await this.loadURL(routeURL({map:r.mapCode,save:encoded.code}));
     }
+    /** Tab：多层地图里把视野切到下一层，返回这次是否真的切换了。 */
+    cycleViewLayer(){
+        if(this.view==='play'){
+            const c=this.game?.controller,count=c?.mapDefinition?.layerCount;if(!count||count<2)return false;
+            this.game.switchToLayer((c.viewLayer+1)%count);return true;
+        }
+        if(this.view==='editor'&&this.editor?.loaded){
+            const d=this.editor.editorDoc;if(d.layerCount<2)return false;
+            this.editor.switchToLayer((d.currentLayer+1)%d.layerCount);return true;
+        }
+        return false;
+    }
     key(e){
         const target=e.target,k=e.key.toLowerCase(),typing=target?.isContentEditable||['SELECT','TEXTAREA'].includes(target?.tagName)||target?.tagName==='INPUT'&&!['checkbox','radio','range','button'].includes(target.type);
         if(this.dialogOpen||typing||this.loading)return;if(k===' '&&target?.tagName==='INPUT'&&['checkbox','radio'].includes(target.type))return;
         if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&['1','2','3','4'].includes(k)){e.preventDefault();this.switchColumn(['maps','play','replay','editor'][Number(k)-1]);return;}
+        // 多层地图：游玩和编辑里 Tab 循环视野所在层（编辑元件参数时由输入框先接走 Tab）。
+        if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&k==='tab'&&this.cycleViewLayer()){e.preventDefault();return;}
         const modifier=e.ctrlKey||e.metaKey;
         if(modifier&&k==='z'){if(this.view==='play'){e.preventDefault();e.shiftKey?this.game.handleRedo():this.game.handleUndo();}else if(this.view==='editor'){e.preventDefault();e.shiftKey?this.editor.redo():this.editor.undo();}return;}
         if(modifier&&k==='y'){if(this.view==='play'){e.preventDefault();this.game.handleRedo();}else if(this.view==='editor'){e.preventDefault();this.editor.redo();}return;}
