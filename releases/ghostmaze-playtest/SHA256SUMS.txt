@@ -1,2 +1,0 @@
-1d3e1e2b32242d07848bbc44d01e40c1817f0cb1a2eaa56a6f84e92ba71cd17a  releases/ghostmaze-playtest/ghostmaze-playtest-skill.zip
-c764a8ba1d19038995e42a3e310238ae8f0802ed9c95522a0ac8994f006b07d0  releases/ghostmaze-playtest/ghostmaze-playtest-plugin.zip

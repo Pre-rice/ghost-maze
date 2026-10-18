@@ -1,0 +1,99 @@
+{
+  "releases": [
+    {
+      "version": "1.0.0",
+      "publicDownloadPassed": true,
+      "sha256Passed": true,
+      "originalZipBytesPreserved": true,
+      "tagSourceCommitMatched": true,
+      "assets": [
+        "SHA256SUMS.txt",
+        "ghostmaze-playtest-plugin.zip",
+        "ghostmaze-playtest-skill.zip",
+        "javascript-play-record.json",
+        "manifest.json",
+        "migration.json",
+        "sample-report.md",
+        "verification.json"
+      ],
+      "sourceCommit": "f1fe58d593bbff591b2956207a83f8ee9c95c120",
+      "engine": "sha256:045d5a8353422b89980b2d2f0e2a1bf4bebdada54436f8d37792fc42bc675441",
+      "sha256": {
+        "SHA256SUMS.txt": "d8163177a820de2de1d46b698b2f65efa39ff967c204d423bf258e78d8875a11",
+        "ghostmaze-playtest-plugin.zip": "876a176b1646bd0355c89bcd098766abf29a49045126805777423a13c3e9ff98",
+        "ghostmaze-playtest-skill.zip": "896c53c0070c1a5a64f2f1043b1e4f65a5635495c59ac9973c0b6cdc00753111",
+        "javascript-play-record.json": "27b10333a9a70a943261de42d26b79480a3e11d67ccb1623c4b69cd0cb72b1ce",
+        "manifest.json": "2ce3e5c93eb96240ca58de6b03ee0a329ba62594edec4a603d45244e4a9e13ae",
+        "migration.json": "20e4beac9c798bafc5b89ff2612453ea8b3032648d0fdd7d8bcf2f3f5d0153ba",
+        "sample-report.md": "6ea1d3d4a1b87f4678a53f86c91373f714805a7b9a6b36308e394005ffb48391",
+        "verification.json": "11d1a4ea09d6945651353a45c6157b6f5a571cc2fdbe5425297c85ae5bb65735"
+      }
+    },
+    {
+      "version": "1.0.1",
+      "publicDownloadPassed": true,
+      "sha256Passed": true,
+      "originalZipBytesPreserved": true,
+      "tagSourceCommitMatched": true,
+      "assets": [
+        "SHA256SUMS.txt",
+        "ghostmaze-playtest-plugin.zip",
+        "ghostmaze-playtest-skill.zip",
+        "manifest.json",
+        "migration.json",
+        "verification.json"
+      ],
+      "sourceCommit": "4d143d1f73189456755d1194c16db3f1684a0ffe",
+      "engine": "sha256:5861b72bee934007e2679b60f38e3820ad1e2302a6d0a309bb7a59793eefb109",
+      "sha256": {
+        "SHA256SUMS.txt": "6db788e453e2f8e0351b950dad8b2e5b3ac03a26c82639eddbe6a19268a4934f",
+        "ghostmaze-playtest-plugin.zip": "1390d655519e34e7203c2c6110466e5da3753f2362f3831f5e26d711ed7bf16b",
+        "ghostmaze-playtest-skill.zip": "f29bf1685e61555d1d73dc2e4b749f8aff7e838c880609c7d11e47df2423a2fe",
+        "manifest.json": "cb8599c11cac66eb46b8addd4d8a3925d62b955c3552bd81bb789ce6a9a0aa54",
+        "migration.json": "d0b389ecf7e98407b7ed469f8b77851ac52e8cc122ec9b3db891e1b00ef23471",
+        "verification.json": "97f0dac171a7c393ec545138c7397b65f4e66e7247a339e3ed3a890fc07b0bd6"
+      }
+    },
+    {
+      "version": "1.0.2",
+      "publicDownloadPassed": true,
+      "sha256Passed": true,
+      "originalZipBytesPreserved": true,
+      "tagSourceCommitMatched": true,
+      "assets": [
+        "SHA256SUMS.txt",
+        "ghostmaze-playtest-plugin.zip",
+        "ghostmaze-playtest-skill.zip",
+        "manifest.json",
+        "migration.json",
+        "verification.json"
+      ],
+      "sourceCommit": "56f9546acff4c6b140291b1cfa7f0d67e537c86f",
+      "engine": "sha256:762b163064dac2464603c002d5a46782675f0a78274e93f68aa36555683cd91a",
+      "sha256": {
+        "SHA256SUMS.txt": "65dab61f9fe034a55dfdff1cdf9dcc52e151948619b82559af2e33f136c86f3f",
+        "ghostmaze-playtest-plugin.zip": "c764a8ba1d19038995e42a3e310238ae8f0802ed9c95522a0ac8994f006b07d0",
+        "ghostmaze-playtest-skill.zip": "1d3e1e2b32242d07848bbc44d01e40c1817f0cb1a2eaa56a6f84e92ba71cd17a",
+        "manifest.json": "7ae6ede69d97b37a0fc11f958dabe2319022e18cf4eb925191476446ab93aac6",
+        "migration.json": "ab00f9ee6d25c98bf12abcdf5b80686460fbe704646ff752454de7c8fc88c980",
+        "verification.json": "c24f0aa8a49e7be79105538de295c3d90785ff14600c9f1a9ed624062882b641"
+      }
+    }
+  ],
+  "workflowRun": "https://github.com/Pre-rice/ghost-maze/actions/runs/39103578815",
+  "latest": "playtest-v1.0.2",
+  "date": "2026-10-18",
+  "sourceRepository": "Pre-rice/ghost-maze",
+  "status": "passed",
+  "historicalInstallationCopiesRemovedFromCurrentTree": true,
+  "originalGitHistoryRetained": true,
+  "validation": {
+    "sourcePackageCheckPassed": true,
+    "gameTestFiles": 29,
+    "packagingCases": 2,
+    "packageStandaloneRestorePassed": true,
+    "readmeUserIntroductionPreserved": true,
+    "mapsAndPhysicsChanged": false,
+    "ordinaryChatAccountInstallTested": false
+  }
+}

@@ -47,7 +47,7 @@ node scripts/prepare-playtest-release.mjs --output artifacts/ghostmaze-playtest
 
 完成提交并同步 main 后，给发布提交打匹配版本标签并推送。GitHub Actions 只在 `playtest-v*` 标签触发：核对标签与版本、运行本体测试、打包，先上传到发布草稿，再公开 Release。已发布版本不可覆盖；失败保留草稿便于查证，不将不完整安装包标成正式版本。
 
-三个既有版本从原交付目录迁入 Release，ZIP 保持原字节；来源提交、校验及原验证记录随版本保留。历史标签对应当时源码，不重新运行旧版机制生成新包。
+三个既有版本从原交付目录迁入 Release，ZIP 保持原字节；来源提交、校验及原验证记录随版本保留。历史标签对应当时源码，不重新运行旧版机制生成新包。 [迁移及公开下载核验](archive/playtest-release-migration-20261018.json)记录三个版本、六个安装包的原件一致性和源码标签。
 
 ## 已验收与实际缺项
 

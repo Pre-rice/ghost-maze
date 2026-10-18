@@ -13,3 +13,5 @@
 [2026-10-13整理清单](reorganization-20261013.json)记录当时路径，不代表现在的文档归属。后续迁出的研究资料及源提交、哈希见[迁移清单](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/repository-separation-20261018.json)。历史快照保留当时两仓混合说明，仅用于追溯。
 
 试玩技能的旧安装包、验收与演练在[对应 Release](https://github.com/Pre-rice/ghost-maze/releases)保留；版本固定，不静默改写旧记录。
+
+[试玩 Release 迁移清单](playtest-release-migration-20261018.json)记录原包、版本标签及实际下载校验。
