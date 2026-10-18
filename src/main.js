@@ -23,7 +23,8 @@ export class GhostMazeGame {
         this.controller=this.makeController();
         this.dpad={element:document.getElementById('dpad-controls'),grip:document.getElementById('dpad-center'),isDragging:false,isResizing:false,currentScale:1};
         this.stopDpad=Input.bindDpadControls(this);UI.initializeDpadTouchControls(this.dpad);
-        this.canvas.addEventListener('click',e=>{if(app.view==='play'&&!this.controller.pendingDeath&&!app.dialogOpen)Input.handleCanvasClick(this,e);});
+        // 监听整页点击：地图边缘按钮需要点到画布外一点点，范围由 handleCanvasClick 判定。
+        document.addEventListener('click',e=>{if(app.view==='play'&&!this.controller.pendingDeath&&!app.dialogOpen)Input.handleCanvasClick(this,e);});
         window.addEventListener('blur',()=>{this.stopAutoMove();this.pauseReplay();});
         window.matchMedia('(max-width:768px)').addEventListener('change',()=>this.sync());
         this.bind();this.resize();

@@ -89,10 +89,13 @@ const makeGame = () => {
             return {
                 width: this.width, height: this.height, cellSize: this.cellSize,
                 hWalls: this.hWalls, vWalls: this.vWalls,
-                seenCells: this.seenCells, activeCells: this.activeCells, debugVision: this.debugVision,
+                seenCells: this.seenCells, activeCells: this.activeCells, buttons: this.buttons || [],
+                debugVision: this.debugVision,
                 player: this.player,
             };
         },
+        switchToLayer(index) { this.switchedTo = index; this.controller.viewLayer = index; },
+        useStair() { this.stairCalls = (this.stairCalls || 0) + 1; },
     };
     g.syncEditorMirrors();
     return g;
@@ -146,6 +149,40 @@ test('handleCanvasClick：点自己所在格触发楼梯', () => {
     InputHandler.handleCanvasClick(g, { clientX: 1 * 50 + 25, clientY: 1 * 50 + 25 }); // 点玩家自己的格
     assertEq(stairs, 1, '点本格触发上下楼梯');
     assertEq(moved, 0, '不当作移动');
+});
+
+test('handleCanvasClick：点本格按钮的贴边范围就按按钮，不当作楼梯', () => {
+    const g = makeGame();
+    g.activeCells[0][1] = false; // 本格上方是地图外，按钮可贴这条边
+    g.buttons = [{ x: 1, y: 1, letter: 'A', direction: { dx: 0, dy: -1 } }];
+    const moves = [];
+    g.movePlayer = (dx, dy) => { moves.push([dx, dy]); };
+    let stairs = 0; g.useStair = () => { stairs++; };
+    InputHandler.handleCanvasClick(g, { clientX: 1 * 50 + 25, clientY: 1 * 50 + 8 }); // 本格靠上边缘
+    assertEq(moves.length, 1, '按按钮走一次等效方向键');
+    assertEq(moves[0][0], 0); assertEq(moves[0][1], -1);
+    assertEq(stairs, 0, '不触发楼梯');
+});
+
+test('handleCanvasClick：视线在别的楼层时先切回玩家层，不移动', () => {
+    const g = makeGame();
+    g.controller.mapDefinition = { multiLayerMode: true };
+    g.controller.viewLayer = 1;
+    g.controller.currentGameState = { player: { layer: 0 } };
+    let moved = 0;
+    g.movePlayer = () => { moved++; };
+    InputHandler.handleCanvasClick(g, { clientX: 75, clientY: 75 }); // 玩家本格
+    assertEq(g.switchedTo, 0, '切回玩家所在层');
+    assertEq(moved, 0, '这一下不当作移动');
+});
+
+test('handleCanvasClick：画布外很远的点击一律忽略', () => {
+    const g = makeGame();
+    let moved = 0, stairs = 0;
+    g.movePlayer = () => { moved++; };
+    g.useStair = () => { stairs++; };
+    InputHandler.handleCanvasClick(g, { clientX: 1500, clientY: 400 }); // 画布（500×500）外
+    assertEq(moved, 0); assertEq(stairs, 0, '远处点击不触发任何游戏动作');
 });
 
 test('handleCanvasClick：点地图外或虚空不移动（全图视野下同样）', () => {

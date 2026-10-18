@@ -171,8 +171,37 @@ export function bindDpadControls(game) {
             if (game.state === GAME_STATES.PLAYING) { return { x: mx - game.drawOffset.x, y: my - game.drawOffset.y }; }
             return { x: mx - (game.padding || 0), y: my - (game.padding || 0) };
         }
+        // 画布外这一段也算在地图区里：地图边缘的按钮常要点到画布外一点点，手机端不额外放宽。
+        const CLICK_SLACK_PX = 32;
+        /** 只接受地图区及其外圈一小段内的点击；面板、楼层面板和控件上的点击不算。 */
+        function withinClickArea(e) {
+            const target = e.target;
+            if (target && target !== canvas && target.closest && target.closest('#layer-panel,aside,dialog,button,a,input,select,textarea,label,header,nav')) return false;
+            const rect = canvas.getBoundingClientRect();
+            const slack = globalThis.matchMedia && globalThis.matchMedia('(max-width:768px)').matches ? 0 : CLICK_SLACK_PX;
+            return e.clientX >= rect.left - slack && e.clientX <= rect.left + rect.width + slack &&
+                e.clientY >= rect.top - slack && e.clientY <= rect.top + rect.height + slack;
+        }
+        /** 点在本格时，落在该格按钮的贴边范围内就返回按钮方向（与编辑器热点同一套判定）。 */
+        function ownButtonDirection(view, pos) {
+            const buttons = view.buttons || [];
+            if (!buttons.some(b => b.x === view.player.x && b.y === view.player.y)) return null;
+            const hotspot = Pathfinding.getButtonHotspotAtPos(pos.x, pos.y, {
+                cellSize: view.cellSize, width: view.width, height: view.height,
+                activeCells: view.activeCells, hWalls: view.hWalls, vWalls: view.vWalls, editorMode: 'free'
+            });
+            if (!hotspot || hotspot.x !== view.player.x || hotspot.y !== view.player.y) return null;
+            const hit = buttons.find(b => b.x === hotspot.x && b.y === hotspot.y &&
+                b.direction.dx === hotspot.direction.dx && b.direction.dy === hotspot.direction.dy);
+            return hit ? hit.direction : null;
+        }
         export function handleCanvasClick(game, e) {
-            if (game.state !== GAME_STATES.PLAYING || game.editor.active) return;
+            if (game.state !== GAME_STATES.PLAYING || game.editor.active || !withinClickArea(e)) return;
+            const controller = game.controller, player = controller.currentGameState?.player;
+            // 视线停在别的楼层时，这次点击只回到玩家所在层，不当作移动或寻路。
+            if (controller.mapDefinition?.multiLayerMode && player && controller.viewLayer !== player.layer) {
+                game.switchToLayer(player.layer); return;
+            }
             game.stopAutoMove();
             const view = game.getGameView();
             const pos = getMousePos(game, e);
@@ -180,8 +209,12 @@ export function bindDpadControls(game) {
             const dx = targetX - view.player.x; const dy = targetY - view.player.y;
             // 相邻格一律等效按一次方向键，不看是否在地图内：地图边缘的按钮就要朝外点才能按到。
             if (Math.abs(dx) + Math.abs(dy) === 1) { game.movePlayer(dx, dy); return; }
-            // 点自己所在格：站在楼梯格上再点本格即上下楼，点击因此能覆盖全部操作。
-            if (dx === 0 && dy === 0) { game.useStair(); return; }
+            // 点自己所在格：点在按钮贴边处就按按钮，否则当作上下楼梯。
+            if (dx === 0 && dy === 0) {
+                const press = ownButtonDirection(view, pos);
+                if (press) game.movePlayer(press.dx, press.dy); else game.useStair();
+                return;
+            }
             // 其余只认地图内、可见的活动格：点地图外、虚空或未探索的格子不移动。
             if (targetX < 0 || targetX >= view.width || targetY < 0 || targetY >= view.height) return;
             if (!view.activeCells[targetY][targetX]) return;

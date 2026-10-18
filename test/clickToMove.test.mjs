@@ -165,6 +165,7 @@ const stubGame = (c, { debugVision = false, useStair = false } = {}) => {
         },
         movePlayer(dx, dy) { return c.movePlayer(dx, dy); },
         useStair() { return c.useStair(); },
+        switchToLayer(index) { game.switched = index; c.viewLayer = index; },
         stopAutoMove() { if (game.autoMoveInterval) { clearInterval(game.autoMoveInterval); game.autoMoveInterval = null; } },
     };
     return game;
@@ -233,6 +234,58 @@ test('点自己所在的楼梯格就上下楼', () => {
     InputHandler.handleCanvasClick(game, { clientX: 2 * 50 + 25, clientY: 2 * 50 + 25 }); // 点本格
     assertEq(c.currentGameState.player.layer, 1, '点本格上楼到第 2 层');
     assertEq(c.currentGameState.player.steps, 1, '上下楼记一步');
+});
+
+// 视线在别的楼层时：点击先切回玩家层，不做移动
+test('视线停在别的楼层时，点击只切回玩家层', () => {
+    const base = makeMap({ endPos: null });
+    const c = new GameController({});
+    const started = c.startGame({
+        width: base.width, height: base.height, editorMode: base.editorMode, gameMode: base.gameMode, initialHealth: base.initialHealth,
+        multiLayerMode: true, layerCount: 2,
+        stairs: [{ x: 2, y: 2, layer: 0, direction: 'up' }, { x: 2, y: 2, layer: 1, direction: 'down' }],
+        layers: [0, 1].map(layer => ({
+            hWalls: base.hWalls.map(row => row.map(w => ({ ...w }))),
+            vWalls: base.vWalls.map(row => row.map(w => ({ ...w }))),
+            activeCells: base.activeCells.map(row => row.slice()),
+            ghosts: [], items: [], buttons: [],
+            endPos: layer === 1 ? { x: 6, y: 6 } : null,
+            customStartPos: layer === 0 ? { x: 2, y: 2 } : null,
+        })),
+    });
+    assert(started.success, started.error);
+    const game = stubGame(c);
+    c.viewLayer = 1; // 玩家在第 0 层，视线停在第 1 层
+    let moved = 0;
+    const origMove = game.movePlayer;
+    game.movePlayer = (dx, dy) => { moved++; return origMove(dx, dy); };
+    InputHandler.handleCanvasClick(game, { clientX: 1 * 50 + 25, clientY: 1 * 50 + 25 });
+    assertEq(game.switched, 0, '切回玩家所在层');
+    assertEq(c.viewLayer, 0);
+    assertEq(moved, 0, '这一下不移动');
+    assertEq(c.currentGameState.player.steps, 0);
+});
+
+// 本格按钮：按钮贴在出生格的左边界，点本格靠左的边缘就按下去
+const edgeButtonMap = () => {
+    const base = makeMap({
+        activeCells: Array.from({ length: 8 }, (_, y) => Array.from({ length: 8 }, (_, x) => x < 3 && y < 3)),
+        customStartPos: { x: 0, y: 0 }, endPos: { x: 2, y: 2 },
+        buttons: [{ x: 0, y: 0, letter: 'A', direction: { dx: -1, dy: 0 } }],
+    });
+    base.vWalls[1][2] = { type: 6, letter: 'A', initialState: 'closed' };
+    return base;
+};
+
+test('点本格按钮的贴边范围就按按钮，人物不移动', () => {
+    const c = new GameController({});
+    const started = c.startGame(edgeButtonMap());
+    assert(started.success, started.error);
+    const game = stubGame(c);
+    InputHandler.handleCanvasClick(game, { clientX: 5, clientY: 25 }); // 本格（0,0）靠左边缘
+    assertEq(c.currentGameState.player.steps, 1, '按按钮记一步');
+    assertDeepEq({ x: c.currentGameState.player.x, y: c.currentGameState.player.y }, { x: 0, y: 0 }, '人物不动');
+    assertEq(c.currentGameState.layerStates[0].wallStates.v[1][2].currentState, 'open', '字母门被按下打开');
 });
 
 // 相邻穿门：玩家 {1,1}，{2,1} 左侧 DOOR，点击 {2,1} 单步穿门直接到达
