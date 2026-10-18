@@ -5,7 +5,7 @@
 ## 接手与运行
 
 1. 阅读 AGENTS，核对本仓 main、origin/main 和未提交修改；保留用户及另一位协作者的工作。
-2. 使用 Node.js 22（已验收 22.21.1）运行测试；打包另外需要 Python 3。网站无构建步骤，无需 npm install。
+2. 测试与打包需要 Node.js 22（已验收 22.21.1）及 Python 3，仅使用标准库；测试包括安装包独立运行检查。网站无构建步骤，无需 npm install。
 3. 在本仓运行静态服务器，例如 `python3 -m http.server 8000 --bind 127.0.0.1`，访问 `http://127.0.0.1:8000/`。不能用 file://。
 4. JavaScript 修改运行 `npm test`；规则或试玩运行包变化另核对 `node scripts/package-playtest.mjs --check`。纯文档检查链接与事实。
 
