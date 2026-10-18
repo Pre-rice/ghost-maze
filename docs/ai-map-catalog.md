@@ -1,5 +1,19 @@
 # AI 地图总目录
 
+## 2026-10-18 新候选：《布阵》
+
+完整6×6、单层36格、四鬼、一把钥匙；A两门、B一门、一扇普通门及终点1门。最优58步，两种含停顿鬼轨迹；全部最优无重合、去终点安全，中性初态与指定实际入场保持，四鬼24排列18164520次后继一致。**尚无真人评价、未入地图集；现行十五图保持。**
+
+[试玩](https://ghostmaze.novic.cc/?map=AWM4wPAHDBiZLCSPb1rDaMF9gpWJYdWiKQwMDEKtoQwM3IoiGs0TC4o0khQcGDgYmQA) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/staged-workroom-20261018)
+
+<details><summary>设计预期与参考（含答案）</summary>
+
+普通门内侧安置一鬼并调开钥匙旁的角鬼，也占掉了之后的避追能力。经过右侧前需要从左侧校准中守卫，让它留在内室，保留到B前停步的条件，再借室内换向取得钥匙。省略这项校准的一条自然安全前缀已无续解，仅该守卫位置不同的对照局面仍可解。预期整体规划价值尚未获真人确认。
+
+[58步参考](https://ghostmaze.novic.cc/?map=AWM4wPAHDBiZLCSPb1rDaMF9gpWJYdWiKQwMDEKtoQwM3IoiGs0TC4o0khQcGDgYmQA&replay=EAIs3Aqr8tqoBV_8ACpll_8AKqA) · [两种参考及边界](https://github.com/Pre-rice/ghost-maze-ai/blob/main/examples/staged-workroom-20261018/README.md)。从八机关两钥匙稿删五扇字母门和必经钥匙，组合复算58步。机器证据不作趣味标签，不继承旧图好评。
+
+</details>
+
 ## 2026-10-18 《调度》新版确认入集
 
 用户在规则更新后实际试玩，评价“新版《调度》甚至更妙了”“需要更复杂的调度”“核心思想几乎完全不变”，明确要求加入地图集。以原图和新规则70步证据追加为第十五张；四种最优鬼轨迹，全部边界通过。旧版反馈、50步证据与源码保持。
