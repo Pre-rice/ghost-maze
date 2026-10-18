@@ -85,6 +85,21 @@ test('findPlayerPath: 不可见格阻挡（视野外无法寻路）', () => {
     assertEq(findPlayerPath({ x: 0, y: 0 }, { x: 1, y: 0 }, config) !== null, true, '视野内可寻路');
 });
 
+test('findPlayerPath: 全图视野下也不穿过虚空', () => {
+    // 3×1 中间格是虚空：全图视野且都可见时也不能直穿，虚空格本身也不可达
+    const config = {
+        width: 3, height: 1,
+        hWalls: [emptyRow(3), emptyRow(3)],
+        vWalls: [emptyRow(4)],
+        seenCells: [[true, true, true]],
+        debugVision: true,
+        playerKeys: 0,
+        activeCells: [[true, false, true]],
+    };
+    assertEq(findPlayerPath({ x: 0, y: 0 }, { x: 2, y: 0 }, config), null, '虚空不可穿过');
+    assertEq(findPlayerPath({ x: 0, y: 0 }, { x: 1, y: 0 }, config), null, '虚空格不可达');
+});
+
 test('getButtonHotspotAtPos: 贴墙方向热点命中，非贴墙不命中', () => {
     const cellSize = 100;
     const empty = () => ({ type: 0, keys: 0 });

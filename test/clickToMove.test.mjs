@@ -16,6 +16,7 @@ installBrowserEnv();
 import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
 import { GameController } from '../src/core/gameController.js';
 import { computeGameView } from '../src/view/viewSlice.js';
+import { makeMap } from './helpers/map-fixture.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const goldenMaps = JSON.parse(readFileSync(join(__dirname, 'golden/maps.json'), 'utf-8'));
@@ -137,7 +138,7 @@ test('确定性带门地图 {1,1}→{3,1}：穿过 DOOR 精确到达', () => {
     }
 });
 
-// 相邻格降级寻路：玩家 {1,1} 下方 {1,2} 隔 SOLID 墙，但 {1,2} 可经 {2,1}→{2,2} 绕行到达
+// 相邻格撞墙：玩家 {1,1} 下方 {1,2} 隔 SOLID 墙。相邻点击只按一次方向键，不再绕行。
 const wallAdjacentMap = () => {
     const W = 8, H = 8;
     const hWalls = Array(H + 1).fill(null).map((_, y) => Array(W).fill(null).map((_, x) => ({ type: (y === 0 || y === H || x === 0 || x === W - 1) ? 1 : 0, keys: 0 })));
@@ -151,6 +152,88 @@ const wallAdjacentMap = () => {
         multiLayerMode: false, layerCount: 1, layers: [], stairs: []
     };
 };
+
+const stubGame = (c, { debugVision = false, useStair = false } = {}) => {
+    const game = {
+        state: 'playing', cellSize: 50, drawOffset: { x: 0, y: 0 }, autoMoveInterval: null,
+        controller: c, editor: { active: false }, debugVision,
+        getGameView() {
+            return computeGameView(
+                { mapDef: c.mapDefinition, gameState: c.currentGameState, viewLayer: c.viewLayer },
+                { canvas: canvasEl, staticLayerCanvas: canvasEl, state: game.state, cellSize: 50, colors: {}, drawOffset: { x: 0, y: 0 }, debugVision }
+            );
+        },
+        movePlayer(dx, dy) { return c.movePlayer(dx, dy); },
+        useStair() { return c.useStair(); },
+        stopAutoMove() { if (game.autoMoveInterval) { clearInterval(game.autoMoveInterval); game.autoMoveInterval = null; } },
+    };
+    return game;
+};
+
+test('相邻格撞墙只按一次方向键，不再绕行寻路', () => {
+    const c = new GameController({});
+    c.startGame(wallAdjacentMap());
+    c.currentGameState.seenCells[0][2][1] = true; c.currentGameState.seenCells[0][2][2] = true;
+    const game = stubGame(c);
+    let calls = 0;
+    const origMove = game.movePlayer;
+    game.movePlayer = (dx, dy) => { calls++; return origMove(dx, dy); };
+    const origSet = globalThis.setInterval, origClear = globalThis.clearInterval;
+    globalThis.__timerCb = null;
+    globalThis.setInterval = (cb) => { globalThis.__timerCb = cb; return 1; };
+    globalThis.clearInterval = () => { globalThis.__timerCb = null; };
+    try {
+        InputHandler.handleCanvasClick(game, { clientX: 1 * 50 + 25, clientY: 2 * 50 + 25 }); // 相邻 {1,2}
+        assertEq(calls, 1, '只尝试相邻单步');
+        assertEq(globalThis.__timerCb, null, '不注册寻路定时器');
+        assertDeepEq({ x: c.currentGameState.player.x, y: c.currentGameState.player.y }, { x: 1, y: 1 }, '撞墙不动，也不绕行');
+    } finally {
+        globalThis.setInterval = origSet; globalThis.clearInterval = origClear; globalThis.__timerCb = null;
+    }
+});
+
+test('点虚空或地图外不移动（全图视野下也一样）', () => {
+    const source = doorMap();
+    source.activeCells[5][5] = false; source.activeCells[5][6] = false;
+    const c = new GameController({});
+    c.startGame(source);
+    const game = stubGame(c, { debugVision: true });
+    let calls = 0;
+    game.movePlayer = () => { calls++; return {}; };
+    const origSet = globalThis.setInterval;
+    globalThis.setInterval = () => 0;
+    try {
+        InputHandler.handleCanvasClick(game, { clientX: 5 * 50 + 25, clientY: 5 * 50 + 25 }); // 虚空格
+        assertEq(calls, 0, '虚空格不触发移动');
+        InputHandler.handleCanvasClick(game, { clientX: 20 * 50 + 25, clientY: 20 * 50 + 25 }); // 地图外
+        assertEq(calls, 0, '地图外不触发移动');
+        InputHandler.handleCanvasClick(game, { clientX: 4 * 50 + 25, clientY: 1 * 50 + 25 }); // 正常活动格
+        assertEq(calls, 1, '正常活动格仍自动移动');
+    } finally { globalThis.setInterval = origSet; }
+});
+
+test('点自己所在的楼梯格就上下楼', () => {
+    const base = makeMap({ endPos: null });
+    const c = new GameController({});
+    const started = c.startGame({
+        width: base.width, height: base.height, editorMode: base.editorMode, gameMode: base.gameMode, initialHealth: base.initialHealth,
+        multiLayerMode: true, layerCount: 2,
+        stairs: [{ x: 2, y: 2, layer: 0, direction: 'up' }, { x: 2, y: 2, layer: 1, direction: 'down' }],
+        layers: [0, 1].map(layer => ({
+            hWalls: base.hWalls.map(row => row.map(w => ({ ...w }))),
+            vWalls: base.vWalls.map(row => row.map(w => ({ ...w }))),
+            activeCells: base.activeCells.map(row => row.slice()),
+            ghosts: [], items: [], buttons: [],
+            endPos: layer === 1 ? { x: 6, y: 6 } : null,
+            customStartPos: layer === 0 ? { x: 2, y: 2 } : null,
+        })),
+    });
+    assert(started.success, started.error);
+    const game = stubGame(c);
+    InputHandler.handleCanvasClick(game, { clientX: 2 * 50 + 25, clientY: 2 * 50 + 25 }); // 点本格
+    assertEq(c.currentGameState.player.layer, 1, '点本格上楼到第 2 层');
+    assertEq(c.currentGameState.player.steps, 1, '上下楼记一步');
+});
 
 // 相邻穿门：玩家 {1,1}，{2,1} 左侧 DOOR，点击 {2,1} 单步穿门直接到达
 const doorAdjacentMap = () => {
@@ -166,40 +249,6 @@ const doorAdjacentMap = () => {
         multiLayerMode: false, layerCount: 1, layers: [], stairs: []
     };
 };
-
-test('相邻格单步撞墙且非黑暗 → 降级寻路绕行到达', () => {
-    const c = new GameController({});
-    c.startGame(wallAdjacentMap());
-    c.currentGameState.seenCells[0][2][1] = true; c.currentGameState.seenCells[0][2][2] = true;
-    const game = {
-        state: 'playing', cellSize: 50, drawOffset: { x: 0, y: 0 }, autoMoveInterval: null,
-        controller: c, editor: { active: false }, debugVision: false,
-        getGameView() {
-            return computeGameView(
-                { mapDef: c.mapDefinition, gameState: c.currentGameState, viewLayer: c.viewLayer },
-                { canvas: canvasEl, staticLayerCanvas: canvasEl, state: game.state, cellSize: 50, colors: {}, drawOffset: { x: 0, y: 0 }, debugVision: false }
-            );
-        },
-        movePlayer(dx, dy) { return c.movePlayer(dx, dy); },
-        stopAutoMove() { if (game.autoMoveInterval) { clearInterval(game.autoMoveInterval); game.autoMoveInterval = null; } },
-    };
-    const calls = [];
-    const origMove = game.movePlayer;
-    game.movePlayer = (dx, dy) => { calls.push([dx, dy]); return origMove(dx, dy); };
-    const origSet = globalThis.setInterval, origClear = globalThis.clearInterval;
-    globalThis.__timerCb = null;
-    globalThis.setInterval = (cb) => { globalThis.__timerCb = cb; return 1; };
-    globalThis.clearInterval = () => { globalThis.__timerCb = null; };
-    try {
-        InputHandler.handleCanvasClick(game, { clientX: 1 * 50 + 25, clientY: 2 * 50 + 25 }); // 相邻 {1,2}
-        assertEq(calls[0][0], 0); assertEq(calls[0][1], 1, '先按相邻方向单步');
-        for (let i = 0; i < 20 && globalThis.__timerCb; i++) globalThis.__timerCb();
-        assertDeepEq({ x: c.currentGameState.player.x, y: c.currentGameState.player.y }, { x: 1, y: 2 }, '降级寻路绕行到达 {1,2}');
-        assert(calls.length >= 3, `单步尝试 + 寻路多步，实际 ${calls.length} 次`);
-    } finally {
-        globalThis.setInterval = origSet; globalThis.clearInterval = origClear; globalThis.__timerCb = null;
-    }
-});
 
 test('相邻格单步穿门（等效方向键）直接到达，不寻路', () => {
     const c = new GameController({});

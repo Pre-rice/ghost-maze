@@ -95,14 +95,14 @@ export function calculateDistances(startNode, width, height, hWalls, vWalls) {
 }
 
 /**
- * 查找玩家从起点到终点的路径（考虑可见性和墙壁）
+ * 查找玩家从起点到终点的路径（考虑可见性、墙壁与活动格）
  * @param {object} start - 起点 {x, y}
  * @param {object} end - 终点 {x, y}
  * @param {object} config - 配置对象
  * @returns {Array|null} 路径数组或null
  */
 export function findPlayerPath(start, end, config) {
-    const { width, height, hWalls, vWalls, seenCells, debugVision, playerKeys } = config;
+    const { width, height, hWalls, vWalls, seenCells, debugVision, playerKeys, activeCells } = config;
     
     const queue = [[{ x: start.x, y: start.y }]];
     const visited = new Set([`${start.x},${start.y}`]);
@@ -128,6 +128,8 @@ export function findPlayerPath(start, end, config) {
             const key = `${nx},${ny}`;
             
             if (nx >= 0 && nx < width && ny >= 0 && ny < height && !visited.has(key)) {
+                // 虚空不是通道：全图视野下也不能穿过非活动格，否则点击自动移动会绕出地图。
+                if (activeCells && !activeCells[ny]?.[nx]) continue;
                 // 检查可见性
                 if (!seenCells[ny][nx] && !debugVision) {
                     continue;

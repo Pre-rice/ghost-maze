@@ -1,6 +1,6 @@
 {
   "version": "1.0.2",
-  "engine": "sha256:762b163064dac2464603c002d5a46782675f0a78274e93f68aa36555683cd91a",
+  "engine": "sha256:019235cb010b0651262e722469bf19c0fc8bc1aec4dfb1a7295224054791f23e",
   "format": "ghostmaze-playtest-v1",
   "sources": {
     "src/playtest/public.js": "6750130a5897a547c13a98144fd4ab6f3aa713c1b5e9e27198efc7b83d90488b",
@@ -9,7 +9,7 @@
     "src/core/constants.js": "d255fe6a37b04bba52d9fc54a267b764079b3de38b114112a844e6b654bfea56",
     "src/core/gameState.js": "0b3df61441df78017a1ed2d75cce5997249afee341d9fe124053a62c66f515f6",
     "src/core/mapDataUtils.js": "64dfca10735ce26ae5f075b939676e9c04e485f82efe848c13103bc575e30a04",
-    "src/core/pathfinding.js": "333c35b051237b97373903c1b2a8d6b5bfca3cbb71c4089542dc0202855404bd",
+    "src/core/pathfinding.js": "d636996ea2c301d54eea855a63d26d44783d011de9b3d916d39b9abbb0df4468",
     "src/core/mapDefinition.js": "a842b9e8a68a21b3a93d6429cf3ab06c31b18808201ef45f16ba3e6bd5bc3bf6",
     "src/core/dataSerializer.js": "5a0c990494bd64e60d9e98670967553d29b0152e861f86e66fca0b2353def9b3",
     "src/core/binaryCodec.js": "3dfba2c82b4d2a776c023d2aa44cda36dc8975e1fa195b7030df4d28fa8a335c",
@@ -25,7 +25,7 @@
     "src/solver/searchIndex.js": "f2dfef332276000bb7b8bedb71cd0ef142d3e314d0222ef2c408b8a187eaf0e9"
   },
   "assets": {
-    "playtest.js": "0fa8a1c77fc69e57572d1c903c316def07518180b71b36638a6921dace2c2829",
-    "target.js": "55bcf691ba86e15344e91e02c64f0622c7f8e5666bb755567bc6fabf14cc1b7f"
+    "playtest.js": "31d610562a070c487c2e2ea722dc0d26af58a0491e2954d8fe7eabeba4b3889c",
+    "target.js": "798ccef2ce93c10317e85f504f836797036b323f7a62600c913ea255423dead6"
   }
 }

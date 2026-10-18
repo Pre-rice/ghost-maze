@@ -177,19 +177,15 @@ export function bindDpadControls(game) {
             const view = game.getGameView();
             const pos = getMousePos(game, e);
             const targetX = Math.floor(pos.x / view.cellSize); const targetY = Math.floor(pos.y / view.cellSize);
-            if (targetX < 0 || targetX >= view.width || targetY < 0 || targetY >= view.height) return;
             const dx = targetX - view.player.x; const dy = targetY - view.player.y;
-            if (Math.abs(dx) + Math.abs(dy) === 1) {
-                // 相邻格：先等效方向键单步（支持穿门进黑暗格 / 触发按钮）
-                const result = game.movePlayer(dx, dy);
-                // 已产生效果（移动/按按钮等状态变化）→ 单步完成，结束
-                if (result !== null) return;
-                // 单步无效（撞墙等）且目标非黑暗 → 降级为寻路绕行
-                if (!view.seenCells[targetY][targetX] && !view.debugVision) return;
-            } else if (!view.seenCells[targetY][targetX] && !view.debugVision) {
-                // 远距：目标必须已探索
-                return;
-            }
+            // 相邻格一律等效按一次方向键，不看是否在地图内：地图边缘的按钮就要朝外点才能按到。
+            if (Math.abs(dx) + Math.abs(dy) === 1) { game.movePlayer(dx, dy); return; }
+            // 点自己所在格：站在楼梯格上再点本格即上下楼，点击因此能覆盖全部操作。
+            if (dx === 0 && dy === 0) { game.useStair(); return; }
+            // 其余只认地图内、可见的活动格：点地图外、虚空或未探索的格子不移动。
+            if (targetX < 0 || targetX >= view.width || targetY < 0 || targetY >= view.height) return;
+            if (!view.activeCells[targetY][targetX]) return;
+            if (!view.seenCells[targetY][targetX] && !view.debugVision) return;
             const path = findPlayerPath(game, { x: view.player.x, y: view.player.y }, { x: targetX, y: targetY });
             if (path && path.length > 1) {
                 let currentStep = 1;
@@ -544,6 +540,7 @@ export function bindDpadControls(game) {
                 vWalls: view.vWalls,
                 seenCells: view.seenCells,
                 debugVision: view.debugVision,
-                playerKeys: view.player.keys
+                playerKeys: view.player.keys,
+                activeCells: view.activeCells
             });
         }
