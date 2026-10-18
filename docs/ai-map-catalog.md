@@ -1,8 +1,10 @@
 # AI 地图总目录
 
-## 2026-10-18 新候选：《布阵》
+## 2026-10-18 《布阵》确认入集
 
-完整6×6、单层36格、四鬼、一把钥匙；A两门、B一门、一扇普通门及终点1门。最优58步，两种含停顿鬼轨迹；全部最优无重合、去终点安全，中性初态与指定实际入场保持，四鬼24排列18164520次后继一致。**尚无真人评价、未入地图集；现行十五图保持。**
+完整6×6、单层36格、四鬼、一把钥匙；A两门、B一门、一扇普通门及终点1门。最优58步，两种含停顿鬼轨迹；全部最优无重合、去终点安全，中性初态与指定实际入场保持，四鬼24排列18164520次后继一致。**用户确认加入第十六位，其余十五图原码保持。**
+
+**实际简评：** “不错的地图，但是比上一张欠缺了一点新意和巧妙性。加入地图集。”认可好图，但相较《调度》新意和巧妙性略逊；没有报告具体顿悟、路线或用时。[真实反馈](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/staged-workroom-review-20261018.json)。
 
 [试玩](https://ghostmaze.novic.cc/?map=AWM4wPAHDBiZLCSPb1rDaMF9gpWJYdWiKQwMDEKtoQwM3IoiGs0TC4o0khQcGDgYmQA) · [设计、来源与验收](https://github.com/Pre-rice/ghost-maze-ai/tree/main/examples/staged-workroom-20261018)
 

@@ -119,5 +119,13 @@ export const aiMaps = [
         "cells": 25,
         "ghosts": 3,
         "keys": 0
+    },
+    {
+        "title": "布阵",
+        "mapCode": "AWM4wPAHDBiZLCSPb1rDaMF9gpWJYdWiKQwMDEKtoQwM3IoiGs0TC4o0khQcGDgYmQA",
+        "replayCode": "EAIs3Aqr8tqoBV_8ACpll_8AKqA",
+        "cells": 36,
+        "ghosts": 4,
+        "keys": 1
     }
 ];

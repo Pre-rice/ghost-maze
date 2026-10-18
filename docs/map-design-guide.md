@@ -1,6 +1,6 @@
 # 地图集设计小册
 
-更新：2026-10-18。这里按首次交付／发现记录的顺序，简要总结目前上架的十五张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
+更新：2026-10-18。这里按首次交付／发现记录的顺序，简要总结目前上架的十六张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
 
 “关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《周转》《同行》的新评述及五图优化见[本轮记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-adjustments-20261014.md)。
 
@@ -29,6 +29,7 @@
 | 13 | [《换席》](#13-换席) | 2026-10-16 | 16 / 2 / 1 | 单A按钮、两反相A门、普通门、钥匙门；用户增强版 |
 | 14 | [《回望》](#14-回望) | 2026-10-16 | 16 / 2 / 0 | A/B字母门、0门；先准备未来引鬼通道 |
 | 15 | [《调度》](#15-调度) | 2026-10-17 | 25 / 3 / 0 | A/B两组、六门；整体调度，采用2026-10-18修正规则 |
+| 16 | [《布阵》](#16-布阵) | 2026-10-18 | 36 / 4 / 1 | A/B三门、普通门、钥匙门；先安置与后续避追互相制约 |
 
 ## 1. 错位
 
@@ -201,6 +202,18 @@
 **当前验收：** 原图未改，新规则最优70步、四种逐步鬼轨迹，全部无重合、去终点安全；中性开局、实际入场与编号/排列无关通过。旧50步证据只作历史。
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA) · [当前参考](https://ghostmaze.novic.cc/?map=AADAAPj4-Pj4AAEyYFCMkDVATgEBuhAFVBcg4AAFcCqgAAAAnCFTkLhQooQQAAAECEGAAA&replay=EHN-Avgo9yn8opZf3Asp1XAKD3KClsA)
+
+## 16. 布阵
+
+**设计思想：** 普通门内侧安置一鬼、让另一鬼离开钥匙，同时占掉后续避追口。经过右侧前还要校准中间守卫的距离，保留在B前停步和进房换向的条件；四只鬼的安排需要兼顾后续。
+
+**关键发现：** 预期从“眼前安置完成”转为“这项安置消耗了之后的保护，另一处必须预先准备”。这是设计预期，用户未具体确认顿悟，不把关系必要性当作人的精妙体验。
+
+**你的简评：** “不错的地图，但是比上一张欠缺了一点新意和巧妙性。加入地图集。”认可好图，同时保留相较《调度》的不足；没有完整路线、用时或提示条件记录。[真实评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/staged-workroom-review-20261018.json)。
+
+**验收：** 36格四鬼、最优58步、两种含停顿鬼轨迹；全部最优无重合、去终点安全，中性初态与指定实际入场保持，编号与24种排列无关通过。按原码入集。
+
+[试玩](https://ghostmaze.novic.cc/?map=AWM4wPAHDBiZLCSPb1rDaMF9gpWJYdWiKQwMDEKtoQwM3IoiGs0TC4o0khQcGDgYmQA) · [参考解法](https://ghostmaze.novic.cc/?map=AWM4wPAHDBiZLCSPb1rDaMF9gpWJYdWiKQwMDEKtoQwM3IoiGs0TC4o0khQcGDgYmQA&replay=EAIs3Aqr8tqoBV_8ACpll_8AKqA)
 
 ## 怎样继续使用这份小册
 

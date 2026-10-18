@@ -14,7 +14,7 @@
 
 - [多层交互恢复](archive/delivery/multilayer-restoration-20261015.md)：此前底部数字楼层栏、原版切层／擦除与方向键手势验收。
 
-- [地图集设计小册](map-design-guide.md)：十五图的基本信息、设计思想、尤里卡时刻和真实简评；含解谜关键。
+- [地图集设计小册](map-design-guide.md)：十六图的基本信息、设计思想、尤里卡时刻和真实简评；含解谜关键。
 - [本轮地图调整](map-adjustments-20261014.md)：本轮四图获准维护、两稿取消、边界修正与反思。
 - [地图总目录](ai-map-catalog.md)：所有已保存地图及对照、参考、反馈来源；这是资料库，按需查证，不是日常必读日志。
 - [四栏目验收改进](archive/delivery/four-column-refinements-20261015.md)：地图边缘、手机圆形按键、就地编辑、适应与清空填充等最新调整。
