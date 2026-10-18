@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-18",
+  "source": "actual_user_message",
+  "rawUserText": "普通 ChatGPT 账号端可安装，效果尚可。现在你继续推进主线",
+  "ordinaryChatAccountInstallConfirmedByUser": true,
+  "overallEffect": "尚可",
+  "versionReported": null,
+  "mapReported": null,
+  "fullActionsReported": null,
+  "modesReported": null,
+  "scope": "用户报告安装可用及整体效果；不补具体关卡、模式、路线或完整验收。",
+  "originalReleaseVerificationUnmodified": true,
+  "skillRuntimeChanged": false,
+  "mainlineResumeRequested": true
+}
