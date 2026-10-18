@@ -147,4 +147,4 @@ draft用于独立编辑快照，不修改map或replay格式。复用Base64URL和
 
 《回环》地图码 74 字符，70 步操作码 31 字符。单独方向数据为 18 字节，控制和地图绑定为额外 5 字节。1000 个方向压缩前为 250 字节；可压缩路线还能更短。
 
-支持边界与浏览器实测见 [本轮交付](archive/delivery/architecture-delivery-20261011.md)，现有作品的新入口见 [AI 地图总目录](ai-map-catalog.md)。这里的“择短”指上述候选的最短，不宣称所有编码方案中的理论最短。
+支持边界与浏览器实测见 [本轮交付](archive/delivery/architecture-delivery-20261011.md)，现有作品的新入口见 [AI 地图总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)。这里的“择短”指上述候选的最短，不宣称所有编码方案中的理论最短。

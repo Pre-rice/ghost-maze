@@ -1,0 +1,70 @@
+name: 发布鬼迷宫试玩技能
+
+on:
+  push:
+    tags:
+      - 'playtest-v*'
+  workflow_dispatch:
+    inputs:
+      migrate_legacy:
+        description: 将三个冻结的历史安装包迁入 Release
+        type: boolean
+        required: true
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: playtest-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/playtest-v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: 核对标签、源码与完整测试
+        env:
+          GHOSTMAZE_RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node scripts/package-playtest.mjs --check --release-tag "$GHOSTMAZE_RELEASE_TAG"
+          npm test
+      - name: 准备安装包及校验
+        env:
+          GHOSTMAZE_RELEASE_TAG: ${{ github.ref_name }}
+        run: node scripts/prepare-playtest-release.mjs --output artifacts/ghostmaze-playtest --tag "$GHOSTMAZE_RELEASE_TAG"
+      - name: 上传后公开版本
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          GHOSTMAZE_RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node scripts/publish-playtest-release.mjs --directory artifacts/ghostmaze-playtest --latest
+
+  migrate-legacy:
+    if: github.event_name == 'workflow_dispatch' && inputs.migrate_legacy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: 读取冻结原件
+        run: python3 scripts/prepare-legacy-playtest-releases.py --output artifacts/legacy-playtest
+      - name: 核对附件后依次公开
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          node scripts/publish-playtest-release.mjs --directory artifacts/legacy-playtest/1.0.0
+          node scripts/publish-playtest-release.mjs --directory artifacts/legacy-playtest/1.0.1
+          node scripts/publish-playtest-release.mjs --directory artifacts/legacy-playtest/1.0.2 --latest

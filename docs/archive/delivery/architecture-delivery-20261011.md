@@ -16,7 +16,7 @@
 - [本地主页](http://127.0.0.1:4206/game/)：载入、游玩、同页回放。
 - [独立编辑器](http://127.0.0.1:4206/game/editor.html)：制作或修改地图。
 - [帮助](http://127.0.0.1:4206/game/help.html)：当前规则与操作。
-- [AI 地图总目录](../../ai-map-catalog.md)：全部有效新入口、来源、历史反馈；答案与真人路线在折叠区。
+- [AI 地图总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)：全部有效新入口、来源、历史反馈；答案与真人路线在折叠区。
 
 现有《回环》可用于体验本次交付：[无剧透试玩](http://127.0.0.1:4206/game/?map=AADBweHh4eDAwAE1YEKQICGUCQAgBXCqA4gTIKAkEQACgAEQJygnEFziCc5AkBIAABAgAxAgwA)。
 
@@ -104,7 +104,7 @@ AI 搜索保留队列、索引和启发式，每次物理迁移直接调用本�
 
 总目录包括母图、对照和已保存实验候选，不等于正式作品数量。没有重新证明所有路线最短，也没有重新评价谜题质量。大型批量编辑日志留在原实验档案，未复制成几万张作品。
 
-原地图、生成证据、真人原录制与原反馈包均保留。新入口集中在[地图总目录](../../ai-map-catalog.md)；机械核验记录见 [verification.json](../../../../ghost-maze-ai/runs/map-catalog/verification.json)，真人迁移清单见 [manifest.json](../../../../ghost-maze-ai/data/generated/recordings-current/manifest.json)。
+原地图、生成证据、真人原录制与原反馈包均保留。新入口集中在[地图总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)；机械核验记录见 [verification.json](../../../../ghost-maze-ai/runs/map-catalog/verification.json)，真人迁移清单见 [manifest.json](../../../../ghost-maze-ai/data/generated/recordings-current/manifest.json)。
 
 ## 验收与速度
 

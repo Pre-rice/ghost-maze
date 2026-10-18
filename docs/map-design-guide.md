@@ -1,6 +1,6 @@
 # 地图集设计小册
 
-更新：2026-10-18。这里按首次交付／发现记录的顺序，简要总结目前上架的十六张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](ai-map-catalog.md)。
+更新：2026-10-18。这里按首次交付／发现记录的顺序，简要总结目前上架的十六张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)。
 
 “关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《周转》《同行》的新评述及五图优化见[本轮记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-adjustments-20261014.md)。
 
@@ -8,7 +8,7 @@
 
 《错位》《接力》《再借》的关键也依据你[本次明确总结](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/recruited-return-review-20261013.md#本次重整的设计方向)。
 
-《后路》因关门追击修正后无解，已按用户2026-10-18决定移除；[原条目及评述](archive/reviews/back-route-withdrawal-20261018.md)保留。
+《后路》因关门追击修正后无解，已按用户2026-10-18决定移除；[原条目及评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/back-route-withdrawal-20261018.md)保留。
 
 “不错”不等于已达到精妙目标。基本数量来自当前地图集；《借影》为获准维护版，不把维护当新作品。
 
@@ -165,7 +165,7 @@
 
 [试玩](https://ghostmaze.novic.cc/?map=AADAAODgfHh4AAFS4EVIEBCANBACgIA5UBQ0cCqAAAAAQBARxCEFhiAAAAgMAA) · [参考解法](https://ghostmaze.novic.cc/?map=AADAAODgfHh4AAFS4EVIEBCANBACgIA5UBQ0cCqAAAAAQBARxCEFhiAAAAgMAA&replay=COK8iZEnYL3YKjFWAyJPWdw8)
 
-《楼间》已按用户2026-10-14决定撤出：每步几乎只有一种选择，没有思考难度。原入门定位、地图与修补历史留在[总目录](ai-map-catalog.md)及[反馈复盘](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/multilayer-rejection-20261014.md)，不改写此前评价。
+《楼间》已按用户2026-10-14决定撤出：每步几乎只有一种选择，没有思考难度。原入门定位、地图与修补历史留在[总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)及[反馈复盘](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/multilayer-rejection-20261014.md)，不改写此前评价。
 
 ## 13. 换席
 

@@ -27,14 +27,20 @@
 - 地图只有一份数据：每层网格 + 全局楼梯表；地图码与操作码都带校验与压缩，格式见[分享码](docs/share-codes.md)。
 - 物理规则只有本仓库这一份实现，AI 侧直接调用它，不复制规则。
 
-## 文档
+## 地图集设计小册
 
-- [当前架构](docs/architecture.md)：状态、历史与复活、渲染、编辑器的实际结构。
-- [分享码](docs/share-codes.md)：地图码与操作码的编码与校验。
-- [地图集设计小册](docs/map-design-guide.md)：每张图的设计思路与简评。**含解谜关键，想自己玩就先别点。**
-- [地图总目录](docs/ai-map-catalog.md)：全部作品、参考与反馈来源。
-- [AI 自主试玩](docs/ai-playtest.md)：让 AI 用真实引擎自己玩、交付过程与感受的试玩技能。
-- [云端运行与协作](docs/codex-cloud.md)：两个仓库的分工、合并约定与验收流程。
-- [文档索引](docs/README.md) · [协作指引](AGENTS.md) · [历史档案](docs/archive/README.md)
+[地图集设计小册](docs/map-design-guide.md)简要介绍精品地图的设计思想、关键发现与作者评述。**含解谜关键，想自己玩就先别点。**
 
-同级的 [ghost-maze-ai](https://github.com/Pre-rice/ghost-maze-ai) 是做谜题设计、求解与验证的实验场：方法、证书和历代候选都在那里。
+## AI 自主试玩 skill
+
+让 AI 读取文字局面、自主选择动作，由真实游戏引擎推进，最后交付过程、评价、感受与回放。手动调用，支持已知规则／探索规则，也可要求以最短步数通关；试玩过程不使用程序搜索路线。
+
+[下载最新版本](https://github.com/Pre-rice/ghost-maze/releases/latest) · [使用说明](docs/ai-playtest.md)
+
+普通 ChatGPT 聊天需支持技能资源读取与 JavaScript 实际执行；Codex 可直接使用仓库内技能。下载不会自动安装到聊天账号，安装支持范围以实际宿主为准。
+
+## ghost-maze-ai
+
+[ghost-maze-ai](https://github.com/Pre-rice/ghost-maze-ai)专门研究 AI 开发与谜题设计，包括搜索、验证、训练尝试和真实反馈总结。目标是产生具有巧妙发现的好谜题，训练是可选路线。
+
+本仓库负责游戏网站与自主试玩技能；研究方法、候选作品和实验资料在 AI 仓库维护。

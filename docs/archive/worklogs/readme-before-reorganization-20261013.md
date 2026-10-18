@@ -4,16 +4,16 @@
 
 鬼迷宫是一款纯前端迷宫探索解谜游戏。玩家收集钥匙、切换机关门、引动和安置鬼，最终抵达绿色终点。支持单层与多层地图、地图分享和同页回放。
 
-![鬼迷宫游戏截图](../../../ingame-image.png)
+![鬼迷宫游戏截图](https://github.com/Pre-rice/ghost-maze/blob/010d609f52c96bf984056d61cb23227b3100fb2e/ingame-image.png)
 
 ## 游玩与制作
 
 - [线上游戏](https://ghostmaze.novic.cc)：2026-10-11 架构升级已上线，主页、独立编辑器和帮助入口已核验。
-- 本地首页负责载入、游玩和回放；[editor.html](../../../editor.html) 是独立编辑器，[help.html](../../../help.html) 是完整帮助。
+- 本地首页负责载入、游玩和回放；[editor.html](https://github.com/Pre-rice/ghost-maze/blob/010d609f52c96bf984056d61cb23227b3100fb2e/editor.html) 是独立编辑器，[help.html](https://github.com/Pre-rice/ghost-maze/blob/010d609f52c96bf984056d61cb23227b3100fb2e/help.html) 是完整帮助。
 - 首页小导航中的编辑入口另开标签并带上原图；当前游戏和存档保留。编辑器试玩也另开标签，编辑草稿保留。
 - 地图和回放入口分别为 `?map=地图码`、`?map=地图码&replay=操作码`。操作码依赖对应地图，不需要录制服务器或账号。
 - 分享直接复制地址栏链接；编辑器中合法地图的修改会自动更新链接，未完成地图不保留旧图链接。
-- [AI 地图总目录](../../ai-map-catalog.md) 集中保存最新有效地图入口、来源和反馈；参考解法与真人路线在折叠区。
+- [AI 地图总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md) 集中保存最新有效地图入口、来源和反馈；参考解法与真人路线在折叠区。
 
 ## 规则
 

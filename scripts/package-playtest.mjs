@@ -16,6 +16,10 @@ for (const name of core) {
     digest.update(file + ':' + sha(source(file)) + '\n');
 }
 const build = { version: '1.0.2', engine: 'sha256:' + digest.digest('hex'), format: 'ghostmaze-playtest-v1' };
+const tagIndex = process.argv.indexOf('--release-tag');
+if (tagIndex >= 0 && process.argv[tagIndex + 1] !== `playtest-v${build.version}`) {
+    throw new Error('发布标签必须匹配技能版本：playtest-v' + build.version);
+}
 
 // 只处理本仓库的命名ES模块；拒绝外部依赖。包装改变模块装载方式，不改规则实现。
 function bundle(entry, factory) {
@@ -70,11 +74,16 @@ if (!check) {
 const outputIndex = process.argv.indexOf('--output');
 if (outputIndex >= 0) {
     if (check) throw new Error('--check不能同时写安装包');
-    const output = resolve(process.argv[outputIndex + 1]); mkdirSync(output, { recursive: true });
+    const outputArg = process.argv[outputIndex + 1];
+    if (!outputArg || outputArg.startsWith('--')) throw new Error('--output缺少目录');
+    const output = resolve(outputArg);
+    if (output === skill || output.startsWith(skill + '/')) throw new Error('安装包必须输出到技能目录之外');
+    for (const kind of ['skill', 'plugin']) if (existsSync(resolve(output, `ghostmaze-playtest-${kind}.zip`))) throw new Error('不能覆盖已有安装包');
+    mkdirSync(output, { recursive: true });
     const plugin = { '$schema': 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json', name: 'ghostmaze-playtest',
         version: build.version, description: '手动调用的鬼迷宫AI试玩：真实引擎、文字局面、过程与感受；可选最短步数挑战。',
         author: { name: 'Pre-rice', url: 'https://github.com/Pre-rice' }, repository: 'https://github.com/Pre-rice/ghost-maze' };
-    const script = `import pathlib,zipfile,sys,json\nbase=pathlib.Path(sys.argv[1]);out=pathlib.Path(sys.argv[2]);plugin=json.loads(sys.argv[3])\nfor kind in ['skill','plugin']:\n p=out/('ghostmaze-playtest-'+kind+'.zip')\n with zipfile.ZipFile(p,'w',compression=zipfile.ZIP_DEFLATED) as z:\n  prefix='ghostmaze-playtest/' if kind=='skill' else 'ghostmaze-playtest/skills/ghostmaze-playtest/'\n  for f in sorted(base.rglob('*')):\n   if f.is_file():z.write(f,prefix+str(f.relative_to(base)))\n  if kind=='plugin':z.writestr('ghostmaze-playtest/plugin.json',json.dumps(plugin,ensure_ascii=False,indent=2)+'\\n')\n print(str(p))\n`;
+    const script = `import pathlib,zipfile,sys,json\nbase=pathlib.Path(sys.argv[1]);out=pathlib.Path(sys.argv[2]);plugin=json.loads(sys.argv[3])\nfiles=[]\nfor f in sorted(base.rglob('*')):\n rel=f.relative_to(base)\n if f.is_symlink():raise ValueError('技能包不允许符号链接：'+str(rel))\n if not f.is_file():continue\n if any(p in ['__pycache__','node_modules','.git'] or p.startswith('.') for p in rel.parts):continue\n if rel.parts[0] not in ['README.md','SKILL.md','assets','agents','scripts','references']:raise ValueError('技能包包含无关文件：'+str(rel))\n files.append((str(rel),f.read_bytes()))\ndef put(z,name,data):\n info=zipfile.ZipInfo(name,date_time=(1980,1,1,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o100644<<16;z.writestr(info,data,compresslevel=9)\nfor kind in ['skill','plugin']:\n p=out/('ghostmaze-playtest-'+kind+'.zip')\n with zipfile.ZipFile(p,'x',compression=zipfile.ZIP_DEFLATED) as z:\n  prefix='ghostmaze-playtest/' if kind=='skill' else 'ghostmaze-playtest/skills/ghostmaze-playtest/'\n  for name,data in files:put(z,prefix+name,data)\n  if kind=='plugin':put(z,'ghostmaze-playtest/plugin.json',(json.dumps(plugin,ensure_ascii=False,indent=2)+'\\n').encode())\n print(str(p))\n`;
     const result = spawnSync('python3', ['-c', script, skill, output, JSON.stringify(plugin)], { encoding: 'utf8' });
     if (result.status !== 0) throw new Error(result.stderr);
     process.stdout.write(result.stdout);

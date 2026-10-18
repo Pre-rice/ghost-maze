@@ -1,15 +1,15 @@
-# 历史档案索引
+# 网站历史档案
 
-本目录保存旧判断、反馈依据和阶段过程，**不作为当前任务、当前验收数字或运行规则**。归档保留历史内容，调整了相对链接；完整旧字节另在对应前一Git提交及私人研究包中保留。位置及来源校验见[整理清单](reorganization-20261013.json)。
+本目录保存网站、引擎、交互及分享协议的历史决定，**不是当前任务或现行验收**。开发入口见[文档索引](../README.md)。
 
-| 目录 | 内容 | 何时查阅 |
-| --- | --- | --- |
-| reviews | 原始评述摘要、规则审查与复盘 | 追溯反馈条件、核对经验依据 |
-| selection | 当时机制筛选、取舍和证据范围 | 重用旧关系或解释决策变化 |
-| worklogs | 阶段实验、资料制备及旧AGENTS／README／状态全文 | 查证旧过程，避免重跑已有研究 |
-| delivery | 产品修复、架构交付与旧协议入口 | 查证原交付范围 |
-| inspections | 规则与现有地图影响审查 | 查证楼梯时序修正及原图保护 |
-| plans | 训练／架构计划 | 比较可选实现路线，不自动执行 |
-| research | 调研背景 | 出现具体问题时参考 |
+| 目录 | 内容 |
+| --- | --- |
+| delivery | 架构、编辑器、回放、布局与协议的交付记录 |
+| inspections | 楼梯、视野等机制审查 |
+| reviews | 网站 UI／UX 与规则边界审查 |
+| plans | 当时的架构方案 |
+| worklogs | 旧协作指引、README 与云端接手历史快照 |
 
-真实反馈不因归档消失，也不将亲缘图视为新独立好图。现在持续要用的经验在AI[方法](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/methodology.md)，人读摘要在本体[设计小册](../map-design-guide.md)。日常入口见[文档索引](../README.md)。
+[2026-10-13整理清单](reorganization-20261013.json)记录当时路径，不代表现在的文档归属。后续迁出的研究资料及源提交、哈希见[迁移清单](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/repository-separation-20261018.json)。历史快照保留当时两仓混合说明，仅用于追溯。
+
+试玩技能的旧安装包、验收与演练在[对应 Release](https://github.com/Pre-rice/ghost-maze/releases)保留；版本固定，不静默改写旧记录。
