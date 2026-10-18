@@ -15,11 +15,11 @@ test('按钮长条矩形与绘制一致：贴着对应那条边，四条边各�
     assert(right.x + right.width === 3 * cs, '右侧按钮贴右边');
 });
 
-test('按钮命中：长条内命中、外扩容差内命中、远处不命中', () => {
+test('按钮命中：只认长条本身，不外扩；远处不命中', () => {
     const cs = 40, button = { x: 2, y: 3, direction: { dx: 0, dy: -1 } };
     const rect = buttonRect(button, cs), cx = rect.x + rect.width / 2;
     assert(hitsButton(cx, 3 * cs + 2, button, cs), '长条内命中');
-    assert(hitsButton(cx, 3 * cs - 2, button, cs), '外扩容差内命中');
+    assert(!hitsButton(cx, 3 * cs - 2, button, cs), '长条外（原外扩容差处）不命中');
     assert(!hitsButton(cx, 3 * cs + cs * SHAPE.buttonWidth + 10, button, cs), '长条内侧远处不命中');
     assert(!hitsButton(3 * cs, 3 * cs + 2, button, cs), '长条两侧远处不命中');
 });

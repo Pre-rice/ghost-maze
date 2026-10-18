@@ -36,7 +36,7 @@ export class Application {
         byId('new-map-form').onsubmit=e=>{e.preventDefault();this.generateMap();};
         byId('new-map-dialog').addEventListener('close',()=>this.generationAbort?.abort());
         for(const [id,panel] of [['save-menu-btn','save'],['solve-map-btn','solve']])byId(id).addEventListener('click',()=>this.openPlayPanel(panel));
-        byId('save-btn').onclick=()=>{const result=this.game.controller.save();if(result.ok){this.renderPoints();this.notify('已在第 '+result.step+' 步建立存档点');}else this.notify(result.error,'error');};
+        byId('save-btn').onclick=()=>this.savePlayStep();
         byId('save-map-local').onclick=()=>this.saveLocal('map',routeURL({map:this.mapCode}));
         byId('view-replay-btn').onclick=()=>this.playthroughReplay();byId('view-solution-btn').onclick=()=>this.openPlayPanel('solve');
         byId('solver-continue-btn').onclick=()=>this.solver?.continue();byId('solver-more-btn').onclick=()=>this.solver?.more();
@@ -83,14 +83,14 @@ export class Application {
         try{
             const route=readRoute(input);await this.ensureRuntime();
             if(route.draft){const [{decodeDraft},editor]=await Promise.all([import('./editor/draftCodec.js'),this.ensureEditor()]);const result=decodeDraft(route.draft);if(!result.success)throw new Error(result.error);if(token!==this.loadToken)return false;
-                this.game.clear();this.mapCode=null;this.draftVisible=true;editor.loaded=false;editor.enter(null,null,result.snapshot);this.hasLoadedMap=true;this.recoverAllowed=false;safeSet(AUTO,'');this.solutionOrigin=null;this.replaySource='current';this.setURL(route,{push:!replace});this.showColumn('editor');editor.fit();this.renderLibraries();return true;
+                this.game.clear();this.mapCode=null;this.draftVisible=true;editor.loaded=false;editor.enter(null,null,result.snapshot);this.hasLoadedMap=true;this.recoverAllowed=false;safeSet(AUTO,'');this.solutionView=null;this.solutionSwitchKey='';this.replaySource='current';this.setURL(route,{push:!replace});this.showColumn('editor');editor.fit();this.renderLibraries();return true;
             }
-            if(!route.map){if(token!==this.loadToken)return false;this.game.clear();this.editor&&(this.editor.loaded=false);this.mapCode=null;this.draftVisible=false;this.hasLoadedMap=false;this.recoverAllowed=true;this.solutionOrigin=null;this.setURL({}, {push:!replace});this.showColumn('maps');return true;}
+            if(!route.map){if(token!==this.loadToken)return false;this.game.clear();this.editor&&(this.editor.loaded=false);this.mapCode=null;this.draftVisible=false;this.hasLoadedMap=false;this.recoverAllowed=true;this.solutionView=null;this.solutionSwitchKey='';this.setURL({}, {push:!replace});this.showColumn('maps');return true;}
             const decoded=this.runtime.DataSerializer.loadFromShareCode(route.map);if(!decoded.success)throw new Error(decoded.error);
             const candidate=new this.runtime.GameController();const started=candidate.startGame(decoded.data.mapData);if(!started.success)throw new Error(started.error);
             let actions=null;if(route.save||route.replay){const replay=this.runtime.ReplaySerializer.loadFromShareCode(candidate.mapData,route.save||route.replay);if(!replay.success)throw new Error(replay.error);actions=replay.actions;if(route.save)await candidate.loadActionsAsync(candidate.mapData,actions);}
             if(token!==this.loadToken)return false;
-            this.mapCode=route.map;this.draftVisible=false;this.game.install(candidate,route.map);this.editor&&(this.editor.loaded=false);this.hasLoadedMap=true;this.recoverAllowed=false;safeSet(AUTO,'');this.solutionOrigin=null;this.replayDirty=true;clearTimeout(this.editorSolveTimer);this.solver?.invalidate();
+            this.mapCode=route.map;this.draftVisible=false;this.game.install(candidate,route.map);this.editor&&(this.editor.loaded=false);this.hasLoadedMap=true;this.recoverAllowed=false;safeSet(AUTO,'');this.solutionView=null;this.solutionSwitchKey='';this.replayDirty=true;clearTimeout(this.editorSolveTimer);this.solver?.invalidate();
             this.setURL(route,{push:!replace});
             if(route.replay){this.replaySource='external';this.game.openReplay(candidate.mapData,actions,route.map);this.showColumn('replay');}
             else {this.replaySource='current';this.showColumn('play');}
@@ -100,17 +100,21 @@ export class Application {
     }
     async switchColumn(view){
         if(this.loading)return;await this.ensureRuntime();this.game.stopAutoMove();this.game.pauseReplay();
+        const from=this.view;
         if(this.editor?.loaded&&(this.view==='editor'||this.draftVisible)){this.editor.cancelGesture();if(view==='play'||view==='replay'){const valid=this.editor.code();if(!valid.success){this.notify('草稿尚未完成：'+valid.error,'error');return;}if(!this.game.controller.mapData){const c=new this.runtime.GameController();c.startGame(this.editor.editorDoc.toMapData());this.mapCode=valid.code;this.game.install(c,valid.code);}}}
         if(view==='editor'){
             const editor=await this.ensureEditor();if(!editor.loaded){let recovered=null;
                 if(this.recoverAllowed&&!this.hasLoadedMap){const code=safeGet(AUTO);if(code){const {decodeDraft}=await import('./editor/draftCodec.js');const decoded=decodeDraft(code);if(decoded.success){recovered=decoded.snapshot;this.draftVisible=true;this.setURL({draft:code});}}}
                 editor.enter(this.game.controller.mapData,this.mapCode,recovered);
             }
-            this.showColumn(view);return;
+            this.showColumn(view);if(this.mapCode&&!this.draftVisible)this.setURL({map:this.mapCode});return;
         }
         if(view==='play'&&!this.game.controller.mapData){this.notify('加载地图以开始');return;}
         if(view==='replay'&&this.game.controller.mapData&&this.replaySource==='current')this.refreshCurrentReplay();
         this.showColumn(view);
+        // 回放栏目用自己的 URL（带 replay）；离开回放回到游玩只用 map。
+        if(view==='replay'){this.syncReplayURL();this.renderSolutionSwitch();}
+        else if(from==='replay')this.setURL(this.mapCode?{map:this.mapCode}:{});
     }
     showColumn(view){
         if(view!=='editor')this.editor?.properties.hide();
@@ -166,7 +170,7 @@ export class Application {
         if(!encoded.success){this.notify(encoded.error,'error');return;}this.saveLocal('draft',routeURL({draft:encoded.code}));
     }
     editorChanged(editor){
-        const result=editor.code();this.solutionOrigin=null;this.replaySource='current';this.replayDirty=true;
+        const result=editor.code();this.solutionView=null;this.solutionSwitchKey='';this.replaySource='current';this.replayDirty=true;
         if(result.success){const candidate=new this.runtime.GameController();const valid=candidate.startGame(editor.editorDoc.toMapData());if(valid.success){this.mapCode=result.code;this.draftVisible=false;this.game.install(candidate,result.code);this.setURL({map:result.code});}}
         else {this.mapCode=null;this.draftVisible=true;this.game.clear();}
         const token=this.loadToken,snapshot=editor.workspace.snapshot();
@@ -175,11 +179,12 @@ export class Application {
         clearTimeout(this.editorSolveTimer);this.solver?.invalidate();if(result.success)this.editorSolveTimer=setTimeout(()=>this.getSolver().then(s=>s.prepare(editor.editorDoc.toMapData(),result.code,true)),650);
     }
     gameChanged(){
-        this.setURL({map:this.mapCode});this.solutionOrigin=null;this.replaySource='current';this.replayDirty=true;this.game.sync();
+        this.setURL({map:this.mapCode});this.solutionView=null;this.solutionSwitchKey='';this.replaySource='current';this.replayDirty=true;this.game.sync();
     }
     refreshCurrentReplay(){
         const c=this.game.controller,actions=c.replayActions,signature=this.mapCode+':'+actions.join(',');
         if(!this.game.replay||signature!==this.replaySignature||this.replayDirty){this.game.openReplay(c.mapData,actions,this.mapCode);this.replaySignature=signature;this.replayDirty=false;}
+        this.solutionView=null;this.solutionSwitchKey='';this.renderSolutionSwitch();
     }
     async openPlayPanel(panel){
         if(!this.game?.controller.mapData)return;this.playPanel=panel;this.syncPlayPanel();
@@ -197,25 +202,67 @@ export class Application {
     async openSolution(mapCode,code){
         const parsed=this.runtime.DataSerializer.loadFromShareCode(mapCode),decoded=parsed.success&&this.runtime.ReplaySerializer.loadFromShareCode(parsed.data.mapData,code);
         if(!parsed.success||!decoded.success){this.notify(parsed.error||decoded.error,'error');return;}
-        this.solutionOrigin={view:this.view,url:location.href,playPanel:this.playPanel};this.replaySource='external';
-        this.game.openReplay(parsed.data.mapData,decoded.actions,mapCode);this.setURL({map:mapCode,replay:code},{push:true});this.showColumn('replay');
+        this.replaySource='external';
+        const job=this.solver?.job;
+        this.solutionView={mapCode,codes:job?.mapCode===mapCode&&job.codes.includes(code)?job.codes.slice():[code],code};
+        this.game.openReplay(parsed.data.mapData,decoded.actions,mapCode);this.setURL({map:mapCode,replay:code},{push:true});this.showColumn('replay');this.renderSolutionSwitch();
+    }
+    /** 切换求解给出的另一条解法：只换路线，保持当前步数，并标出正在查看的那条。 */
+    async switchSolution(code){
+        const s=this.solutionView;if(!s||s.code===code)return;
+        const parsed=this.runtime.DataSerializer.loadFromShareCode(s.mapCode),decoded=parsed.success&&this.runtime.ReplaySerializer.loadFromShareCode(parsed.data.mapData,code);
+        if(!parsed.success||!decoded.success){this.notify(parsed.error||decoded.error,'error');return;}
+        const step=this.game.replay?.currentStep||0;
+        this.game.pauseReplay();s.code=code;
+        this.game.openReplay(parsed.data.mapData,decoded.actions,s.mapCode);
+        this.setURL({map:s.mapCode,replay:code});this.renderSolutionSwitch();
+        await this.game.seekReplay(Math.min(step,decoded.actions.length));
+    }
+    /** 回放栏目顶部的解法切换条：只有从求解进入且解法不止一条时出现。 */
+    renderSolutionSwitch(){
+        const s=this.solutionView,box=byId('solution-switch'),row=byId('solution-switch-label'),tabs=byId('solution-switch-tabs');
+        const key=s?[s.mapCode,s.codes.join(','),s.code,this.view].join('|'):'';
+        if(key===this.solutionSwitchKey)return;this.solutionSwitchKey=key;
+        const show=!!s&&s.codes.length>1&&this.view==='replay';
+        box.hidden=!show;tabs.replaceChildren();
+        if(!show)return;
+        const index=s.codes.indexOf(s.code);
+        row.textContent='正在查看 解法 '+(index<0?1:index+1)+' / '+s.codes.length;
+        tabs.append(...s.codes.map((code,i)=>{const b=document.createElement('button');b.type='button';b.className='secondary'+(code===s.code?' active':'');b.textContent='解法 '+(i+1);b.setAttribute('aria-pressed',String(code===s.code));if(code===s.code)b.setAttribute('aria-current','true');b.onclick=()=>this.switchSolution(code);return b;}));
     }
     /** 回到本次游玩的回放：清除已打开的最优解来源和过期缓存，URL 只保留地图。 */
     playthroughReplay(){
-        this.replaySource='current';this.replayDirty=true;this.solutionOrigin=null;
+        this.replaySource='current';this.replayDirty=true;this.solutionView=null;this.solutionSwitchKey='';
         this.setURL(this.mapCode?{map:this.mapCode}:{});
         this.switchColumn('replay');
-    }
-    returnFromSolution(){
-        const origin=this.solutionOrigin;if(!origin)return;this.game.pauseReplay();history.replaceState({},'',origin.url);this.solutionOrigin=null;
-        if(origin.view!=='replay'){this.replaySource='current';this.replayDirty=true;}
-        this.showColumn(origin.view);
-        if(origin.view==='play'){this.playPanel='solve';this.syncPlayPanel();this.solver?.mount(byId('solve-pane'));}
-
     }
     async loadReplayStep(){
         const r=this.game.replay;if(!r)return;this.game.pauseReplay();const actions=r.history.actions.slice(0,r.currentStep),encoded=this.runtime.ReplaySerializer.generateShareCode(r.mapData,actions);
         if(!encoded.success){this.notify(encoded.error,'error');return;}await this.loadURL(routeURL({map:r.mapCode,save:encoded.code}));
+    }
+    /** 游玩栏目的“存档该步”：建立存档点，URL 带 save，移动后自动回到只有 map。 */
+    savePlayStep(){
+        const result=this.game.controller.save();
+        if(!result.ok){this.notify(result.error,'error');return;}
+        this.setURL({map:this.mapCode,save:result.code});
+        this.renderPoints();this.notify('已在第 '+result.step+' 步建立存档点');
+    }
+    /** 回放栏目的“存档该步”：把当前这一步记成存档点，URL 带上 save。 */
+    saveReplayStep(){
+        const r=this.game.replay;if(!r)return;
+        const actions=r.history.actions.slice(0,r.currentStep),encoded=this.runtime.ReplaySerializer.generateShareCode(r.mapData,actions);
+        if(!encoded.success){this.notify(encoded.error,'error');return;}
+        const c=this.game.controller;
+        if(c.checkpoints.some(p=>p.code===encoded.code)){this.notify('该步已经有存档点');return;}
+        c.checkpoints.push({code:encoded.code,step:actions.length,cursor:c.sessionCursor,time:Date.now()});
+        this.setURL({map:this.mapCode,save:encoded.code});
+        this.renderPoints();this.notify('已在第 '+actions.length+' 步建立存档点');
+    }
+    /** 回放栏目的 URL：写回当前正在看的路线，切走时再撤掉 replay。 */
+    syncReplayURL(){
+        const r=this.game?.replay;if(!r||!this.mapCode)return;
+        const encoded=this.runtime.ReplaySerializer.generateShareCode(r.mapData,r.history.actions);
+        if(encoded.success)this.setURL({map:this.mapCode,replay:encoded.code});
     }
     /** Tab：多层地图里把视野切到下一层，返回这次是否真的切换了。 */
     cycleViewLayer(){
@@ -238,7 +285,7 @@ export class Application {
         const modifier=e.ctrlKey||e.metaKey;
         if(modifier&&k==='z'){if(this.view==='play'){e.preventDefault();e.shiftKey?this.game.handleRedo():this.game.handleUndo();}else if(this.view==='editor'){e.preventDefault();e.shiftKey?this.editor.redo():this.editor.undo();}return;}
         if(modifier&&k==='y'){if(this.view==='play'){e.preventDefault();this.game.handleRedo();}else if(this.view==='editor'){e.preventDefault();this.editor.redo();}return;}
-        if(modifier&&k==='s'){if(this.view==='play'){e.preventDefault();const point=this.game.controller.save();if(point.ok){this.renderPoints();this.notify('已建立存档点');}else this.notify(point.error,'error');}else if(this.view==='editor'){e.preventDefault();this.saveDraft();}return;}
+        if(modifier&&k==='s'){if(this.view==='play'){e.preventDefault();this.savePlayStep();}else if(this.view==='editor'){e.preventDefault();this.saveDraft();}return;}
         if(modifier||e.altKey)return;
         if(this.view==='replay'&&this.game?.replay){
             if(k===' '){e.preventDefault();this.game.replayPlaying?this.game.pauseReplay():this.game.playReplay();}

@@ -47,7 +47,7 @@ export class GhostMazeGame {
         on('replay-prev-btn',()=>this.seekReplay(this.replay.currentStep-1));on('replay-next-btn',()=>this.seekReplay(this.replay.currentStep+1));
         on('replay-step-input',e=>this.seekReplay(Number(e.target.value)),'change');on('replay-step-range',e=>this.seekReplay(Number(e.target.value)),'input');
         on('replay-speed',e=>this.setSpeed(Number(e.target.value)),'change');
-        on('replay-load-btn',()=>this.app.loadReplayStep());on('replay-return-btn',()=>this.app.returnFromSolution());
+        on('replay-load-btn',()=>this.app.loadReplayStep());on('replay-save-btn',()=>this.app.saveReplayStep());
     }
     setFullVision(enabled){
         this.debugVision=!!enabled;
@@ -153,8 +153,7 @@ export class GhostMazeGame {
         document.getElementById('replay-total').textContent=r.history.actions.length;
         document.getElementById('replay-prev-btn').disabled=r.currentStep===0;document.getElementById('replay-next-btn').disabled=r.currentStep===r.history.actions.length;
         document.getElementById('replay-play-btn').disabled=r.history.actions.length===0;
-        document.getElementById('replay-return-btn').hidden=!this.app.solutionOrigin;
-        document.getElementById('replay-return-btn').textContent=this.app.solutionOrigin?.view==='editor'?'返回编辑':'返回游玩';
+        this.app.renderSolutionSwitch();
         this.app.renderMap();
     }
     playReplay(){

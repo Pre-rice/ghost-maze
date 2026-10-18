@@ -255,7 +255,7 @@ export function drawStair(ctx, stair, cellSize, colors, isHighlight = false, alp
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.strokeStyle = isHighlight ? colors.hoverHighlight : colors.wall;
-    ctx.lineWidth = isHighlight ? 3 : 2;
+    ctx.lineWidth = isHighlight ? Math.max(3.5, cellSize / 12) : Math.max(2.5, cellSize / 14);
     ctx.lineJoin = 'miter'; // 确保直角不出现凹陷
     ctx.lineCap = 'square'; // 确保线条端点平整
     
@@ -294,11 +294,9 @@ export function drawStair(ctx, stair, cellSize, colors, isHighlight = false, alp
         ctx.closePath();                                  // 回到左下角
     }
     
-    // 填充半透明背景
-    ctx.fillStyle = stair.direction === 'up' ? 'rgba(0, 200, 100, 0.3)' : 'rgba(200, 100, 0, 0.3)';
-    ctx.fill();
+    // 只描线，不填充内部颜色。
     ctx.stroke();
-    
+
     ctx.restore();
 }
 

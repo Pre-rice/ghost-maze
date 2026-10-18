@@ -33,8 +33,8 @@ export function buttonRect(button, cellSize) {
     return { x: (button.x + 1) * cellSize - width, y: centerY - length / 2, width, height: length };
 }
 
-/** 按钮命中：长条矩形再外扩 slack 格，边框外贴着的一圈也算。 */
-export function hitsButton(px, py, button, cellSize, slack = .1) {
+/** 按钮命中：只认长条矩形本身（外扩传 0 即可，默认不外扩）。 */
+export function hitsButton(px, py, button, cellSize, slack = 0) {
     const rect = buttonRect(button, cellSize), pad = cellSize * slack;
     return px >= rect.x - pad && px <= rect.x + rect.width + pad &&
         py >= rect.y - pad && py <= rect.y + rect.height + pad;

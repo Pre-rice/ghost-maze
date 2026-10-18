@@ -984,6 +984,14 @@ body.site-app{padding:22px}
 .site-app .column-tab[aria-selected=false]:hover{background:var(--disabled-color)}
 @media(hover:none){.site-app .column-tab[aria-selected=false]:hover{background:transparent}}
 
+/* 回放栏目的解法切换条：与栏目切换框同一道横线。 */
+#solution-switch{margin:0 0 14px;padding:10px 0 0;border-top:1px solid var(--border-color)}
+.solution-switch-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px}
+.solution-switch-row>span{opacity:.7;white-space:nowrap}
+.solution-switch-tabs{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}
+.solution-switch-tabs>button{font-size:12px;padding:6px 10px;border-radius:5px}
+.solution-switch-tabs>button.active{border-color:var(--primary-color);color:var(--primary-color);background:color-mix(in srgb,var(--primary-color) 10%,var(--container-bg))}
+
 /* 图形控件使用几何中心，焦点只改变现有边框。 */
 #map-empty{inset:12px;border:1px solid var(--border-color);border-radius:6px;box-sizing:border-box}
 .site-app .dialog-close,.site-app .delete-record{display:grid;place-items:center;line-height:1}
