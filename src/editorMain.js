@@ -8,6 +8,7 @@ import { getColorsFromCSS } from './themeManager.js';
 import { InlineProperties } from './editor/inlineProperties.js';
 import { fitScale,resizeView,smallMapMinSpan } from './editor/viewport.js';
 import * as Pathfinding from './core/pathfinding.js';
+import { eraserDotRadius } from './view/shapes.js';
 
 export class EditorApp {
     constructor(app){
@@ -130,7 +131,9 @@ export class EditorApp {
             this.points.delete(e.pointerId);if(this.pinch){if(!this.points.size)this.pinch=null;return;}
             const g=this.gesture;if(!g)return;
             try{if(g.tool!=='pan'){if(g.tool==='stair')this.paint({...p,x:g.start.x,y:g.start.y},false);else if(!g.drag&&!['wall','glass','oneway','grid','eraser'].includes(g.tool))this.paint(p,false);const changed=this.workspace.commit();if(changed)this.changed();}}
-            catch(error){this.workspace.cancel();this.notify(error.message);}this.gesture=null;if(e.pointerType==='touch')this.hover=null;if(this.temporaryTool){this.tool=this.temporaryTool;this.temporaryTool=null;}this.sync();if(g.editTarget)this.properties.show(g.editTarget);
+            catch(error){this.workspace.cancel();this.notify(error.message);}this.gesture=null;if(e.pointerType==='touch')this.hover=null;if(this.temporaryTool){this.tool=this.temporaryTool;this.temporaryTool=null;}this.sync();
+            // 触屏放好元件只显示编辑框、不弹键盘；点的是已经放好的元件才直接进编辑。
+            if(g.editTarget)this.properties.show(g.editTarget,e.pointerType!=='touch'||!!g.existingTarget);
         }
     }
     paint(p,drag){
@@ -149,16 +152,16 @@ export class EditorApp {
                 else if(g.tool==='oneway'){value={type:W.ONE_WAY,direction:this.direction(p,w),keys:0};g.line=w;}
                 else if(g.tool==='letter')value=old.type===W.LETTER_DOOR?{...old,initialState:old.initialState==='open'?'closed':'open'}:{type:W.LETTER_DOOR,letter:this.lastValues.letter,initialState:'closed',keys:0};
                 else value=old.type===W.LOCKED?{...old}:{type:W.LOCKED,keys:this.lastValues.lock};
-                if(['letter','lock'].includes(g.tool))g.editTarget={...w,kind:g.tool,layer:d.currentLayer};
+                if(['letter','lock'].includes(g.tool)){g.editTarget={...w,kind:g.tool,layer:d.currentLayer};g.existingTarget=old.type===(g.tool==='letter'?W.LETTER_DOOR:W.LOCKED);}
                 this.workspace.setWall(w,value);g.validPaint=true;this.draw();return;
             }
             const key=x+','+y;if(g.tool!=='eraser'&&g.seen.has(key))return;g.seen.add(key);
-            if(g.tool==='eraser'){d.eraseAt({x:p.x*this.view.scale,y:p.y*this.view.scale},this.view.scale);g.validPaint=true;this.draw();return;}
+            if(g.tool==='eraser'){const cs=this.view.scale;d.eraseAt({x:p.x*cs,y:p.y*cs},cs,eraserDotRadius(cs));g.validPaint=true;this.draw();return;}
             if(g.tool==='button'){
                 if(!d.activeCells[y]?.[x])return;const w=this.wallAt(p);
                 const direction=w.type==='h'?{dx:0,dy:w.y===y?-1:1}:{dx:w.x===x?-1:1,dy:0},wall=d[w.type+'Walls'][w.y]?.[w.x];if(isInteriorWall(w,d.width,d.height,d.activeCells)&&wall.type!==W.SOLID)throw new Error('按钮只能依附实墙');
                 const old=d.buttons.find(b=>b.x===x&&b.y===y&&b.direction.dx===direction.dx&&b.direction.dy===direction.dy);if(!old)d.buttons.push({x,y,direction,letter:this.lastValues.button});
-                g.editTarget={kind:'button',layer:d.currentLayer,x,y,dx:direction.dx,dy:direction.dy};g.validPaint=true;this.draw();return;
+                g.editTarget={kind:'button',layer:d.currentLayer,x,y,dx:direction.dx,dy:direction.dy};g.existingTarget=!!old;g.validPaint=true;this.draw();return;
             }
             if(g.tool==='stair'){
                 if(!d.activeCells[y]?.[x])return;if(d.stairs.some(s=>s.layer===d.currentLayer&&s.x===x&&s.y===y))d.eraseStairAt(x,y,d.currentLayer);else {const dir=g.stairPreview?.direction||this.stairDirection(p,x,y);if(!dir||!d.placeStair(x,y,dir))throw new Error('相邻层同格需要地板，且不能占用现有元件');}g.validPaint=true;this.draw();return;

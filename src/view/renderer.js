@@ -1,5 +1,5 @@
 import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../core/constants.js';
-import { SHAPE, strokeWidth } from './shapes.js';
+import { SHAPE, strokeWidth, buttonPathPoints, stairOutlinePoints, eraserDotRadius } from './shapes.js';
 
 /**
  * Renderer 模块 - 处理所有Canvas绘制相关的功能
@@ -246,56 +246,19 @@ export function drawItem(ctx, item, cellSize, colors) {
  * @param {number} alpha - 透明度
  */
 export function drawStair(ctx, stair, cellSize, colors, isHighlight = false, alpha = 1.0) {
-    const x = stair.x * cellSize;
-    const y = stair.y * cellSize;
-    const size = cellSize * SHAPE.stairSize;
-    const offset = (cellSize - size) / 2;
-    
+    // 轮廓点与橡皮擦命中共用 stairOutlinePoints，保证“画出来的”和“能擦到的”是同一形状。
+    const points = stairOutlinePoints(stair, cellSize);
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.strokeStyle = isHighlight ? colors.hoverHighlight : colors.wall;
     ctx.lineWidth = strokeWidth('stair', cellSize, isHighlight);
     ctx.lineJoin = 'miter'; // 确保直角不出现凹陷
     ctx.lineCap = 'square'; // 确保线条端点平整
-    
-    // 绘制楼梯图标：三个方框锯齿加上两条完整边的密闭楼梯状图形
-    // 向上楼梯：左低右高，向下楼梯：左高右低
-    const left = x + offset;
-    const top = y + offset;
-    const stepWidth = size / 3;
-    const stepHeight = size / 3;
-    
     ctx.beginPath();
-    
-    if (stair.direction === 'up') {
-        // 向上楼梯：左低右高
-        // 从左下角开始顺时针绘制
-        ctx.moveTo(left, top + size);                    // 左下角
-        ctx.lineTo(left, top + size - stepHeight);       // 左边第一台阶
-        ctx.lineTo(left + stepWidth, top + size - stepHeight);  // 第一台阶水平线
-        ctx.lineTo(left + stepWidth, top + size - 2 * stepHeight);  // 第二台阶垂直线
-        ctx.lineTo(left + 2 * stepWidth, top + size - 2 * stepHeight);  // 第二台阶水平线
-        ctx.lineTo(left + 2 * stepWidth, top);           // 第三台阶垂直线到顶部
-        ctx.lineTo(left + size, top);                    // 顶边
-        ctx.lineTo(left + size, top + size);             // 右边
-        ctx.closePath();                                  // 回到左下角
-    } else {
-        // 向下楼梯：左高右低
-        // 从左下角开始顺时针绘制
-        ctx.moveTo(left, top + size);                    // 左下角
-        ctx.lineTo(left, top);                           // 左边到顶部
-        ctx.lineTo(left + stepWidth, top);               // 顶边第一段
-        ctx.lineTo(left + stepWidth, top + stepHeight);  // 第一台阶向下
-        ctx.lineTo(left + 2 * stepWidth, top + stepHeight);  // 第二台阶水平线
-        ctx.lineTo(left + 2 * stepWidth, top + 2 * stepHeight);  // 第二台阶向下
-        ctx.lineTo(left + size, top + 2 * stepHeight);   // 第三台阶水平线
-        ctx.lineTo(left + size, top + size);             // 右边到底部
-        ctx.closePath();                                  // 回到左下角
-    }
-    
-    // 只描线，不填充内部颜色。
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
+    ctx.closePath();
     ctx.stroke();
-
     ctx.restore();
 }
 
@@ -308,60 +271,13 @@ export function drawStair(ctx, stair, cellSize, colors, isHighlight = false, alp
  * @param {boolean} isHighlight - 是否高亮
  */
 export function drawButton(ctx, button, cellSize, colors, isHighlight = false) {
-    const centerX = button.x * cellSize + cellSize / 2;
-    const centerY = button.y * cellSize + cellSize / 2;
-    const buttonLength = cellSize * SHAPE.buttonLength;
-    const buttonWidth = cellSize * SHAPE.buttonWidth;
-    
-    let p1, p2, p3, p4;
-    
-    if (button.direction.dy === -1) { // 上
-        p1 = { x: centerX - buttonLength / 2, y: button.y * cellSize };
-        p2 = { x: centerX + buttonLength / 2, y: button.y * cellSize };
-        p3 = { x: centerX + buttonLength / 2, y: button.y * cellSize + buttonWidth };
-        p4 = { x: centerX - buttonLength / 2, y: button.y * cellSize + buttonWidth };
-    } else if (button.direction.dy === 1) { // 下
-        p1 = { x: centerX - buttonLength / 2, y: (button.y + 1) * cellSize - buttonWidth };
-        p2 = { x: centerX + buttonLength / 2, y: (button.y + 1) * cellSize - buttonWidth };
-        p3 = { x: centerX + buttonLength / 2, y: (button.y + 1) * cellSize };
-        p4 = { x: centerX - buttonLength / 2, y: (button.y + 1) * cellSize };
-    } else if (button.direction.dx === -1) { // 左
-        p1 = { x: button.x * cellSize, y: centerY - buttonLength / 2 };
-        p2 = { x: button.x * cellSize + buttonWidth, y: centerY - buttonLength / 2 };
-        p3 = { x: button.x * cellSize + buttonWidth, y: centerY + buttonLength / 2 };
-        p4 = { x: button.x * cellSize, y: centerY + buttonLength / 2 };
-    } else { // 右
-        p1 = { x: (button.x + 1) * cellSize - buttonWidth, y: centerY - buttonLength / 2 };
-        p2 = { x: (button.x + 1) * cellSize, y: centerY - buttonLength / 2 };
-        p3 = { x: (button.x + 1) * cellSize, y: centerY + buttonLength / 2 };
-        p4 = { x: (button.x + 1) * cellSize - buttonWidth, y: centerY + buttonLength / 2 };
-    }
-    
+    const points = buttonPathPoints(button, cellSize);
     ctx.strokeStyle = isHighlight ? colors.hoverHighlight : colors.wall;
     ctx.lineWidth = strokeWidth('button', cellSize, isHighlight);
     ctx.beginPath();
-    // 只绘制三边（跳过与墙重合的一边）
-    if (button.direction.dy === -1) { // 上：跳过p1->p2（顶边）
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p4.x, p4.y);
-        ctx.lineTo(p3.x, p3.y);
-        ctx.lineTo(p2.x, p2.y);
-    } else if (button.direction.dy === 1) { // 下：跳过p3->p4（底边）
-        ctx.moveTo(p3.x, p3.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.lineTo(p1.x, p1.y);
-        ctx.lineTo(p4.x, p4.y);
-    } else if (button.direction.dx === -1) { // 左：跳过p1->p4（左边）
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.lineTo(p3.x, p3.y);
-        ctx.lineTo(p4.x, p4.y);
-    } else { // 右：跳过p2->p3（右边）
-        ctx.moveTo(p2.x, p2.y);
-        ctx.lineTo(p1.x, p1.y);
-        ctx.lineTo(p4.x, p4.y);
-        ctx.lineTo(p3.x, p3.y);
-    }
+    // 只绘制三边（跳过与墙重合的一边），端点顺序与命中判定共用 buttonPathPoints。
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
     ctx.stroke();
 }
 
@@ -674,11 +590,11 @@ export function drawEditor(ctx, view) {
     // 字母、数字（门与按钮上的参数）压在高亮之上，放置高亮不能盖住它们。
     drawWallOverlays(ctx, { ...view, inGame: false });
     view.buttons.forEach(b => drawButtonLetter(ctx, b, cs, view.colors));
-    // 橡皮擦工具或右键橡皮擦时显示浅灰色大圆点提示
+    // 橡皮擦光点：直径等于墙线宽度，命中判定按这个光点的外沿算。
     if ((view.editor.tool === EDITOR_TOOLS.ERASER || view.editor.isRightClickErasing) && view.editor.rightClickMousePos) {
         ctx.fillStyle = '#aaaaaa';
         ctx.beginPath();
-        ctx.arc(view.editor.rightClickMousePos.x, view.editor.rightClickMousePos.y, 8, 0, 2 * Math.PI);
+        ctx.arc(view.editor.rightClickMousePos.x, view.editor.rightClickMousePos.y, eraserDotRadius(cs), 0, 2 * Math.PI);
         ctx.fill();
     }
     ctx.restore();

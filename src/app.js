@@ -8,7 +8,7 @@ import { MobileLayout } from './site/mobileLayout.js';
 
 const AUTO='ghostmaze-editor-draft-v3';
 // 界面构建标记：改动界面后手动更新，用来确认“浏览器跑的是不是当前这份代码”。
-const BUILD='2026-10-19a';
+const BUILD='2026-10-19b';
 const byId=id=>document.getElementById(id);
 const idle=fn=>window.requestIdleCallback?requestIdleCallback(fn,{timeout:1800}):setTimeout(fn,180);
 console.info('鬼迷宫界面构建 '+BUILD);
@@ -287,13 +287,28 @@ export class Application {
         const modifier=e.ctrlKey||e.metaKey;
         if(modifier&&k==='z'){if(this.view==='play'){e.preventDefault();e.shiftKey?this.game.handleRedo():this.game.handleUndo();}else if(this.view==='editor'){e.preventDefault();e.shiftKey?this.editor.redo():this.editor.undo();}return;}
         if(modifier&&k==='y'){if(this.view==='play'){e.preventDefault();this.game.handleRedo();}else if(this.view==='editor'){e.preventDefault();this.editor.redo();}return;}
-        if(modifier&&k==='s'){if(this.view==='play'){e.preventDefault();this.savePlayStep();}else if(this.view==='editor'){e.preventDefault();this.saveDraft();}return;}
+        // Ctrl+S：游玩存下当步并顺手展开存档面板；回放也存当步但不跳栏目；编辑只存草稿。
+        if(modifier&&k==='s'){if(this.view==='play'){e.preventDefault();this.savePlayStep();this.openPlayPanel('save');}else if(this.view==='replay'){e.preventDefault();this.saveReplayStep();}else if(this.view==='editor'){e.preventDefault();this.saveDraft();}return;}
         if(modifier||e.altKey)return;
+        // Q／E：撤销、重做（游玩与编辑共用，原有的 Ctrl+Z／Ctrl+Y 保留）。
+        if(['q','e'].includes(k)&&['play','editor'].includes(this.view)){
+            e.preventDefault();
+            const redo=k==='e';
+            if(this.view==='play'){redo?this.game.handleRedo():this.game.handleUndo();}else{redo?this.editor.redo():this.editor.undo();}
+            return;
+        }
         if(this.view==='replay'&&this.game?.replay){
             if(k===' '){e.preventDefault();this.game.replayPlaying?this.game.pauseReplay():this.game.playReplay();}
             else if(['arrowleft','a','arrowright','d'].includes(k)){e.preventDefault();this.game.seekReplay(this.game.replay.currentStep+(['a','arrowleft'].includes(k)?-1:1));}
             else if(['arrowup','w','arrowdown','s'].includes(k)){e.preventDefault();this.game.changeSpeed(['w','arrowup'].includes(k)?1:-1);}
-        }else if(this.view==='editor')this.editor?.handleKey(e);else if(this.view==='play'){if(k===' '){e.preventDefault();this.game?.useStair();}else this.game?.handleKey(e);}
+        }else if(this.view==='editor')this.editor?.handleKey(e);
+        else if(this.view==='play'){
+            // F 求解、R 重置：与游玩栏目的按钮一致。
+            if(k==='f'){e.preventDefault();this.openPlayPanel('solve');}
+            else if(k==='r'){e.preventDefault();this.game?.resetCurrentMap();}
+            else if(k===' '){e.preventDefault();this.game?.useStair();}
+            else this.game?.handleKey(e);
+        }
     }
 }
 new Application();

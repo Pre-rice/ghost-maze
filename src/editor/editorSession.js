@@ -2,7 +2,7 @@ import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../cor
 import * as Editor from './editor.js';
 import { createNewLayer, cleanupStairsOnLayerRemove } from '../layerManager.js';
 import { normalizeMapData, validateMapData, isInteriorWall } from '../core/mapDataUtils.js';
-import { hitsButton, hitsCircle, hitsKey, hitsStair, wallHitThreshold } from '../view/shapes.js';
+import { hitsButtonStroke, hitsCircle, hitsKey, hitsStair, wallHitThreshold } from '../view/shapes.js';
 
 /**
  * EditorDocument - 编辑器会话的唯一数据源（纯逻辑，零 DOM）
@@ -486,30 +486,31 @@ export class EditorDocument {
 
     /**
      * 擦除指定坐标处的元件（对应 eraseAtPos 纯数据部分）。
-     * 按画出来的形状命中：按钮长条 → 钥匙菱形 → 鬼圆 → 出生／终点圆 → 楼梯方块，一次只擦最上层的一个；
-     * 都没命中再按墙线判定。避免以前按整格擦除，点旁边就把整格元件擦掉。
+     * 按画出来的形状命中：按钮三边长条 → 钥匙菱形 → 鬼圆 → 出生／终点圆 → 楼梯折线，一次只擦最上层的一个；
+     * 都没命中再按墙线判定。pad 传橡皮擦光点半径，光点外沿碰到画出来的边才擦。
      * @param {object} pos - 像素坐标 {x, y}（格数 × 格宽，与画布缩放一致）
      * @param {number} cellSize - 一格对应的像素数（画布缩放）
+     * @param {number} [pad] - 橡皮擦光点半径（像素），默认 0
      */
-    eraseAt(pos, cellSize) {
+    eraseAt(pos, cellSize, pad = 0) {
         const px = pos.x, py = pos.y;
         const cellX = Math.floor(px / cellSize), cellY = Math.floor(py / cellSize);
         // regular 模式下起始房间的元件受保护（与墙一样由房间规则接管）。
         if (this.mode === 'free' || !this.isPosInStartRoom(cellX, cellY)) {
             // 与绘制顺序一致：越靠上画的越先擦（按钮 → 钥匙 → 鬼 → 出生点 → 终点 → 楼梯）。
-            const button = this.buttons.find(b => hitsButton(px, py, b, cellSize));
+            const button = this.buttons.find(b => hitsButtonStroke(px, py, b, cellSize, pad));
             if (button) { this.buttons = this.buttons.filter(b => b !== button); return; }
-            const key = this.items.find(i => i.type === 'key' && hitsKey(px, py, i.x, i.y, cellSize));
+            const key = this.items.find(i => i.type === 'key' && hitsKey(px, py, i.x, i.y, cellSize, pad));
             if (key) { this.items = this.items.filter(i => i !== key); return; }
-            const ghost = this.ghosts.find(g => hitsCircle(px, py, g.x, g.y, cellSize));
+            const ghost = this.ghosts.find(g => hitsCircle(px, py, g.x, g.y, cellSize, pad));
             if (ghost) { this.ghosts = this.ghosts.filter(g => g !== ghost); return; }
-            if (this.customStartPos && hitsCircle(px, py, this.customStartPos.x, this.customStartPos.y, cellSize)) { this.customStartPos = null; return; }
-            if (this.endPos && hitsCircle(px, py, this.endPos.x, this.endPos.y, cellSize)) { this.endPos = null; return; }
-            const stair = this.stairs.find(s => s.layer === this.currentLayer && hitsStair(px, py, s.x, s.y, cellSize));
+            if (this.customStartPos && hitsCircle(px, py, this.customStartPos.x, this.customStartPos.y, cellSize, pad)) { this.customStartPos = null; return; }
+            if (this.endPos && hitsCircle(px, py, this.endPos.x, this.endPos.y, cellSize, pad)) { this.endPos = null; return; }
+            const stair = this.stairs.find(s => s.layer === this.currentLayer && hitsStair(px, py, s, cellSize, pad));
             if (stair) { this.eraseStairAt(stair.x, stair.y, stair.layer); return; }
         }
-        // 墙线只认画出来的粗细（线宽的一半加一像素抗锯齿余量），不再用会误擦的宽带。
-        const wall = Editor.getWallAtPos(px, py, cellSize, this.width, this.height, EDITOR_TOOLS.ERASER, wallHitThreshold(cellSize));
+        // 墙线只认画出来的粗细（线宽的一半加一像素抗锯齿余量），再加上橡皮擦光点半径。
+        const wall = Editor.getWallAtPos(px, py, cellSize, this.width, this.height, EDITOR_TOOLS.ERASER, wallHitThreshold(cellSize, pad));
         if (wall && this.isWallEditable(wall)) {
             this.eraseButtonsOnWall(wall);
             if (wall.type === 'h') this.hWalls[wall.y][wall.x] = { type: WALL_TYPES.EMPTY, keys: 0 };

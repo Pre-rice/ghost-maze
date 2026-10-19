@@ -14,13 +14,6 @@ export class MobileLayout {
         this.divider.addEventListener('pointermove',e=>{if(this.drag)this.set((this.drag.height+e.clientY-this.drag.y)/this.layout.clientHeight);});
         for(const type of ['pointerup','pointercancel','lostpointercapture'])this.divider.addEventListener(type,()=>{if(this.drag){this.drag=null;this.divider.classList.remove('dragging');this.save();}});
         this.divider.addEventListener('dblclick',()=>this.reset());
-        this.divider.addEventListener('keydown',e=>{
-            if(!['ArrowUp','ArrowDown','Home','End','Enter',' '].includes(e.key))return;
-            e.preventDefault();e.stopPropagation();
-            if(e.key==='Enter'||e.key===' '){this.reset();return;}
-            const {min,max}=this.limits();
-            this.set(e.key==='Home'?min:e.key==='End'?max:(this.stage.getBoundingClientRect().height+(e.key==='ArrowUp'?-24:24))/this.layout.clientHeight);this.save();
-        });
         this.resize=new ResizeObserver(()=>this.sync());this.resize.observe(this.stage);this.sync();
     }
     limits(){const h=this.layout.clientHeight,min=Math.max(.2,150/h);return {min,max:Math.max(min,Math.min(.7,1-194/h))};}
