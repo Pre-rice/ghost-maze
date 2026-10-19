@@ -7,7 +7,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { test, suite, summary, assert, assertEq } from './_assert.mjs';
+import { test, suite, summary, assert, assertEq, assertDeepEq } from './_assert.mjs';
 import { computeGameView, computeEditorView, pruneTrails } from '../src/view/viewSlice.js';
 import { EditorDocument } from '../src/editor/editorSession.js';
 import { MapDefinition } from '../src/core/mapDefinition.js';
@@ -373,7 +373,8 @@ test('致死回放当步显示死亡位置，权威状态与历史初态不污�
         assertEq(view.player.y,0);
         assertEq(view.playerLayer,0);
         assertEq(gameState.player.x,0,'权威状态仍是复活后的出生点');
-        assertEq(view.player.steps,gameMode==='death-loop'?0:1);
+        assertEq(view.player.steps,1,'画面用死亡判定瞬间的步数');
+        assertEq(gameState.player.steps,gameMode==='death-loop'?0:1,'权威状态步数');
         assertEq(view.debugVision,gameMode==='death-loop');
         assertEq(JSON.stringify(gameState),before,'死亡位置不写入共享局面');
         assertEq(history.stateAt(1).player.x,0);
@@ -390,6 +391,22 @@ test('死亡位置只属于当步，游玩继续后不再显示', () => {
     assertEq(deathPositionOf(nextStep),null,'后续步没有死亡标记');
     assertEq(computeGameView({mapDef,gameState:nextStep,viewLayer:0},{state:GAME_STATES.REPLAY,debugVision:false}).player,nextStep.player,'无标记时直接用权威位置');
     assertEq(computeGameView({mapDef,gameState:deathStep,viewLayer:0},{state:GAME_STATES.PLAYING,debugVision:false}).player,deathStep.player,'游玩中未死亡提示时也直接用权威位置');
+});
+
+test('死亡当步显示死亡判定瞬间的整张地图（门态与鬼都不回退到复活后）', () => {
+    const map = makeMap({ gameMode: 'death-loop', customStartPos: { x: 0, y: 0 }, endPos: { x: 7, y: 7 }, initialGhosts: [{ x: 2, y: 0, id: 0 }] });
+    map.buttons = [{ x: 0, y: 0, letter: 'A', direction: { dx: -1, dy: 0 } }];
+    map.vWalls[1][2] = { type: 6, letter: 'A', initialState: 'closed', keys: 0 };
+    const mapDef = new MapDefinition(map);
+    const history = new ActionHistory(mapDef, ['L', 'R']); // 先按按钮开门，再向右撞鬼
+    const state = history.stateAt(2);
+    assertEq(state.loopCount, 1, '死亡循环已加一');
+    assertEq(state.layerStates[0].wallStates.v[1][2].currentState, 'closed', '权威状态回到本轮初态：门已复位');
+    assertDeepEq(state.layerStates[0].ghosts.map(g => [g.x, g.y]), [[2, 0]], '权威状态的鬼回到初始格');
+    const view = computeGameView({ mapDef, gameState: state, viewLayer: 0 }, { state: GAME_STATES.REPLAY, debugVision: false });
+    assertEq(view.player.x, 1, '画面玩家停在死亡格');
+    assertDeepEq(view.ghosts.map(g => [g.x, g.y]), [[1, 0]], '画面用死亡判定瞬间的鬼位置（与玩家重合）');
+    assertEq(view.vWalls[1][2].currentState, 'open', '画面用死亡判定瞬间的门态');
 });
 
 summary('viewSlice');

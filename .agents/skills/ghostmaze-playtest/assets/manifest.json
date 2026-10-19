@@ -1,6 +1,6 @@
 {
   "version": "1.0.2",
-  "engine": "sha256:019235cb010b0651262e722469bf19c0fc8bc1aec4dfb1a7295224054791f23e",
+  "engine": "sha256:69f3b7eea3dce5d2a53acf41074ebbeb289e1a49c4f45f30018b7dbad71cfed0",
   "format": "ghostmaze-playtest-v1",
   "sources": {
     "src/playtest/public.js": "6750130a5897a547c13a98144fd4ab6f3aa713c1b5e9e27198efc7b83d90488b",
@@ -25,7 +25,7 @@
     "src/solver/searchIndex.js": "f2dfef332276000bb7b8bedb71cd0ef142d3e314d0222ef2c408b8a187eaf0e9"
   },
   "assets": {
-    "playtest.js": "31d610562a070c487c2e2ea722dc0d26af58a0491e2954d8fe7eabeba4b3889c",
-    "target.js": "798ccef2ce93c10317e85f504f836797036b323f7a62600c913ea255423dead6"
+    "playtest.js": "3e4d73470aa374ed16a48831fb6fd5cc1a68409b3505c724015b1f64ea45deb3",
+    "target.js": "e880ba246140f499e56be28135b00c14b71690459afa86ed13fa09da01b1669f"
   }
 }

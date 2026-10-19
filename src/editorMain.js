@@ -7,6 +7,7 @@ import * as Renderer from './view/renderer.js';
 import { getColorsFromCSS } from './themeManager.js';
 import { InlineProperties } from './editor/inlineProperties.js';
 import { fitScale,resizeView,smallMapMinSpan } from './editor/viewport.js';
+import * as Pathfinding from './core/pathfinding.js';
 
 export class EditorApp {
     constructor(app){
@@ -80,9 +81,23 @@ export class EditorApp {
     resizeViewport(width,height){this.view=resizeView(this.view,this.workspace.frame,{width,height},{width:this.canvas.width,height:this.canvas.height},180*(devicePixelRatio||1),smallMapMinSpan());}
     zoom(factor,cx=null,cy=null){const r=this.canvas.getBoundingClientRect(),x=cx===null?this.canvas.width/2:(cx-r.left)*this.canvas.width/r.width,y=cy===null?this.canvas.height/2:(cy-r.top)*this.canvas.height/r.height;const scale=Math.max(10,Math.min(700,this.view.scale*factor)),ratio=scale/this.view.scale;this.view.x=x-(x-this.view.x)*ratio;this.view.y=y-(y-this.view.y)*ratio;this.view.scale=scale;this.draw();}
     draw(){
-        const d=this.editorDoc,colors=getColorsFromCSS();
-        const v=computeEditorView(d,{canvas:this.canvas,staticLayerCanvas:this.staticLayerCanvas,state:'editor',cellSize:this.view.scale,colors,padding:0,editor:{active:true,mode:'free',tool:this.tool,isDragging:!!this.gesture,stairPlacement:this.gesture?.stairPreview||null,hoveredWall:this.hover&&['wall','door','lock','oneway','glass','letter'].includes(this.tool)?this.wallAt(this.hover):null,isRightClickErasing:this.tool==='eraser',rightClickMousePos:this.gesture&&this.hover?{x:this.hover.x*this.view.scale,y:this.hover.y*this.view.scale}:null}});
+        const d=this.editorDoc,colors=getColorsFromCSS(),hover=this.hover&&!this.gesture?this.hover:null;
+        const v=computeEditorView(d,{canvas:this.canvas,staticLayerCanvas:this.staticLayerCanvas,state:'editor',cellSize:this.view.scale,colors,padding:0,editor:{active:true,mode:'free',tool:this.tool,isDragging:!!this.gesture,stairPlacement:this.gesture?.stairPreview||(hover?this.stairPreviewAt(hover):null),hoveredWall:hover&&['wall','door','lock','oneway','glass','letter'].includes(this.tool)?this.wallAt(hover):null,hoveredButtonHotspot:hover&&this.tool==='button'?this.buttonHotspotAt(hover):null,isRightClickErasing:this.tool==='eraser',rightClickMousePos:this.gesture&&this.hover?{x:this.hover.x*this.view.scale,y:this.hover.y*this.view.scale}:null}});
         v.editor.mode='free';v.offsetX=this.view.x;v.offsetY=this.view.y;v.workspaceFrame=this.workspace.frame;Renderer.drawEditor(this.ctx,v);this.properties.position();
+    }
+    /** 悬停时预览“在这里点击会放下的按钮”：位置与朝向都和实际放置一致。 */
+    buttonHotspotAt(p){
+        const d=this.editorDoc;
+        const cs=this.view.scale;
+        return Pathfinding.getButtonHotspotAtPos(p.x*cs,p.y*cs,{cellSize:cs,width:d.width,height:d.height,activeCells:d.activeCells,hWalls:d.hWalls,vWalls:d.vWalls,editorMode:d.mode});
+    }
+    /** 悬停时预览“在这里点击会放上楼梯还是下楼梯”。 */
+    stairPreviewAt(p){
+        const d=this.editorDoc;if(d.layerCount<2)return null;
+        const x=Math.floor(p.x),y=Math.floor(p.y);
+        if(!d.activeCells[y]?.[x])return null;
+        const direction=this.stairDirection(p,x,y);
+        return direction&&d.isValidStairPlacement(x,y,direction)?{x,y,layer:d.currentLayer,direction}:null;
     }
     position(e){const r=this.canvas.getBoundingClientRect(),px=(e.clientX-r.left)*this.canvas.width/r.width,py=(e.clientY-r.top)*this.canvas.height/r.height;return {px,py,x:(px-this.view.x)/this.view.scale,y:(py-this.view.y)/this.view.scale};}
     wallAt(p){const x=Math.round(p.x),y=Math.round(p.y);return Math.abs(p.x-x)<Math.abs(p.y-y)?{type:'v',x,y:Math.floor(p.y)}:{type:'h',x:Math.floor(p.x),y};}

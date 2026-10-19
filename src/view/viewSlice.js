@@ -1,5 +1,5 @@
 import { GAME_STATES } from '../core/constants.js';
-import { deathPositionOf } from '../core/stepOutcome.js';
+import { deathOutcomeOf } from '../core/stepOutcome.js';
 
 /**
  * viewSlice - 视图快照（渲染/输入的唯一读取通道）
@@ -18,11 +18,13 @@ import { deathPositionOf } from '../core/stepOutcome.js';
  */
 export function computeGameView({ mapDef, gameState, viewLayer }, renderParams) {
     const layerDef = mapDef.layers[viewLayer];
-    const layerState = gameState.layerStates[viewLayer];
-    // 当步重生已由历史完成；游玩死亡提示和回放当步都显示在死亡位置。
+    // 当步重生已由历史完成；游玩死亡提示和回放当步显示的是死亡判定瞬间的整张地图
+    // （玩家在死亡格，鬼、门、钥匙都保持当时的状态，不回退到复活后或本轮初态）。
     const death = renderParams.state === GAME_STATES.DEAD || renderParams.state === GAME_STATES.REPLAY
-        ? deathPositionOf(gameState) : null;
-    const player = death ? { ...gameState.player, ...death } : gameState.player;
+        ? deathOutcomeOf(gameState) : null;
+    const shown = death || gameState;
+    const layerState = shown.layerStates[viewLayer];
+    const player = shown.player;
     return {
         // 宿主渲染参数（非数据源）
         canvas: renderParams.canvas,
@@ -36,7 +38,7 @@ export function computeGameView({ mapDef, gameState, viewLayer }, renderParams) 
         width: mapDef.width,
         height: mapDef.height,
         activeCells: layerDef.activeCells,
-        seenCells: gameState.seenCells[viewLayer],
+        seenCells: shown.seenCells[viewLayer],
         hWalls: layerState.wallStates.h,
         vWalls: layerState.wallStates.v,
         ghosts: layerState.ghosts,

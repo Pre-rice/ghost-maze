@@ -290,10 +290,12 @@ test('toggleActiveCell: remove 清实体 + 清四周墙 + 清起点/终点', () 
 
 test('eraseAt: 按绘制形状擦除（墙线／元件图形），整格空白处不误擦', () => {
     const doc = EditorDocument.blank(10, 10, 'regular');
-    // 内部墙 (4,4)：画布坐标 (4*40+5, 4*40+5) 靠近左/上边界 → 命中竖墙 (4,4) 或横墙 (4,4)
+    // 内部墙 (4,4)：贴着画出来的墙线才擦，离墙线 0.2 格就擦不到。
     doc.hWalls[4][4] = W(WT.SOLID);
-    doc.eraseAt({ x: 4 * 40 + 5, y: 4 * 40 + 5 }, 40);
-    assertEq(doc.hWalls[4][4].type, WT.EMPTY, '墙线命中擦除');
+    doc.eraseAt({ x: 4 * 40 + 8, y: 4 * 40 + 8 }, 40);
+    assertEq(doc.hWalls[4][4].type, WT.SOLID, '离墙线太远不擦');
+    doc.eraseAt({ x: 4 * 40 + 2, y: 4 * 40 + 2 }, 40);
+    assertEq(doc.hWalls[4][4].type, WT.EMPTY, '压在墙线上才擦');
     // 鬼与钥匙按绘制图形命中：格内角落不再整格擦除
     doc.ghosts.push({ x: 4, y: 4 });
     doc.items.push({ x: 4, y: 4, type: 'key' });

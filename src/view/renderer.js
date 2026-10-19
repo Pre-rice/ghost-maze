@@ -563,8 +563,9 @@ export function drawGame(ctx, view) {
         if (view.seenCells[stair.y][stair.x] || view.debugVision) { drawStair(ctx, stair, cs, view.colors); }
     });
     if (view.endPos && (view.seenCells[view.endPos.y][view.endPos.x] || view.debugVision)) { drawCircle(ctx, view.endPos.x, view.endPos.y, cs, view.colors.endPoint); }
-    view.ghosts.forEach(ghost => { if (view.seenCells[ghost.y][ghost.x] || view.debugVision) { drawCircle(ctx, ghost.x, ghost.y, cs, view.colors.ghost); } });
+    // 玩家先画、鬼后画：两者重合时鬼显示在玩家上面。
     if (!view.multiLayerMode || view.currentLayer === view.playerLayer) { drawCircle(ctx, view.player.x, view.player.y, cs, view.colors.player); }
+    view.ghosts.forEach(ghost => { if (view.seenCells[ghost.y][ghost.x] || view.debugVision) { drawCircle(ctx, ghost.x, ghost.y, cs, view.colors.ghost); } });
     view.items.forEach(item => { if (view.seenCells[item.y][item.x] || view.debugVision) { drawItem(ctx, item, cs, view.colors); } });
     view.buttons.forEach(button => { if (view.seenCells[button.y][button.x] || view.debugVision) { drawButton(ctx, button, cs, view.colors); } });
     drawWallOverlays(ctx, { ...view, inGame: true });
@@ -628,7 +629,7 @@ export function drawEditor(ctx, view) {
     }
     ctx.stroke();
     drawCorners(ctx, view, true);
-    drawWallOverlays(ctx, { ...view, inGame: false });
+    // 先画放置高亮预览，再把门上的字母／数字等覆盖层画在上面，避免高亮盖住参数。
     if (view.editor.tool === EDITOR_TOOLS.GRID && view.editor.hoveredWall) {
         const { x, y } = view.editor.hoveredWall;
         if (x >= 0 && x < view.width && y >= 0 && y < view.height) { ctx.fillStyle = "rgba(255, 255, 0, 0.3)"; ctx.fillRect(x * cs, y * cs, cs, cs); }
@@ -652,6 +653,7 @@ export function drawEditor(ctx, view) {
             }
         }
     }
+    drawWallOverlays(ctx, { ...view, inGame: false });
     view.stairs.filter(s => s.layer === view.currentLayer).forEach(s => drawStair(ctx, s, cs, view.colors));
     if (view.editor.tool === EDITOR_TOOLS.STAIR && view.editor.stairPlacement) { drawStair(ctx, view.editor.stairPlacement, cs, view.colors, !view.editor.isDragging); }
     if (view.endPos) drawCircle(ctx, view.endPos.x, view.endPos.y, cs, view.colors.endPoint);

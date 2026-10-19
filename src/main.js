@@ -39,7 +39,8 @@ export class GhostMazeGame {
         const on=(id,fn,event='click')=>document.getElementById(id).addEventListener(event,fn);
         on('undo-btn',()=>this.handleUndo());on('redo-btn',()=>this.handleRedo());on('reset-map-btn',()=>this.resetCurrentMap());
         on('revive-btn',()=>this.revivePlayer());on('restart-btn',()=>this.resetCurrentMap());
-        document.getElementById('death-dialog').addEventListener('cancel',event=>event.preventDefault());
+        // 死亡提示只是地图区中央的一块提示，不锁页面；点它不要冒泡成地图点击。
+        document.getElementById('death-notice').addEventListener('click',event=>event.stopPropagation());
         on('full-vision-toggle',e=>this.setFullVision(e.target.checked),'change');
         on('dpad-toggle',()=>this.updateDpadVisibility(),'change');
         on('replay-full-vision',e=>this.setFullVision(e.target.checked),'change');
@@ -87,15 +88,22 @@ export class GhostMazeGame {
         // 死亡当步画在死亡位置；多层的视野层跟着死亡位置，复活后由规则层重新接管。
         const death=s&&deathPositionOf(s);
         if(death&&(c.pendingDeath||s.isDead))c.viewLayer=death.layer;
-        const dead=!!s&&(c.pendingDeath||s.isDead)&&this.app.view==='play';
-        document.getElementById('death-message').textContent=dead?this.deathMessage():'';
-        document.getElementById('revive-btn').hidden=!dead||!c.canRevive;
-        document.getElementById('restart-btn').hidden=!dead||c.canRevive;
-        const dialog=document.getElementById('death-dialog');
-        if(dead&&!dialog.open){dialog.showModal();document.getElementById(c.canRevive?'revive-btn':'restart-btn').focus();}else if(!dead&&dialog.open)dialog.close();
+        this.syncDeathNotice();
         document.getElementById('win-notice').hidden=!s?.isWon;
         document.getElementById('win-message').textContent=s?.isWon?c._winStats().text:'';
         this.syncButtons();this.updateDpadVisibility();this.app.renderMap();
+    }
+    /** 死亡提示只盖住地图区，且只在游玩栏目出现；侧栏保持可用。 */
+    deathNoticeVisible(){
+        const c=this.controller,s=c?.currentGameState;
+        return !!s&&(c.pendingDeath||s.isDead)&&this.app.view==='play';
+    }
+    syncDeathNotice(){
+        const c=this.controller,dead=this.deathNoticeVisible();
+        document.getElementById('death-message').textContent=dead?this.deathMessage():'';
+        document.getElementById('revive-btn').hidden=!dead||!c.canRevive;
+        document.getElementById('restart-btn').hidden=!dead||c.canRevive;
+        document.getElementById('death-notice').hidden=!dead;
     }
     /** 死亡弹窗文案：能复活时只确认复活，不能复活时只提供重新开始。 */
     deathMessage(){
@@ -153,6 +161,7 @@ export class GhostMazeGame {
         document.getElementById('replay-total').textContent=r.history.actions.length;
         document.getElementById('replay-prev-btn').disabled=r.currentStep===0;document.getElementById('replay-next-btn').disabled=r.currentStep===r.history.actions.length;
         document.getElementById('replay-play-btn').disabled=r.history.actions.length===0;
+        this.syncDeathNotice();
         this.app.renderSolutionSwitch();
         this.app.renderMap();
     }

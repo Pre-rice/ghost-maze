@@ -177,7 +177,7 @@ export function bindDpadControls(game) {
         /** 只接受地图区及其外圈一小段内的点击；面板、楼层面板和控件上的点击不算。 */
         function withinClickArea(e) {
             const target = e.target;
-            if (target && target !== canvas && target.closest && target.closest('#layer-panel,aside,dialog,button,a,input,select,textarea,label,header,nav')) return false;
+            if (target && target !== canvas && target.closest && target.closest('#layer-panel,#death-notice,aside,dialog,button,a,input,select,textarea,label,header,nav')) return false;
             const rect = canvas.getBoundingClientRect();
             const slack = globalThis.matchMedia && globalThis.matchMedia('(max-width:768px)').matches ? 0 : CLICK_SLACK_PX;
             return e.clientX >= rect.left - slack && e.clientX <= rect.left + rect.width + slack &&

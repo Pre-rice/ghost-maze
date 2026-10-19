@@ -496,18 +496,20 @@ export class EditorDocument {
         const cellX = Math.floor(px / cellSize), cellY = Math.floor(py / cellSize);
         // regular 模式下起始房间的元件受保护（与墙一样由房间规则接管）。
         if (this.mode === 'free' || !this.isPosInStartRoom(cellX, cellY)) {
+            // 与绘制顺序一致：越靠上画的越先擦（按钮 → 钥匙 → 鬼 → 出生点 → 终点 → 楼梯）。
             const button = this.buttons.find(b => hitsButton(px, py, b, cellSize));
             if (button) { this.buttons = this.buttons.filter(b => b !== button); return; }
             const key = this.items.find(i => i.type === 'key' && hitsKey(px, py, i.x, i.y, cellSize));
             if (key) { this.items = this.items.filter(i => i !== key); return; }
             const ghost = this.ghosts.find(g => hitsCircle(px, py, g.x, g.y, cellSize));
             if (ghost) { this.ghosts = this.ghosts.filter(g => g !== ghost); return; }
-            if (this.endPos && hitsCircle(px, py, this.endPos.x, this.endPos.y, cellSize)) { this.endPos = null; return; }
             if (this.customStartPos && hitsCircle(px, py, this.customStartPos.x, this.customStartPos.y, cellSize)) { this.customStartPos = null; return; }
+            if (this.endPos && hitsCircle(px, py, this.endPos.x, this.endPos.y, cellSize)) { this.endPos = null; return; }
             const stair = this.stairs.find(s => s.layer === this.currentLayer && hitsStair(px, py, s.x, s.y, cellSize));
             if (stair) { this.eraseStairAt(stair.x, stair.y, stair.layer); return; }
         }
-        const wall = Editor.getWallAtPos(px, py, cellSize, this.width, this.height, EDITOR_TOOLS.ERASER);
+        // 墙线按画出来的粗细判定（约 0.1 格），不再用会误擦的 0.3 格宽带。
+        const wall = Editor.getWallAtPos(px, py, cellSize, this.width, this.height, EDITOR_TOOLS.ERASER, cellSize * 0.1);
         if (wall && this.isWallEditable(wall)) {
             this.eraseButtonsOnWall(wall);
             if (wall.type === 'h') this.hWalls[wall.y][wall.x] = { type: WALL_TYPES.EMPTY, keys: 0 };

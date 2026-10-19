@@ -976,13 +976,16 @@ body.site-app{padding:22px}
 .site-app .win-notice>p{margin:0}
 .site-app .win-notice .button-row{flex:0 0 auto;gap:8px;margin:0}
 .site-app .win-notice .button-row>button{width:auto;padding:8px 12px;font-size:13px}
-/* 死亡弹窗只有继续所需的按钮，不能关掉。 */
-.site-app .death-dialog{width:min(320px,86vw);box-sizing:border-box;padding:24px 22px;text-align:center}
-.site-app .death-dialog p{margin:0 0 18px;font-size:16px;font-weight:650;line-height:1.6}
-.site-app .death-dialog .button-row{margin:0}
 
 .site-app .column-tab[aria-selected=false]:hover{background:var(--disabled-color)}
 @media(hover:none){.site-app .column-tab[aria-selected=false]:hover{background:transparent}}
+
+/* 死亡提示只盖在地图区中央，不锁定右侧栏目。 */
+.death-notice{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:7}
+.death-notice[hidden]{display:none}
+.death-card{pointer-events:auto;width:min(320px,86%);box-sizing:border-box;padding:22px;text-align:center;background:var(--container-bg);border:1px solid var(--border-color);border-radius:10px;box-shadow:0 12px 48px #0003}
+.death-card p{margin:0 0 16px;font-size:16px;font-weight:650;line-height:1.6}
+.death-card .button-row{margin:0}
 
 /* 回放栏目的解法切换条：与栏目切换框同一道横线。 */
 #solution-switch{margin:0 0 14px;padding:10px 0 0;border-top:1px solid var(--border-color)}

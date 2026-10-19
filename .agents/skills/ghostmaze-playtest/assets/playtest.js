@@ -1,5 +1,5 @@
 /* 自动生成，禁止手改；由scripts/package-playtest.mjs从本体生成。
- * pako许可随包附带；引擎 sha256:019235cb010b0651262e722469bf19c0fc8bc1aec4dfb1a7295224054791f23e
+ * pako许可随包附带；引擎 sha256:69f3b7eea3dce5d2a53acf41074ebbeb289e1a49c4f45f30018b7dbad71cfed0
  */
 (function(){
 const __factories={"src/playtest/public.js":"const { startSession, dispatchSession, reconstruct, publicSession, encodeSession, decodeSession, exportSession } = __load(\"src/playtest/session.js\");\nconst { formatBoard } = __load(\"src/playtest/observation.js\");\n\nfunction createPlaytestAPI(build) {\n    const revision = build.engine;\n    return Object.freeze({ version: build.version, engine: revision,\n        start: options => startSession(options, revision),\n        command: (session, command) => dispatchSession(session, command, revision),\n        observe: session => { const runtime = reconstruct(session, revision); return { board: runtime.board, info: publicSession(session, runtime) }; },\n        save: session => encodeSession(session, revision), restore: token => decodeSession(token, revision),\n        history: (session, { from = 1, limit = 20 } = {}) => {\n            if (!Number.isInteger(from) || from < 1 || !Number.isInteger(limit) || limit < 1 || limit > 100) throw new RangeError('历史范围无效');\n            return reconstruct(session, revision, { trace: true }).records.slice(from - 1, from - 1 + limit);\n        },\n        export: session => exportSession(session, revision), formatBoard });\n}\n\nreturn {\"createPlaytestAPI\":createPlaytestAPI};\n",
@@ -23,5 +23,5 @@ const __pako=(function(){var module={exports:{}};var exports=module.exports;
 
 return module.exports;})();
 __load('src/playtest/portable.js').installPortableGlobals(__pako);
-return __load("src/playtest/public.js")["createPlaytestAPI"]({"version":"1.0.2","engine":"sha256:019235cb010b0651262e722469bf19c0fc8bc1aec4dfb1a7295224054791f23e","format":"ghostmaze-playtest-v1"});
+return __load("src/playtest/public.js")["createPlaytestAPI"]({"version":"1.0.2","engine":"sha256:69f3b7eea3dce5d2a53acf41074ebbeb289e1a49c4f45f30018b7dbad71cfed0","format":"ghostmaze-playtest-v1"});
 })();

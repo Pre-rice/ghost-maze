@@ -167,10 +167,10 @@ export function createStartRoomLayout(hWalls, vWalls, roomY) {
  * @param {number} width - 地图宽度
  * @param {number} height - 地图高度
  * @param {string} currentTool - 当前工具
+ * @param {number} [threshold] - 命中宽度（默认 0.3 格；橡皮擦按绘制粗细传更小的值）
  * @returns {object|null} 墙对象
  */
-export function getWallAtPos(mouseX, mouseY, cellSize, width, height, currentTool) {
-    const threshold = cellSize * 0.3;
+export function getWallAtPos(mouseX, mouseY, cellSize, width, height, currentTool, threshold = cellSize * 0.3) {
     const cellX = Math.floor(mouseX / cellSize);
     const cellY = Math.floor(mouseY / cellSize);
     const cellOffsetX = mouseX - cellX * cellSize;
