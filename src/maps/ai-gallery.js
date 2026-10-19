@@ -1,4 +1,5 @@
 // 仅按用户明确决定上架；按首次交付顺序排列，数量取自当前地图码。
+// userOptimized 仅表示站主亲自提供优化版，获认可的AI维护稿不计入。
 export const aiMaps = [
     {
         "title": "错位",
@@ -6,7 +7,8 @@ export const aiMaps = [
         "replayCode": "AAJ-1OUyFXgAyMlXAw",
         "cells": 11,
         "ghosts": 1,
-        "keys": 0
+        "keys": 0,
+        "userOptimized": true
     },
     {
         "title": "接力",
@@ -14,7 +16,8 @@ export const aiMaps = [
         "replayCode": "CN5HYT8_AVmXDeZACA",
         "cells": 15,
         "ghosts": 2,
-        "keys": 0
+        "keys": 0,
+        "userOptimized": true
     },
     {
         "title": "归途",
@@ -30,7 +33,8 @@ export const aiMaps = [
         "replayCode": "GOgozp8CP3SYXwKolf2oMzIYAA",
         "cells": 24,
         "ghosts": 2,
-        "keys": 1
+        "keys": 1,
+        "userOptimized": true
     },
     {
         "title": "回环",
@@ -50,11 +54,12 @@ export const aiMaps = [
     },
     {
         "title": "换边",
-        "mapCode": "AWM4wZDw4UECAwNjWIMLkwIvA8MCF-4vAqwMILCFs0T4C0sDiMnEAQA",
-        "replayCode": "AJOILtmM5m-reKM3",
-        "cells": 11,
+        "mapCode": "AWM4wZDw4UMCAwNjUIMPkwIvA8MCF-4vAqwMILCFs0T4AyeYySIAAA",
+        "replayCode": "GKgthopjOZvq3ijNwA",
+        "cells": 12,
         "ghosts": 1,
-        "keys": 1
+        "keys": 1,
+        "userOptimized": true
     },
     {
         "title": "换岗",
@@ -62,7 +67,8 @@ export const aiMaps = [
         "replayCode": "AIsip9aPJm9eCg2fXDqvyMlVeACZv-oD",
         "cells": 22,
         "ghosts": 2,
-        "keys": 2
+        "keys": 2,
+        "userOptimized": true
     },
     {
         "title": "暂驻",
@@ -86,7 +92,8 @@ export const aiMaps = [
         "ghosts": 2,
         "keys": 0,
         "mapCode": "AADAAABgfHh4AAFngIqgJQQgAAAADlQ4UBwKoAAAAAAkBHOQhBYYgAAAIEMAMA",
-        "replayCode": "AF4gB2knYL3YKi1nCv8"
+        "replayCode": "AF4gB2knYL3YKi1nCv8",
+        "userOptimized": true
     },
     {
         "title": "同行",
@@ -102,7 +109,8 @@ export const aiMaps = [
         "replayCode": "AIK7sy_nfArWUA9WYMOVeQ",
         "cells": 16,
         "ghosts": 2,
-        "keys": 1
+        "keys": 1,
+        "userOptimized": true
     },
     {
         "title": "回望",
@@ -126,6 +134,23 @@ export const aiMaps = [
         "replayCode": "EAIs3Aqr8tqoBV_8ACpll_8AKqA",
         "cells": 36,
         "ghosts": 4,
+        "keys": 1
+    },
+    {
+        "title": "同调",
+        "mapCode": "AADB8fHx8fAAAAE14DAaBvgSwtwUggCgHOArgK4FVAAAAAYwCUFSCzzkEAAAAAAIAMIAADA",
+        "replayCode": "GDE-7lKom_Pai6f8AqlZ_xjNqA_VqT_cAliA",
+        "cells": 25,
+        "ghosts": 2,
+        "keys": 0,
+        "userOptimized": true
+    },
+    {
+        "title": "留隙",
+        "mapCode": "AWM4-BEIPjAwMCYnuLkosIc6Oug0MjiGMjAwcChyCZ0SUWRhAAEOAA",
+        "replayCode": "CHFlrF5NqYMj9daoD81o",
+        "cells": 25,
+        "ghosts": 3,
         "keys": 1
     }
 ];
