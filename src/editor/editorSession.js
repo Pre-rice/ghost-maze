@@ -2,7 +2,7 @@ import { WALL_TYPES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../cor
 import * as Editor from './editor.js';
 import { createNewLayer, cleanupStairsOnLayerRemove } from '../layerManager.js';
 import { normalizeMapData, validateMapData, isInteriorWall } from '../core/mapDataUtils.js';
-import { hitsButton, hitsCircle, hitsKey, hitsStair } from '../view/shapes.js';
+import { hitsButton, hitsCircle, hitsKey, hitsStair, wallHitThreshold } from '../view/shapes.js';
 
 /**
  * EditorDocument - 编辑器会话的唯一数据源（纯逻辑，零 DOM）
@@ -488,8 +488,8 @@ export class EditorDocument {
      * 擦除指定坐标处的元件（对应 eraseAtPos 纯数据部分）。
      * 按画出来的形状命中：按钮长条 → 钥匙菱形 → 鬼圆 → 出生／终点圆 → 楼梯方块，一次只擦最上层的一个；
      * 都没命中再按墙线判定。避免以前按整格擦除，点旁边就把整格元件擦掉。
-     * @param {object} pos - 坐标 {x, y}（调用方换算到格宽单位）
-     * @param {number} cellSize - 一格对应的坐标单位
+     * @param {object} pos - 像素坐标 {x, y}（格数 × 格宽，与画布缩放一致）
+     * @param {number} cellSize - 一格对应的像素数（画布缩放）
      */
     eraseAt(pos, cellSize) {
         const px = pos.x, py = pos.y;
@@ -508,8 +508,8 @@ export class EditorDocument {
             const stair = this.stairs.find(s => s.layer === this.currentLayer && hitsStair(px, py, s.x, s.y, cellSize));
             if (stair) { this.eraseStairAt(stair.x, stair.y, stair.layer); return; }
         }
-        // 墙线按画出来的粗细判定（约 0.1 格），不再用会误擦的 0.3 格宽带。
-        const wall = Editor.getWallAtPos(px, py, cellSize, this.width, this.height, EDITOR_TOOLS.ERASER, cellSize * 0.1);
+        // 墙线只认画出来的粗细（线宽的一半加一像素抗锯齿余量），不再用会误擦的宽带。
+        const wall = Editor.getWallAtPos(px, py, cellSize, this.width, this.height, EDITOR_TOOLS.ERASER, wallHitThreshold(cellSize));
         if (wall && this.isWallEditable(wall)) {
             this.eraseButtonsOnWall(wall);
             if (wall.type === 'h') this.hWalls[wall.y][wall.x] = { type: WALL_TYPES.EMPTY, keys: 0 };

@@ -153,7 +153,7 @@ export class EditorApp {
                 this.workspace.setWall(w,value);g.validPaint=true;this.draw();return;
             }
             const key=x+','+y;if(g.tool!=='eraser'&&g.seen.has(key))return;g.seen.add(key);
-            if(g.tool==='eraser'){d.eraseAt({x:p.x,y:p.y},1);g.validPaint=true;this.draw();return;}
+            if(g.tool==='eraser'){d.eraseAt({x:p.x*this.view.scale,y:p.y*this.view.scale},this.view.scale);g.validPaint=true;this.draw();return;}
             if(g.tool==='button'){
                 if(!d.activeCells[y]?.[x])return;const w=this.wallAt(p);
                 const direction=w.type==='h'?{dx:0,dy:w.y===y?-1:1}:{dx:w.x===x?-1:1,dy:0},wall=d[w.type+'Walls'][w.y]?.[w.x];if(isInteriorWall(w,d.width,d.height,d.activeCells)&&wall.type!==W.SOLID)throw new Error('按钮只能依附实墙');

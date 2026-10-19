@@ -8,7 +8,7 @@ import { MobileLayout } from './site/mobileLayout.js';
 
 const AUTO='ghostmaze-editor-draft-v3';
 // 界面构建标记：改动界面后手动更新，用来确认“浏览器跑的是不是当前这份代码”。
-const BUILD='2026-10-18c';
+const BUILD='2026-10-19a';
 const byId=id=>document.getElementById(id);
 const idle=fn=>window.requestIdleCallback?requestIdleCallback(fn,{timeout:1800}):setTimeout(fn,180);
 console.info('鬼迷宫界面构建 '+BUILD);
@@ -221,16 +221,14 @@ export class Application {
         this.setURL({map:s.mapCode,replay:code});this.renderSolutionSwitch();
         await this.game.seekReplay(Math.min(step,decoded.actions.length));
     }
-    /** 回放栏目顶部的解法切换条：只有从求解进入且解法不止一条时出现。 */
+    /** 回放栏目底部的解法切换条：只有从求解进入且解法不止一条时出现。 */
     renderSolutionSwitch(){
-        const s=this.solutionView,box=byId('solution-switch'),row=byId('solution-switch-label'),tabs=byId('solution-switch-tabs');
+        const s=this.solutionView,box=byId('solution-switch'),tabs=byId('solution-switch-tabs');
         const key=s?[s.mapCode,s.codes.join(','),s.code,this.view].join('|'):'';
         if(key===this.solutionSwitchKey)return;this.solutionSwitchKey=key;
         const show=!!s&&s.codes.length>1&&this.view==='replay';
         box.hidden=!show;tabs.replaceChildren();
         if(!show)return;
-        const index=s.codes.indexOf(s.code);
-        row.textContent='正在查看 解法 '+(index<0?1:index+1)+' / '+s.codes.length;
         tabs.append(...s.codes.map((code,i)=>{const b=document.createElement('button');b.type='button';b.className='secondary'+(code===s.code?' active':'');b.textContent='解法 '+(i+1);b.setAttribute('aria-pressed',String(code===s.code));if(code===s.code)b.setAttribute('aria-current','true');b.onclick=()=>this.switchSolution(code);return b;}));
     }
     /** 回到本次游玩的回放：清除已打开的最优解来源和过期缓存，URL 只保留地图。 */

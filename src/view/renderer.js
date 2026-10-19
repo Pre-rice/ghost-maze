@@ -1,5 +1,5 @@
 import { WALL_TYPES, GAME_STATES, EDITOR_TOOLS, START_ROOM_SIZE, getStartRoomY } from '../core/constants.js';
-import { SHAPE } from './shapes.js';
+import { SHAPE, strokeWidth } from './shapes.js';
 
 /**
  * Renderer 模块 - 处理所有Canvas绘制相关的功能
@@ -26,8 +26,7 @@ export function drawWallOrDoor(ctx, x1, y1, x2, y2, wallObject, cellSize, colors
     const type = wallObject.type;
     
     ctx.strokeStyle = isHighlight ? colors.hoverHighlight : colors.wall;
-    ctx.lineWidth = isHighlight ? Math.max(3, cellSize / 8) : 
-        ([WALL_TYPES.LOCKED, WALL_TYPES.ONE_WAY].includes(type) ? Math.max(3, cellSize / 12) : Math.max(2, cellSize / 10));
+    ctx.lineWidth = strokeWidth([WALL_TYPES.LOCKED, WALL_TYPES.ONE_WAY].includes(type) ? 'thinWall' : 'wall', cellSize, isHighlight);
     
     if (type === WALL_TYPES.SOLID) {
         ctx.moveTo(x1, y1);
@@ -255,7 +254,7 @@ export function drawStair(ctx, stair, cellSize, colors, isHighlight = false, alp
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.strokeStyle = isHighlight ? colors.hoverHighlight : colors.wall;
-    ctx.lineWidth = isHighlight ? Math.max(3.5, cellSize / 12) : Math.max(2.5, cellSize / 14);
+    ctx.lineWidth = strokeWidth('stair', cellSize, isHighlight);
     ctx.lineJoin = 'miter'; // 确保直角不出现凹陷
     ctx.lineCap = 'square'; // 确保线条端点平整
     
@@ -315,40 +314,31 @@ export function drawButton(ctx, button, cellSize, colors, isHighlight = false) {
     const buttonWidth = cellSize * SHAPE.buttonWidth;
     
     let p1, p2, p3, p4;
-    let letterCenterX, letterCenterY;
     
     if (button.direction.dy === -1) { // 上
         p1 = { x: centerX - buttonLength / 2, y: button.y * cellSize };
         p2 = { x: centerX + buttonLength / 2, y: button.y * cellSize };
         p3 = { x: centerX + buttonLength / 2, y: button.y * cellSize + buttonWidth };
         p4 = { x: centerX - buttonLength / 2, y: button.y * cellSize + buttonWidth };
-        letterCenterX = centerX;
-        letterCenterY = p1.y + buttonWidth / 2;
     } else if (button.direction.dy === 1) { // 下
         p1 = { x: centerX - buttonLength / 2, y: (button.y + 1) * cellSize - buttonWidth };
         p2 = { x: centerX + buttonLength / 2, y: (button.y + 1) * cellSize - buttonWidth };
         p3 = { x: centerX + buttonLength / 2, y: (button.y + 1) * cellSize };
         p4 = { x: centerX - buttonLength / 2, y: (button.y + 1) * cellSize };
-        letterCenterX = centerX;
-        letterCenterY = p1.y + buttonWidth / 2;
     } else if (button.direction.dx === -1) { // 左
         p1 = { x: button.x * cellSize, y: centerY - buttonLength / 2 };
         p2 = { x: button.x * cellSize + buttonWidth, y: centerY - buttonLength / 2 };
         p3 = { x: button.x * cellSize + buttonWidth, y: centerY + buttonLength / 2 };
         p4 = { x: button.x * cellSize, y: centerY + buttonLength / 2 };
-        letterCenterX = p1.x + buttonWidth / 2;
-        letterCenterY = centerY;
     } else { // 右
         p1 = { x: (button.x + 1) * cellSize - buttonWidth, y: centerY - buttonLength / 2 };
         p2 = { x: (button.x + 1) * cellSize, y: centerY - buttonLength / 2 };
         p3 = { x: (button.x + 1) * cellSize, y: centerY + buttonLength / 2 };
         p4 = { x: (button.x + 1) * cellSize - buttonWidth, y: centerY + buttonLength / 2 };
-        letterCenterX = p1.x + buttonWidth / 2;
-        letterCenterY = centerY;
     }
     
     ctx.strokeStyle = isHighlight ? colors.hoverHighlight : colors.wall;
-    ctx.lineWidth = isHighlight ? Math.max(3, cellSize / 8) : Math.max(2, cellSize / 10);
+    ctx.lineWidth = strokeWidth('button', cellSize, isHighlight);
     ctx.beginPath();
     // 只绘制三边（跳过与墙重合的一边）
     if (button.direction.dy === -1) { // 上：跳过p1->p2（顶边）
@@ -373,19 +363,32 @@ export function drawButton(ctx, button, cellSize, colors, isHighlight = false) {
         ctx.lineTo(p3.x, p3.y);
     }
     ctx.stroke();
-    
-    if (!isHighlight && button.letter) {
-        // 与字母门使用相同的字体大小：cellSize * 0.4
-        const fontSize = cellSize * 0.4;
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 3;
-        ctx.strokeText(button.letter, letterCenterX, letterCenterY);
-        ctx.fillStyle = colors.key;
-        ctx.fillText(button.letter, letterCenterX, letterCenterY);
-    }
+}
+
+/**
+ * 按钮上的字母：单独一层，必须画在放置预览高亮之上（长条本身在高亮之下）。
+ * 与字母门使用同一字体大小 cellSize * 0.4。
+ * @param {CanvasRenderingContext2D} ctx - Canvas上下文
+ * @param {object} button - 按钮对象
+ * @param {number} cellSize - 单元格大小
+ * @param {object} colors - 颜色配置
+ */
+export function drawButtonLetter(ctx, button, cellSize, colors) {
+    if (!button.letter) return;
+    const centerX = button.x * cellSize + cellSize / 2;
+    const centerY = button.y * cellSize + cellSize / 2;
+    const buttonWidth = cellSize * SHAPE.buttonWidth;
+    const { dx, dy } = button.direction;
+    const letterCenterX = dy !== 0 ? centerX : (dx === -1 ? button.x * cellSize + buttonWidth / 2 : (button.x + 1) * cellSize - buttonWidth / 2);
+    const letterCenterY = dy === -1 ? button.y * cellSize + buttonWidth / 2 : dy === 1 ? (button.y + 1) * cellSize - buttonWidth / 2 : centerY;
+    ctx.font = `bold ${cellSize * 0.4}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 3;
+    ctx.strokeText(button.letter, letterCenterX, letterCenterY);
+    ctx.fillStyle = colors.key;
+    ctx.fillText(button.letter, letterCenterX, letterCenterY);
 }
 
 /**
@@ -568,6 +571,7 @@ export function drawGame(ctx, view) {
     view.ghosts.forEach(ghost => { if (view.seenCells[ghost.y][ghost.x] || view.debugVision) { drawCircle(ctx, ghost.x, ghost.y, cs, view.colors.ghost); } });
     view.items.forEach(item => { if (view.seenCells[item.y][item.x] || view.debugVision) { drawItem(ctx, item, cs, view.colors); } });
     view.buttons.forEach(button => { if (view.seenCells[button.y][button.x] || view.debugVision) { drawButton(ctx, button, cs, view.colors); } });
+    view.buttons.forEach(button => { if (view.seenCells[button.y][button.x] || view.debugVision) { drawButtonLetter(ctx, button, cs, view.colors); } });
     drawWallOverlays(ctx, { ...view, inGame: true });
     // 重合数量也必须可见，不能让一只鬼和多只鬼呈现为相同局面。
     const counts = new Map();
@@ -629,7 +633,15 @@ export function drawEditor(ctx, view) {
     }
     ctx.stroke();
     drawCorners(ctx, view, true);
-    // 先画放置高亮预览，再把门上的字母／数字等覆盖层画在上面，避免高亮盖住参数。
+    // 元件分两层：长条、方块这些灰色线条画在放置高亮之下，只有字母和数字压在高亮之上。
+    view.stairs.filter(s => s.layer === view.currentLayer).forEach(s => drawStair(ctx, s, cs, view.colors));
+    if (view.endPos) drawCircle(ctx, view.endPos.x, view.endPos.y, cs, view.colors.endPoint);
+    if (view.customStartPos) drawCircle(ctx, view.customStartPos.x, view.customStartPos.y, cs, view.colors.player);
+    view.ghosts.forEach(g => drawCircle(ctx, g.x, g.y, cs, view.colors.ghost));
+    view.items.forEach(item => drawItem(ctx, item, cs, view.colors));
+    view.buttons.forEach(b => drawButton(ctx, b, cs, view.colors));
+    if (view.editor.mode === 'regular') drawCircle(ctx, view.startPos.x, view.startPos.y, cs, view.colors.player);
+    // 放置高亮预览：画在元件线条之上、字母数字之下。
     if (view.editor.tool === EDITOR_TOOLS.GRID && view.editor.hoveredWall) {
         const { x, y } = view.editor.hoveredWall;
         if (x >= 0 && x < view.width && y >= 0 && y < view.height) { ctx.fillStyle = "rgba(255, 255, 0, 0.3)"; ctx.fillRect(x * cs, y * cs, cs, cs); }
@@ -653,19 +665,15 @@ export function drawEditor(ctx, view) {
             }
         }
     }
-    drawWallOverlays(ctx, { ...view, inGame: false });
-    view.stairs.filter(s => s.layer === view.currentLayer).forEach(s => drawStair(ctx, s, cs, view.colors));
+    // 当前工具正要放下的元件：贴墙按钮与楼梯也一起预览。
     if (view.editor.tool === EDITOR_TOOLS.STAIR && view.editor.stairPlacement) { drawStair(ctx, view.editor.stairPlacement, cs, view.colors, !view.editor.isDragging); }
-    if (view.endPos) drawCircle(ctx, view.endPos.x, view.endPos.y, cs, view.colors.endPoint);
-    if (view.customStartPos) drawCircle(ctx, view.customStartPos.x, view.customStartPos.y, cs, view.colors.player);
-    view.ghosts.forEach(g => drawCircle(ctx, g.x, g.y, cs, view.colors.ghost));
-    view.items.forEach(item => drawItem(ctx, item, cs, view.colors));
-    view.buttons.forEach(b => drawButton(ctx, b, cs, view.colors));
-    if (view.editor.mode === 'regular') drawCircle(ctx, view.startPos.x, view.startPos.y, cs, view.colors.player);
     if (view.editor.hoveredButtonHotspot) {
         const virtualButton = { x: view.editor.hoveredButtonHotspot.x, y: view.editor.hoveredButtonHotspot.y, direction: view.editor.hoveredButtonHotspot.direction };
         drawButton(ctx, virtualButton, cs, view.colors, true);
     }
+    // 字母、数字（门与按钮上的参数）压在高亮之上，放置高亮不能盖住它们。
+    drawWallOverlays(ctx, { ...view, inGame: false });
+    view.buttons.forEach(b => drawButtonLetter(ctx, b, cs, view.colors));
     // 橡皮擦工具或右键橡皮擦时显示浅灰色大圆点提示
     if ((view.editor.tool === EDITOR_TOOLS.ERASER || view.editor.isRightClickErasing) && view.editor.rightClickMousePos) {
         ctx.fillStyle = '#aaaaaa';

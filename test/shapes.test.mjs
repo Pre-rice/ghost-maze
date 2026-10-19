@@ -1,5 +1,5 @@
 import { test, suite, summary, assert } from './_assert.mjs';
-import { SHAPE, hitsButton, hitsCircle, hitsKey, hitsStair, buttonRect } from '../src/view/shapes.js';
+import { SHAPE, strokeWidth, hitsButton, hitsCircle, hitsKey, hitsStair, buttonRect, wallHitThreshold } from '../src/view/shapes.js';
 
 suite('shapes');
 
@@ -15,13 +15,21 @@ test('按钮长条矩形与绘制一致：贴着对应那条边，四条边各�
     assert(right.x + right.width === 3 * cs, '右侧按钮贴右边');
 });
 
-test('按钮命中：只认长条本身，不外扩；远处不命中', () => {
+test('按钮命中含画出来的线宽：到外沿为止，贴墙一侧不越过墙线', () => {
     const cs = 40, button = { x: 2, y: 3, direction: { dx: 0, dy: -1 } };
     const rect = buttonRect(button, cs), cx = rect.x + rect.width / 2;
-    assert(hitsButton(cx, 3 * cs + 2, button, cs), '长条内命中');
-    assert(!hitsButton(cx, 3 * cs - 2, button, cs), '长条外（原外扩容差处）不命中');
-    assert(!hitsButton(cx, 3 * cs + cs * SHAPE.buttonWidth + 10, button, cs), '长条内侧远处不命中');
-    assert(!hitsButton(3 * cs, 3 * cs + 2, button, cs), '长条两侧远处不命中');
+    assert(strokeWidth('button', cs) === 4, '线宽与绘制同源：40 格宽下 4px');
+    assert(hitsButton(cx, rect.y, button, cs), '压在路径上命中');
+    assert(hitsButton(cx, rect.y + rect.height + 2, button, cs), '路径外半个线宽内命中（画出来的外沿）');
+    assert(!hitsButton(cx, rect.y + rect.height + 4, button, cs), '外沿之外不命中');
+    assert(hitsButton(rect.x - 2, rect.y + 4, button, cs), '两侧外沿同样命中');
+    assert(!hitsButton(rect.x - 4, rect.y + 4, button, cs), '两侧外沿之外不命中');
+    assert(!hitsButton(cx, rect.y - 2, button, cs), '贴墙一侧是平头端点，不越过墙线');
+    assert(!hitsButton(3 * cs + 2, rect.y + 4, button, cs), '长条两端之外不命中');
+    // 右贴墙的按钮：外沿到墙线为止，不伸进邻格。
+    const right = { x: 2, y: 3, direction: { dx: 1, dy: 0 } };
+    assert(hitsButton(3 * cs - 1, 3 * cs + cs / 2, right, cs), '贴着墙线命中');
+    assert(!hitsButton(3 * cs + 1, 3 * cs + cs / 2, right, cs), '越过墙线进入邻格不命中');
 });
 
 test('圆形与菱形按绘制半径命中', () => {
@@ -33,10 +41,20 @@ test('圆形与菱形按绘制半径命中', () => {
     assert(!hitsKey(4 * cs + 2, 5 * cs + 2, 4, 5, cs), '角落不命中菱形');
 });
 
-test('楼梯方块按绘制的 0.7 格方块命中', () => {
-    const cs = 40;
-    assert(hitsStair(4 * cs + cs / 2, 5 * cs + cs / 2, 4, 5, cs), '方块中心命中');
+test('楼梯按 0.7 方格加线宽命中', () => {
+    const cs = 40, half = (cs * SHAPE.stairSize + strokeWidth('stair', cs)) / 2 + 1;
+    const cx = 4 * cs + cs / 2, cy = 5 * cs + cs / 2;
+    assert(hitsStair(cx, cy, 4, 5, cs), '方块中心命中');
+    assert(hitsStair(cx + half - .5, cy, 4, 5, cs), '到画出来的外沿为止');
+    assert(!hitsStair(cx + half + .5, cy, 4, 5, cs), '外沿之外不命中');
     assert(!hitsStair(4 * cs + 1, 5 * cs + 1, 4, 5, cs), '方格角落不命中');
+});
+
+test('墙线命中宽度等于画出来的线宽的一半再加一像素', () => {
+    const cs = 40;
+    assert(strokeWidth('wall', cs) === 4, '墙线宽与绘制同源');
+    assert(wallHitThreshold(cs) === 3, '一半线宽加一像素抗锯齿余量');
+    assert(strokeWidth('thinWall', cs) === 3.3333333333333335, '数字门与单向门更细');
 });
 
 summary('shapes');
