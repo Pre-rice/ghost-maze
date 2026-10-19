@@ -5,10 +5,11 @@ import { LocalLibrary,readRoute,routeURL } from './site/localLibrary.js';
 import { CardViews } from './site/cards.js';
 import { PanelScroll } from './site/panelScroll.js';
 import { MobileLayout } from './site/mobileLayout.js';
+import { enableWheelNumbers } from './site/numberInputs.js';
 
 const AUTO='ghostmaze-editor-draft-v3';
 // 界面构建标记：改动界面后手动更新，用来确认“浏览器跑的是不是当前这份代码”。
-const BUILD='2026-10-19b';
+const BUILD='2026-10-19c';
 const byId=id=>document.getElementById(id);
 const idle=fn=>window.requestIdleCallback?requestIdleCallback(fn,{timeout:1800}):setTimeout(fn,180);
 console.info('鬼迷宫界面构建 '+BUILD);
@@ -16,7 +17,7 @@ export class Application {
     constructor(){
         this.view='maps';this.playPanel=null;this.scrolls={};this.loadToken=0;this.hasLoadedMap=false;this.recoverAllowed=!location.search;this.replaySource='current';this.replayDirty=true;
         this.library=new LocalLibrary();this.cards=new CardViews(this);this.mapCode=null;this.draftVisible=false;window.app=this;
-        initThemeManager();this.bind();this.panelScroll=new PanelScroll();this.mobileLayout=new MobileLayout();this.renderLibraries();performance.mark('ghostmaze-shell-ready');try{const route=readRoute(location.href);this.showColumn(route.draft?'editor':route.replay?'replay':route.map?'play':'maps');}catch{}this.boot();
+        initThemeManager();this.bind();enableWheelNumbers();this.panelScroll=new PanelScroll();this.mobileLayout=new MobileLayout();this.renderLibraries();performance.mark('ghostmaze-shell-ready');try{const route=readRoute(location.href);this.showColumn(route.draft?'editor':route.replay?'replay':route.map?'play':'maps');}catch{}this.boot();
     }
     get dialogOpen(){return !!document.querySelector('dialog[open]');}
     notify(message,type='info'){const el=byId('toast-notification');clearTimeout(this.toastTimer);el.textContent=message;el.className='toast show '+(type==='info'?'':type);this.toastTimer=setTimeout(()=>el.classList.remove('show'),3500);}
