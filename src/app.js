@@ -9,7 +9,7 @@ import { enableWheelNumbers } from './site/numberInputs.js';
 
 const AUTO='ghostmaze-editor-draft-v3';
 // 界面构建标记：改动界面后手动更新，用来确认“浏览器跑的是不是当前这份代码”。
-const BUILD='2026-10-19c';
+const BUILD='2026-10-19e';
 const byId=id=>document.getElementById(id);
 const idle=fn=>window.requestIdleCallback?requestIdleCallback(fn,{timeout:1800}):setTimeout(fn,180);
 console.info('鬼迷宫界面构建 '+BUILD);
@@ -23,6 +23,8 @@ export class Application {
     notify(message,type='info'){const el=byId('toast-notification');clearTimeout(this.toastTimer);el.textContent=message;el.className='toast show '+(type==='info'?'':type);this.toastTimer=setTimeout(()=>el.classList.remove('show'),3500);}
     bind(){
         document.querySelectorAll('[data-column]').forEach(b=>b.onclick=()=>this.switchColumn(b.dataset.column));
+        // 鼠标点过的按钮、折叠标题和开关交还焦点：否则之后按任意键会亮起蓝色焦点框。
+        document.addEventListener('pointerup',e=>{const el=e.target?.closest?.('button,summary,input[type=checkbox],input[type=radio]');if(el)el.blur();},true);
         document.querySelectorAll('[data-close-dialog]').forEach(b=>b.onclick=()=>byId(b.dataset.closeDialog).close());
         for(const d of document.querySelectorAll('dialog'))d.addEventListener('close',()=>this.game?.updateDpadVisibility());
         byId('help-btn').onclick=async()=>{this.game?.stopAutoMove();this.game?.pauseReplay();byId('help-dialog').showModal();this.game?.updateDpadVisibility();try{const m=await this.helpModule();byId('help-body').innerHTML=m.helpContent;}catch{byId('help-body').textContent='帮助加载失败，请关闭后重试。';}};
