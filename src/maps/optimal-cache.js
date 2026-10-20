@@ -179,6 +179,15 @@ export const optimalCache = {
       ],
       "complete": true,
       "ruleset": "sha256:69f3b7eea3dce5d2a53acf41074ebbeb289e1a49c4f45f30018b7dbad71cfed0"
+    },
+    "AWM4UPn_4wcGBgbGEAXXogscDlpdqoJhWlwrGIBAjKNdJmAhCwMYOAAA": {
+      "steps": 37,
+      "count": "1",
+      "codes": [
+        "GFB_r6eMqTdhmqDZ_yPA"
+      ],
+      "complete": true,
+      "ruleset": "sha256:69f3b7eea3dce5d2a53acf41074ebbeb289e1a49c4f45f30018b7dbad71cfed0"
     }
   }
 };

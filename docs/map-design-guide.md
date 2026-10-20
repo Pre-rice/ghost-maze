@@ -1,6 +1,6 @@
 # 地图集设计小册
 
-更新：2026-10-20。这里按首次交付／发现记录的顺序，简要总结目前上架的十九张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)。
+更新：2026-10-20。这里按首次交付／发现记录的顺序，简要总结目前上架的二十张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)。
 
 名称后`*`表示站主亲自提供过优化版，共九张；由AI提出、经认可的维护稿不加标记。网站地图集使用同一标记。
 
@@ -35,6 +35,7 @@
 | 17 | [《同调》](#17-同调) * | 2026-10-19 | 25 / 2 / 0 | A/B字母门、普通门、0门；综合两种困鬼方式 |
 | 18 | [《留隙》](#18-留隙) | 2026-10-19 | 25 / 3 / 1 | 0与1门；绕圈调动与细节走位 |
 | 19 | [《内外》](#19-内外) * | 2026-10-20 | 16 / 1 / 1 | A/B字母门、钥匙门；困鬼装置的简单引入 |
+| 20 | [《侧入》](#20-侧入) | 2026-10-20 | 22 / 3 / 0 | 单A、两反相A门、普通门；从终点守卫反推进入方向 |
 
 ## 1. 错位
 
@@ -257,6 +258,18 @@
 **验收：** 4×4包络16活动格（含两个封闭格）、单鬼、一钥匙，最优27步、唯一含停顿鬼轨迹。全部最优无重合、去终点安全，中性开局、实际入场与编号无关通过。按用户原码保留。
 
 [试玩](https://ghostmaze.novic.cc/?map=AWM4wPABCBgYGC80hDA-0G0KaNBqLGJheiLKAASMHFoLdjwRnQFiK7ZxcAAA) · [参考解法](https://ghostmaze.novic.cc/?map=AWM4wPABCBgYGC80hDA-0G0KaNBqLGJheiLKAASMHFoLdjwRnQFiK7ZxcAAA&replay=CFsltrH6XfGCvdnY)
+
+## 20. 侧入
+
+**设计思想：** 先分析堵在终点的鬼需要被引向哪里，再倒推接近方向、门态与前置安排；共享通路同时影响玩家从哪一侧进入，不能只当作鬼的最终停车位。
+
+**关键发现：** 你指出“必须从左边那个门上去，把鬼引到左边去”，据此设计整体方案。第一只鬼的处理仍是已经掌握的经验基操；不将这一前置步骤包装成新的顿悟。
+
+**你的简评：** “有点意思。可称好图。”明确加入地图集，同时仍期待更加新颖、优秀的谜题；未报告完整实际路线、用时或提示条件，不扩大为已刷新最高评价。[真实评述](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/temporary-entry-review-20261020.json)。
+
+**验收：** 22格、8×4阶梯包络、三鬼，无钥匙，最优37步、唯一含停顿鬼轨迹。全部最优无重合、去终点安全，中性初态、真实一步入场、编号无关及分享往返通过。按交付原版收录，未改图。
+
+[试玩](https://ghostmaze.novic.cc/?map=AWM4UPn_4wcGBgbGEAXXogscDlpdqoJhWlwrGIBAjKNdJmAhCwMYOAAA) · [参考解法](https://ghostmaze.novic.cc/?map=AWM4UPn_4wcGBgbGEAXXogscDlpdqoJhWlwrGIBAjKNdJmAhCwMYOAAA&replay=GFB_r6eMqTdhmqDZ_yPA)
 
 ## 怎样继续使用这份小册
 

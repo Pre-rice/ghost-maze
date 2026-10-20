@@ -161,5 +161,13 @@ export const aiMaps = [
         "ghosts": 1,
         "keys": 1,
         "userOptimized": true
+    },
+    {
+        "title": "侧入",
+        "mapCode": "AWM4UPn_4wcGBgbGEAXXogscDlpdqoJhWlwrGIBAjKNdJmAhCwMYOAAA",
+        "replayCode": "GFB_r6eMqTdhmqDZ_yPA",
+        "cells": 22,
+        "ghosts": 3,
+        "keys": 0
     }
 ];
