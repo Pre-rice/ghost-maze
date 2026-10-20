@@ -37,8 +37,10 @@ const bumpPatch = parts => [parts[0], parts[1], parts[2] + 1];
 const format = parts => parts.join('.');
 
 // 与上次发布比较：改了打包路径里的任何东西才需要发版。
-const changed = latestTag ? git('diff', '--name-only', `${latestTag}..HEAD`, '--', ...PACKAGED_PATHS) : '';
-const release = !latestTag || changed.length > 0;
+// 标签在本地不存在（浅克隆或标签被清理）时按“需要发版”处理，由 CI 的 fetch-depth: 0 保证正常情况能取到。
+const hasLatestTag = latestTag ? (() => { try { git('rev-parse', '--verify', `refs/tags/${latestTag}`); return true; } catch { return false; } })() : false;
+const changed = hasLatestTag ? git('diff', '--name-only', `${latestTag}..HEAD`, '--', ...PACKAGED_PATHS) : '';
+const release = !hasLatestTag || changed.length > 0;
 
 // 版本号取“打包脚本里的版本”和“上次发布版本”的较大者；都没动过才 +1。
 const current = readVersion();
