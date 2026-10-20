@@ -27,5 +27,5 @@ const __pako=(function(){var module={exports:{}};var exports=module.exports;
 
 return module.exports;})();
 __load('src/playtest/portable.js').installPortableGlobals(__pako);
-return __load("src/playtest/target-public.js")["createTargetAPI"]({"version":"1.0.2","engine":"sha256:69f3b7eea3dce5d2a53acf41074ebbeb289e1a49c4f45f30018b7dbad71cfed0","format":"ghostmaze-playtest-v1"});
+return __load("src/playtest/target-public.js")["createTargetAPI"]({"version":"1.0.3","engine":"sha256:69f3b7eea3dce5d2a53acf41074ebbeb289e1a49c4f45f30018b7dbad71cfed0","format":"ghostmaze-playtest-v1"});
 })();

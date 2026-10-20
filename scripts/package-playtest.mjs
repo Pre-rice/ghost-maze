@@ -15,7 +15,7 @@ for (const name of core) {
     const file = 'src/core/' + name;
     digest.update(file + ':' + sha(source(file)) + '\n');
 }
-const build = { version: '1.0.2', engine: 'sha256:' + digest.digest('hex'), format: 'ghostmaze-playtest-v1' };
+const build = { version: '1.0.3', engine: 'sha256:' + digest.digest('hex'), format: 'ghostmaze-playtest-v1' };
 const tagIndex = process.argv.indexOf('--release-tag');
 if (tagIndex >= 0 && process.argv[tagIndex + 1] !== `playtest-v${build.version}`) {
     throw new Error('发布标签必须匹配技能版本：playtest-v' + build.version);
