@@ -1,4 +1,4 @@
-# 鬼迷宫试玩
+# 鬼迷宫AI试玩
 
 手动调用，让AI读取文字局面、自主选择动作，由同一份游戏引擎推进，最后交付实际过程、关键发现、评价、感受和回放。
 
@@ -8,7 +8,7 @@
 
 ## 安装
 
-- ChatGPT：提供独立skill ZIP，以及包含该skill的插件ZIP；使用当前账号支持的技能上传／插件安装入口。安装后显式选择“鬼迷宫试玩”或用@调用。仓库目录本身不会自动安装进ChatGPT。
+- ChatGPT：提供独立skill ZIP，以及包含该skill的插件ZIP；使用当前账号支持的技能上传／插件安装入口。安装后显式选择“鬼迷宫AI试玩”或用@调用。仓库目录本身不会自动安装进ChatGPT。
 - Codex：仓库中的`.agents/skills/ghostmaze-playtest`可被发现；在新会话中用`$ghostmaze-playtest`调用，也可安装独立包。默认禁止隐式调用。
 - 日常直接执行随包JavaScript，不需要服务、API Key或访问生产站；有Node时可用scripts/play.mjs，无Node时按references/runtime.md在JavaScript执行器中装载同一资产。
 
@@ -16,7 +16,7 @@
 
 ## 使用
 
-> 用鬼迷宫试玩这个地图：〈地图链接或分享码〉。
+> 用鬼迷宫AI试玩这个地图：〈地图链接或分享码〉。
 
 > 不读取规则，自主探索；沿用本对话已有经验。
 

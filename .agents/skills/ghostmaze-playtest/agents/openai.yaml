@@ -1,5 +1,5 @@
 interface:
-  display_name: "鬼迷宫试玩"
+  display_name: "鬼迷宫AI试玩"
   short_description: "手动调用，亲自解谜，交付过程、评价、感受和回放"
   default_prompt: "自主试玩我提供的鬼迷宫地图，交付实际过程、关键发现、评价、感受与回放。"
 policy:

@@ -1,0 +1,105 @@
+name: 自动发布鬼迷宫AI试玩
+
+# 引擎或技能内容一变，就自动升一个补丁版本、提交、打包并发布，
+# 不再需要人工改版本号或打标签。技能目录、试玩源码、引擎、vendor 与打包脚本之外的改动不会触发。
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.agents/skills/ghostmaze-playtest/**'
+      - 'src/playtest/**'
+      - 'src/core/**'
+      - 'src/vendor/pako.js'
+      - 'scripts/package-playtest.mjs'
+      - 'scripts/auto-playtest-release.mjs'
+      - '.github/workflows/playtest-auto-release.yml'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 只判断是否需要发版，不提交、不发布
+        type: boolean
+        required: true
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: playtest-auto-release
+  cancel-in-progress: false
+
+jobs:
+  auto-release:
+    # 自提交带 [skip ci]，避免机器人提交再触发一轮。
+    if: ${{ !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 读取最近一次已发布版本
+        id: released
+        run: |
+          set -euo pipefail
+          tag=$(gh api "repos/$GH_REPO/releases?per_page=100" --jq \
+            '[.[] | select(.tag_name | startswith("playtest-v"))] | sort_by(.tag_name[10:] | split(".") | map(tonumber)) | last | .tag_name // ""')
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "最近发布：${tag:-（无）}"
+
+      - name: 统一历史 Release 里的中文名
+        if: ${{ inputs.dry_run != true }}
+        run: node scripts/rename-playtest-releases.mjs
+
+      - name: 判断是否需要发版
+        id: decide
+        run: |
+          set -euo pipefail
+          node scripts/auto-playtest-release.mjs --latest-tag "${{ steps.released.outputs.tag }}" | tee decision.json
+          node -e "const d=JSON.parse(require('fs').readFileSync('decision.json','utf8'));require('fs').appendFileSync(process.env.GITHUB_OUTPUT,'release='+String(d.release)+'\nversion='+d.version+'\n')"
+
+      - name: 运行全部测试
+        if: ${{ steps.decide.outputs.release == 'true' && inputs.dry_run != true }}
+        run: npm test
+
+      - name: 升版本并重新生成随包资产
+        if: ${{ steps.decide.outputs.release == 'true' && inputs.dry_run != true }}
+        run: node scripts/auto-playtest-release.mjs --latest-tag "${{ steps.released.outputs.tag }}" --apply
+
+      - name: 提交版本与资产
+        if: ${{ steps.decide.outputs.release == 'true' && inputs.dry_run != true }}
+        run: |
+          set -euo pipefail
+          version="${{ steps.decide.outputs.version }}"
+          git config user.name 'ghostmaze-release-bot'
+          git config user.email 'ghostmaze-release-bot@users.noreply.github.com'
+          git add scripts/package-playtest.mjs .agents/skills/ghostmaze-playtest/assets
+          git commit -m "chore: 自动发布试玩技能 v${version} [skip ci]"
+          git push origin HEAD:main
+          echo "已提交 v${version}"
+
+      - name: 准备安装包并发布
+        if: ${{ steps.decide.outputs.release == 'true' && inputs.dry_run != true }}
+        run: |
+          set -euo pipefail
+          label="playtest-v${{ steps.decide.outputs.version }}"
+          node scripts/prepare-playtest-release.mjs --output artifacts/ghostmaze-playtest --tag "$label"
+          node scripts/publish-playtest-release.mjs --directory artifacts/ghostmaze-playtest --latest
+
+      - name: 汇总
+        run: |
+          if [ "${{ steps.decide.outputs.release }}" != "true" ]; then
+            echo "随包引擎与技能内容自上次发布后没有变化，不发布。"
+          elif [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "演练模式：本应发布 playtest-v${{ steps.decide.outputs.version }}，未提交也未发布。"
+          else
+            echo "已发布 playtest-v${{ steps.decide.outputs.version }}。"
+          fi

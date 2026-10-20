@@ -1,4 +1,4 @@
-name: 发布鬼迷宫试玩技能
+name: 发布鬼迷宫AI试玩
 
 on:
   push:

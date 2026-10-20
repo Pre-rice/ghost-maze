@@ -1,4 +1,4 @@
-# AI 自主试玩 skill
+# 鬼迷宫AI试玩 skill
 
 手动调用，让 AI 读取文字局面、自主选择动作，由真实游戏引擎推进，最后交付实际过程、关键发现、评价、感受与回放。普通 ChatGPT 聊天优先，兼容 Codex；不通过程序搜索通关路线。
 
@@ -10,10 +10,10 @@
 - `ghostmaze-playtest-plugin.zip`：同一个技能的插件封装，不含在线服务。
 - `SHA256SUMS.txt`、`manifest.json`：下载校验与固定引擎版本。
 
-使用当前账号支持的技能上传／插件安装入口。安装后显式选择“鬼迷宫试玩”或用 @ 调用；Codex 在仓库中可用 `$ghostmaze-playtest`。仓库文件和 Release 下载不会自动安装到 ChatGPT。普通聊天需能读取随包资源、实际执行 JavaScript 并返回结果、连续保存 session 或传递恢复码；具体安装能力以宿主为准。
+使用当前账号支持的技能上传／插件安装入口。安装后显式选择“鬼迷宫AI试玩”或用 @ 调用；Codex 在仓库中可用 `$ghostmaze-playtest`。仓库文件和 Release 下载不会自动安装到 ChatGPT。普通聊天需能读取随包资源、实际执行 JavaScript 并返回结果、连续保存 session 或传递恢复码；具体安装能力以宿主为准。
 
 ```text
-用鬼迷宫试玩这个地图：〈地图链接或分享码〉。自主完成，交付过程、评价和感受。
+用鬼迷宫AI试玩这个地图：〈地图链接或分享码〉。自主完成，交付过程、评价和感受。
 
 不读取规则，自主探索；沿用本对话已有经验。
 
@@ -40,12 +40,19 @@
 node scripts/package-playtest.mjs
 node scripts/package-playtest.mjs --check
 npm test
+node scripts/auto-playtest-release.mjs --latest-tag playtest-v1.0.2   # 只判断，不写文件
 node scripts/prepare-playtest-release.mjs --output artifacts/ghostmaze-playtest
 ```
 
-版本号在打包脚本中唯一维护，采用 `playtest-vX.Y.Z` 标签，与网站版本独立。准备脚本校验源码资产，生成独立包／插件包、manifest、SHA256SUMS、源码提交与使用说明；输出目录不进 Git。
+版本号在 `scripts/package-playtest.mjs` 中唯一维护，采用 `playtest-vX.Y.Z` 标签，与网站版本独立。准备脚本校验源码资产，生成独立包／插件包、manifest、SHA256SUMS、源码提交与使用说明；输出目录不进 Git。
 
-完成提交并同步 main 后，给发布提交打匹配版本标签并推送。GitHub Actions 只在 `playtest-v*` 标签触发：核对标签与版本、运行本体测试、打包，先上传到发布草稿，再公开 Release。已发布版本不可覆盖；失败保留草稿便于查证，不将不完整安装包标成正式版本。
+**自动发版**：推送到 main 且改动落在 `.agents/skills/ghostmaze-playtest/`、`src/playtest/`、`src/core/`、`src/vendor/pako.js` 或打包脚本时，`.github/workflows/playtest-auto-release.yml` 会比较最近一次已发布版本：内容没变就跳过；变了就自动把补丁号 +1、重新生成资产、跑全量测试、提交版本与资产（提交信息带 `[skip ci]`，不会自我触发）、打包并公开 Release。不需要人工改版本号或打标签。机器人提交用 `GITHUB_TOKEN` 推送，本身不会触发新的流水线；失败时重跑同一工作流即可，版本号已提交则沿用、未提交则重新 +1。
+
+**手动补发／演练**：工作流支持 `workflow_dispatch`，默认 `dry_run: true`，只判断会发哪个版本、不提交不发布；确认无误后把 `dry_run` 设为 false 再跑一次即可把欠的版本补上。
+
+**名称**：技能中文名为“鬼迷宫AI试玩”，Release 标题与说明用同一名称。工作流每次运行会把历史 `playtest-v*` Release 的旧中文名统一改成新名称，只动标题与说明文字，不动任何安装包附件。
+
+`playtest-v*` 标签工作流（`.github/workflows/playtest-release.yml`）保留作人工发布与历史迁移入口：核对标签与版本、运行本体测试、打包，先上传发布草稿，再公开 Release。已发布版本不可覆盖；失败保留草稿便于查证，不将不完整安装包标成正式版本。
 
 三个既有版本从原交付目录迁入 Release，ZIP 保持原字节；来源提交、校验及原验证记录随版本保留。历史标签对应当时源码，不重新运行旧版机制生成新包。 [迁移及公开下载核验](archive/playtest-release-migration-20261018.json)记录三个版本、六个安装包的原件一致性和源码标签。
 

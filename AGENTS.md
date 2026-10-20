@@ -2,7 +2,7 @@
 
 ## 职责与入口
 
-本仓库负责游戏网站：玩法引擎、游玩／回放、网页求解器、编辑器、地图集展示，以及手动调用的 AI 自主试玩 skill。
+本仓库负责游戏网站：玩法引擎、游玩／回放、网页求解器、编辑器、地图集展示，以及手动调用的鬼迷宫AI试玩 skill。
 
 AI 研发、训练与谜题设计统一到 [ghost-maze-ai](https://github.com/Pre-rice/ghost-maze-ai) 执行。
 
@@ -41,5 +41,6 @@ AI 研发、训练与谜题设计统一到 [ghost-maze-ai](https://github.com/Pr
 - 唯一技能源为 `.agents/skills/ghostmaze-playtest/`，只在用户显式调用时试玩；普通编码、验收和地图讨论不自动调用。
 - 维护与发布见[技能说明](docs/ai-playtest.md)。引擎由 `node scripts/package-playtest.mjs` 从本体生成，`--check` 核对；修改源代码的一方负责更新资产。
 - skill 独立版本采用 `playtest-vX.Y.Z` 标签。源码和随包 JavaScript 留在仓库，安装 ZIP、校验与版本说明通过 GitHub Release 分发；不提交新 ZIP 到 releases。
+- 发版全自动：推送到 main 且改动落在技能目录、`src/playtest/`、`src/core/`、`src/vendor/pako.js` 或打包脚本时，`.github/workflows/playtest-auto-release.yml` 自动升补丁号、重新生成资产、跑全量测试、提交（带 `[skip ci]`）、打包并公开 Release，不需要人工改版本号或打标签。改这些路径就别再手动升版本；需要演练或补发时用该工作流的手动触发，默认 `dry_run: true` 只判断不发布。
 - 只有技能内容或随包引擎变化才升级技能版本；普通页面调整、地图入集不重发。版本固定引擎，旧记录用对应旧版恢复，不覆盖已发布安装包。
 - 保持手动调用、规则文件隔离、只给目标步数的最短挑战和真实过程记录。工程验收与普通 ChatGPT 账号端实际安装验收分开报告，不能代替用户反馈。

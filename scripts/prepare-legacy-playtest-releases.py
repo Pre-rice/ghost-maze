@@ -38,7 +38,7 @@ for version, revision in versions.items():
     checksums = {name: hashlib.sha256(data).hexdigest() for name, data in files.items()}
     files['SHA256SUMS.txt'] = ''.join(f'{digest}  {name}\n' for name, digest in checksums.items()).encode()
     latest = '当前推荐版本。' if version == '1.0.2' else '历史版本，用于恢复已有记录；新试玩请使用最新版本。'
-    notes = f'''# 鬼迷宫自主试玩 {version}
+    notes = f'''# 鬼迷宫AI试玩 {version}
 
 {latest}
 

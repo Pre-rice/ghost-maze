@@ -36,7 +36,7 @@ if (!release) {
     // 直接采用创建响应，避免刚创建的草稿尚未进入列表时重复创建。
     release = JSON.parse(gh('api', '--method', 'POST', 'repos/{owner}/{repo}/releases',
         '--raw-field', 'tag_name=' + tag, '--raw-field', 'target_commitish=' + record.sourceCommit,
-        '--raw-field', `name=鬼迷宫自主试玩 ${record.version}`, '--raw-field', 'body=' + readFileSync(join(root, 'release-notes.md'), 'utf8'), '--field', 'draft=true'));
+        '--raw-field', `name=鬼迷宫AI试玩 ${record.version}`, '--raw-field', 'body=' + readFileSync(join(root, 'release-notes.md'), 'utf8'), '--field', 'draft=true'));
 }
 if (!release) throw new Error('发布草稿未找到');
 if (release.target_commitish !== record.sourceCommit) throw new Error('同名版本的源码提交不一致，拒绝覆盖');
