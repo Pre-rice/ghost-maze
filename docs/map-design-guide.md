@@ -1,8 +1,8 @@
 # 地图集设计小册
 
-更新：2026-10-19。这里按首次交付／发现记录的顺序，简要总结目前上架的十八张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)。
+更新：2026-10-20。这里按首次交付／发现记录的顺序，简要总结目前上架的十九张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)。
 
-名称后`*`表示站主亲自提供过优化版，共八张；由AI提出、经认可的维护稿不加标记。网站地图集使用同一标记。
+名称后`*`表示站主亲自提供过优化版，共九张；由AI提出、经认可的维护稿不加标记。网站地图集使用同一标记。
 
 “关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《周转》《同行》的新评述及五图优化见[本轮记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-adjustments-20261014.md)。
 
@@ -34,6 +34,7 @@
 | 16 | [《布阵》](#16-布阵) | 2026-10-18 | 36 / 4 / 1 | A/B三门、普通门、钥匙门；先安置与后续避追互相制约 |
 | 17 | [《同调》](#17-同调) * | 2026-10-19 | 25 / 2 / 0 | A/B字母门、普通门、0门；综合两种困鬼方式 |
 | 18 | [《留隙》](#18-留隙) | 2026-10-19 | 25 / 3 / 1 | 0与1门；绕圈调动与细节走位 |
+| 19 | [《内外》](#19-内外) * | 2026-10-20 | 16 / 1 / 1 | A/B字母门、钥匙门；困鬼装置的简单引入 |
 
 ## 1. 错位
 
@@ -244,6 +245,18 @@
 **验收：** 25格三鬼、一钥匙，最优39步、三种含停顿鬼轨迹；全部最优无重合、去终点安全，中性开局、实际入场及编号无关通过。
 
 [试玩](https://ghostmaze.novic.cc/?map=AWM4-BEIPjAwMCYnuLkosIc6Oug0MjiGMjAwcChyCZ0SUWRhAAEOAA) · [参考解法](https://ghostmaze.novic.cc/?map=AWM4-BEIPjAwMCYnuLkosIc6Oug0MjiGMjAwcChyCZ0SUWRhAAEOAA&replay=CHFlrF5NqYMj9daoD81o)
+
+## 19. 内外
+
+**设计思想：** 两个困鬼装置分别牵制取物和终点的通路，需要改变同一只鬼的安置位置；作为困鬼装置的简单引入，帮助熟悉保护和通路的关系。
+
+**关键发现：** 设计者预期是改变安全操作的一侧；用户认为有经验就容易分析，没有确认新意或尤里卡时刻。入集定位为入门题，不视为挑战主线的新突破。
+
+**你的简评与优化：** 简洁、结构直观、思路简单；两个困鬼装置容易看懂。亲自调整为近于对角线对称、更匀称优美的版本，明确保留两个封闭格：此处对称性更重要，封闭格也比虚空好看。[真实反馈与版本归属](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/inside-outside-and-circulating-review-20261020.json)。
+
+**验收：** 4×4包络16活动格（含两个封闭格）、单鬼、一钥匙，最优27步、唯一含停顿鬼轨迹。全部最优无重合、去终点安全，中性开局、实际入场与编号无关通过。按用户原码保留。
+
+[试玩](https://ghostmaze.novic.cc/?map=AWM4wPABCBgYGC80hDA-0G0KaNBqLGJheiLKAASMHFoLdjwRnQFiK7ZxcAAA) · [参考解法](https://ghostmaze.novic.cc/?map=AWM4wPABCBgYGC80hDA-0G0KaNBqLGJheiLKAASMHFoLdjwRnQFiK7ZxcAAA&replay=CFsltrH6XfGCvdnY)
 
 ## 怎样继续使用这份小册
 

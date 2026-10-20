@@ -152,5 +152,14 @@ export const aiMaps = [
         "cells": 25,
         "ghosts": 3,
         "keys": 1
+    },
+    {
+        "title": "内外",
+        "mapCode": "AWM4wPABCBgYGC80hDA-0G0KaNBqLGJheiLKAASMHFoLdjwRnQFiK7ZxcAAA",
+        "replayCode": "CFsltrH6XfGCvdnY",
+        "cells": 16,
+        "ghosts": 1,
+        "keys": 1,
+        "userOptimized": true
     }
 ];
