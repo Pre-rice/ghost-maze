@@ -170,6 +170,15 @@ export const optimalCache = {
         "CHFlrF52iYMj9daoD81o"
       ],
       "complete": true
+    },
+    "AWM4wPABCBgYGC80hDA-0G0KaNBqLGJheiLKAASMHFoLdjwRnQFiK7ZxcAAA": {
+      "steps": 27,
+      "count": "1",
+      "codes": [
+        "CFsltrH6XfGCvdnY"
+      ],
+      "complete": true,
+      "ruleset": "sha256:69f3b7eea3dce5d2a53acf41074ebbeb289e1a49c4f45f30018b7dbad71cfed0"
     }
   }
 };
