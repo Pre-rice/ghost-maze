@@ -1,8 +1,8 @@
 # 地图集设计小册
 
-更新：2026-10-20。这里按首次交付／发现记录的顺序，简要总结目前上架的二十张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)。
+更新：2026-10-23。这里按首次交付／发现记录的顺序，简要总结目前上架的二十一张图。**正文包含解谜关键；准备首次试玩时请直接访问[主页的地图栏目](https://ghostmaze.novic.cc/)。** 各图只列当前地图与参考，历史改图和完整反馈在[总目录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/ai-map-catalog.md)。
 
-名称后`*`表示站主亲自提供过优化版，共九张；由AI提出、经认可的维护稿不加标记。网站地图集使用同一标记。
+名称后`*`表示站主亲自提供过优化版，共十张；由AI提出、经认可的维护稿不加标记。网站地图集使用同一标记。
 
 “关键发现”分为你明确确认的尤里卡时刻、带提示／回放后的发现，以及设计者预期但尚未获确认的认识变化。《周转》《同行》的新评述及五图优化见[本轮记录](https://github.com/Pre-rice/ghost-maze-ai/blob/main/docs/archive/reviews/map-adjustments-20261014.md)。
 
@@ -36,6 +36,7 @@
 | 18 | [《留隙》](#18-留隙) | 2026-10-19 | 25 / 3 / 1 | 0与1门；绕圈调动与细节走位 |
 | 19 | [《内外》](#19-内外) * | 2026-10-20 | 16 / 1 / 1 | A/B字母门、钥匙门；困鬼装置的简单引入 |
 | 20 | [《侧入》](#20-侧入) | 2026-10-20 | 22 / 3 / 0 | 单A、两反相A门、普通门；从终点守卫反推进入方向 |
+| 21 | [《门庭》](#21-门庭) * | 2026-10-22 | 38 / 3 / 1 | 同A四门、两控制；同列分隔与按钮一步的奇偶性 |
 
 ## 1. 错位
 
@@ -270,6 +271,18 @@
 **验收：** 22格、8×4阶梯包络、三鬼，无钥匙，最优37步、唯一含停顿鬼轨迹。全部最优无重合、去终点安全，中性初态、真实一步入场、编号无关及分享往返通过。按交付原版收录，未改图。
 
 [试玩](https://ghostmaze.novic.cc/?map=AWM4UPn_4wcGBgbGEAXXogscDlpdqoJhWlwrGIBAjKNdJmAhCwMYOAAA) · [参考解法](https://ghostmaze.novic.cc/?map=AWM4UPn_4wcGBgbGEAXXogscDlpdqoJhWlwrGIBAjKNdJmAhCwMYOAAA&replay=GFB_r6eMqTdhmqDZ_yPA)
+
+## 21. 门庭
+
+**设计思想：** 三鬼共用中央房间和外侧通路；通过不同方向的引动与同组门的切换，把一只鬼留在外面，为取中央钥匙创造条件。当前采用用户2026-10-23提供的增强版，轮廓更匀称，并增加一只鬼。
+
+**关键发现：** 用户明确指出，按按钮也算一步，能调整鬼移动的奇偶性，使鬼停在中间。外侧安置与取钥匙需要配合这个距离调整；不把单纯按按钮或增加鬼数称为新意。
+
+**你的简评与优化：** “不错的地图”，认可后亲自增强并要求入集；同时强调“本质上还是在外围引鬼，思路没有什么很新颖的地方”。保留这一限制，不扩大为最高评价。[真实评述与版本归属](https://github.com/Pre-rice/ghost-maze-ai/blob/main/data/manifests/queue-separation-review-20261023.json)。
+
+**验收：** 38格、7×7包络、三鬼一钥匙，最优79步，四条最短走法归并为一种含停顿鬼轨迹。全部最优无重合、去终点安全，中性初态、指定两步实际入场、编号无关及分享往返通过。用户原码保持，原生成稿另存。
+
+[试玩](https://ghostmaze.novic.cc/?map=AADB_SV1_X0l_AFo-BIsGwBKAnwFAFUCgK5BCEMiuUKUVVQAgCqgqIThxKipVVSAgABAQQAA) · [参考解法](https://ghostmaze.novic.cc/?map=AADB_SV1_X0l_AFo-BIsGwBKAnwFAFUCgK5BCEMiuUKUVVQAgCqgqIThxKipVVSAgABAQQAA&replay=CGAYUYQD_9VWr8CMCqpWA_qVveNilf_wJA)
 
 ## 怎样继续使用这份小册
 

@@ -169,5 +169,14 @@ export const aiMaps = [
         "cells": 22,
         "ghosts": 3,
         "keys": 0
+    },
+    {
+        "title": "门庭",
+        "mapCode": "AADB_SV1_X0l_AFo-BIsGwBKAnwFAFUCgK5BCEMiuUKUVVQAgCqgqIThxKipVVSAgABAQQAA",
+        "replayCode": "CGAYUYQD_9VWr8CMCqpWA_qVveNilf_wJA",
+        "cells": 38,
+        "ghosts": 3,
+        "keys": 1,
+        "userOptimized": true
     }
 ];
